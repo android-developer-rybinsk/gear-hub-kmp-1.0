@@ -83,8 +83,3 @@ kotlin {
     }
 }
 
-android {
-    namespace = "com.gear.hub.auth"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig { minSdk = libs.versions.android.minSdk.get().toInt() }
-}
