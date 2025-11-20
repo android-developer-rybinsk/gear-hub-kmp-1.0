@@ -8,10 +8,16 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.gear.hub.network"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk = 36
+        minSdk = 24
 
-        withHostTestBuilder {}
+        withHostTestBuilder { }
+
+        withDeviceTestBuilder {
+            sourceSetTreeName = "test"
+        }.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
     }
 
     iosX64()
@@ -48,9 +54,9 @@ kotlin {
 
 android {
     namespace = "com.gear.hub.network"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = 36
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk = 24
     }
     buildFeatures {
         buildConfig = true

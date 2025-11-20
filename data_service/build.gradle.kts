@@ -7,10 +7,16 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.gear.hub.data"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk = 36
+        minSdk = 24
 
-        withHostTestBuilder {}
+        withHostTestBuilder { }
+
+        withDeviceTestBuilder {
+            sourceSetTreeName = "test"
+        }.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
     }
 
     iosX64()
@@ -37,13 +43,5 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.koin.core)
         }
-    }
-}
-
-android {
-    namespace = "com.gear.hub.data"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
