@@ -7,33 +7,12 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = "com.gear.hub.network"
-        compileSdk = 36
-        minSdk = 24
-
         withHostTestBuilder { }
 
         withDeviceTestBuilder {
             sourceSetTreeName = "test"
         }.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-
-        buildFeatures { buildConfig = true }
-
-        val devHost = project.findProperty("devHost") as? String ?: "http://84.54.56.129:8000"
-        val prodHost = project.findProperty("prodHost") as? String ?: "https://prod.example.com"
-
-        buildTypes {
-            debug {
-                buildConfigField("String", "DEV_HOST", "\"$devHost\"")
-                buildConfigField("String", "PROD_HOST", "\"$prodHost\"")
-            }
-            release {
-                buildConfigField("String", "DEV_HOST", "\"$devHost\"")
-                buildConfigField("String", "PROD_HOST", "\"$prodHost\"")
-                isMinifyEnabled = false
-            }
         }
     }
 
@@ -65,6 +44,29 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.koin.core)
             implementation(libs.ktor.client.darwin)
+        }
+    }
+}
+
+android {
+    namespace = "com.gear.hub.network"
+    compileSdk = 36
+    defaultConfig { minSdk = 24 }
+
+    buildFeatures { buildConfig = true }
+
+    val devHost = project.findProperty("devHost") as? String ?: "http://84.54.56.129:8000"
+    val prodHost = project.findProperty("prodHost") as? String ?: "https://prod.example.com"
+
+    buildTypes {
+        debug {
+            buildConfigField("String", "DEV_HOST", "\"$devHost\"")
+            buildConfigField("String", "PROD_HOST", "\"$prodHost\"")
+        }
+        release {
+            buildConfigField("String", "DEV_HOST", "\"$devHost\"")
+            buildConfigField("String", "PROD_HOST", "\"$prodHost\"")
+            isMinifyEnabled = false
         }
     }
 }
