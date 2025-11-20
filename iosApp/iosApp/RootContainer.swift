@@ -1,0 +1,53 @@
+import SwiftUI
+import Shared
+
+struct RootContainer: View {
+    @StateObject private var nav = NavigationCoordinator()
+    let router: RouterIOS
+
+    var body: some View {
+        NavigationStack(path: $nav.path) {
+            SplashScreenSwiftUI(
+                vm: SplashViewModelWrapper(vm: KoinKt.resolveSplashVM()),
+                router: router
+            )
+            .navigationDestination(for: DestinationAny.self) { dest in
+                switch dest {
+                case is DestinationApp.MainScreen:
+                    MainScreenSwiftUI(
+                        vm: MainViewModelWrapper(vm: KoinKt.resolveMainVM()),
+                        router: router
+                    )
+                case is DestinationChats.ChatsScreen:
+                    ChatsScreenSwiftUI(
+                        vm: ChatsViewModelWrapper(vm: KoinKt.resolveChatsVM()),
+                        router: router
+                    )
+                case is DestinationMenu.MenuScreen:
+                    MenuScreenSwiftUI(
+                        vm: MenuViewModelWrapper(vm: KoinKt.resolveMenuVM()),
+                        router: router
+                    )
+                case is DestinationProducts.MyAdsScreen:
+                    MyAdsScreenSwiftUI(
+                        vm: MyAdsViewModelWrapper(vm: KoinKt.resolveMyAdsVM()),
+                        router: router
+                    )
+                case is DestinationProfile.ProfileScreen:
+                    ProfileScreenSwiftUI(
+                        vm: ProfileViewModelWrapper(vm: KoinKt.resolveProfileVM()),
+                        router: router
+                    )
+                case is DestinationApp.SplashScreen:
+                    SplashScreenSwiftUI(
+                        vm: SplashViewModelWrapper(vm: KoinKt.resolveSplashVM()),
+                        router: router
+                    )
+                default:
+                        EmptyView()
+                }
+            }
+        }
+        .onAppear { nav.bind(router: router) }
+    }
+}
