@@ -34,6 +34,7 @@ kotlin {
             implementation(project(":feature_menu"))
             implementation(project(":feature_profile"))
             implementation(project(":feature_products"))
+            implementation(project(":feature_auth"))
 
             implementation(compose.runtime)
             implementation(compose.foundation)

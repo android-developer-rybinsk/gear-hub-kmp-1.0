@@ -14,7 +14,7 @@ class SplashViewModel(
     override fun onAction(action: SplashAction) {
         when (action) {
             SplashAction.OnStartTimeout -> startTimeout()
-            SplashAction.OnEndTimeout -> router.replaceAll(DestinationApp.MainScreen)
+            SplashAction.OnEndTimeout -> router.replaceAll(DestinationApp.AuthScreen)
         }
     }
 

@@ -45,6 +45,9 @@ kotlin {
             implementation(project(":feature_menu"))
             implementation(project(":feature_profile"))
             implementation(project(":feature_products"))
+            implementation(project(":feature_auth"))
+            implementation(project(":network_service"))
+            implementation(project(":data_service"))
 
             // Compose MPP
             implementation(compose.runtime)
@@ -52,6 +55,7 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
+            implementation(libs.kotlinx.coroutines.core)
 
             // DI
             implementation(libs.koin.core)

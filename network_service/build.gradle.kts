@@ -1,0 +1,73 @@
+plugins {
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.androidKotlinMultiplatformLibrary)
+    alias(libs.plugins.androidLint)
+    alias(libs.plugins.kotlinSerialization)
+}
+
+kotlin {
+    androidLibrary {
+        namespace = "com.gear.hub.network"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        withHostTestBuilder {}
+    }
+
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.kotlin.stdlib)
+            implementation(libs.koin.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+
+        androidMain.dependencies {
+            implementation(libs.retrofit.core)
+            implementation(libs.retrofit.kotlinx.serialization.converter)
+            implementation(libs.okhttp.logging)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.koin.core)
+            implementation(libs.ktor.client.darwin)
+        }
+    }
+}
+
+android {
+    namespace = "com.gear.hub.network"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+    buildFeatures {
+        buildConfig = true
+    }
+
+    val devHost = project.findProperty("devHost") as? String ?: "http://84.54.56.129:8000"
+    val prodHost = project.findProperty("prodHost") as? String ?: "https://prod.example.com"
+
+    buildTypes {
+        debug {
+            buildConfigField("String", "DEV_HOST", "\"$devHost\"")
+            buildConfigField("String", "PROD_HOST", "\"$prodHost\"")
+        }
+        release {
+            buildConfigField("String", "DEV_HOST", "\"$devHost\"")
+            buildConfigField("String", "PROD_HOST", "\"$prodHost\"")
+            isMinifyEnabled = false
+        }
+    }
+}

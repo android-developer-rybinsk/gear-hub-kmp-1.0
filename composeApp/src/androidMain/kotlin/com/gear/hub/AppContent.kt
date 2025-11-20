@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.gear.hub.auth_feature.api.AuthNavigationConfig
+import com.gear.hub.auth_feature.internal.presentation.AuthScreen
+import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
 import com.gear.hub.navigation.DestinationApp
 import com.gear.hub.presentation.screens.main.MainScreenAndroid
 import com.gear.hub.presentation.splash.SplashScreen
@@ -22,6 +25,11 @@ fun AppContent() {
     ) {
         composable(DestinationApp.SplashScreen.route) {
             SplashScreen(getKoin().get { parametersOf(router) })
+        }
+        composable(DestinationApp.AuthScreen.route) {
+            val config: AuthNavigationConfig = getKoin().get()
+            val vm: AuthViewModel = getKoin().get { parametersOf(router, config) }
+            AuthScreen(vm)
         }
         composable(DestinationApp.MainScreen.route) {
             MainScreenAndroid(getKoin().get { parametersOf(router) })
