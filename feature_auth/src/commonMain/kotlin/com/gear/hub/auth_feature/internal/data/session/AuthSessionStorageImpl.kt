@@ -1,0 +1,25 @@
+package com.gear.hub.auth_feature.internal.data.session
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+/**
+ * Общая реализация хранилища статуса авторизации, работающая через
+ * платформенный драйвер и единый набор SQL-запросов.
+ */
+internal class AuthSessionStorageImpl(
+    private val driver: AuthSessionDbDriver,
+) : AuthSessionStorage {
+
+    override suspend fun isAuthorized(): Boolean = withContext(Dispatchers.IO) {
+        driver.ensureInitialized()
+        driver.readAuthorized()
+    }
+
+    override suspend fun setAuthorized(value: Boolean) {
+        withContext(Dispatchers.IO) {
+            driver.ensureInitialized()
+            driver.writeAuthorized(value)
+        }
+    }
+}

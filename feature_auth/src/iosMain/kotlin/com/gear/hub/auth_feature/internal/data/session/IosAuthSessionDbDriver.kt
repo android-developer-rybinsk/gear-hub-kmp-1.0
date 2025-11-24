@@ -1,5 +1,6 @@
 package com.gear.hub.auth_feature.internal.data.session
 
+import com.gear.hub.data.config.DatabaseRuntime
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
@@ -8,8 +9,6 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSFileProtectionComplete
@@ -35,19 +34,17 @@ import platform.SQLite3.sqlite3_step
 import platform.SQLite3.sqlite3_stmt
 
 /**
- * iOS-хранилище статуса авторизации на базе локальной БД SQLite с защитой файла.
- *
- * Вместо небезопасного текстового файла используется база `auth_session.db`, лежащая
- * в каталоге Application Support и защищённая `NSFileProtectionComplete`.
- * Таблица содержит единственную запись с признаком авторизации, чтение/запись
- * выполняются в фоновых потоках.
+ * iOS-драйвер для таблицы авторизации. Использует SQLite из Application Support
+ * и базовые параметры БД из [DatabaseRuntime.config].
  */
-class IosAuthSessionStorage : AuthSessionStorage {
+internal class IosAuthSessionDbDriver(
+    runtime: DatabaseRuntime,
+) : AuthSessionDbDriver {
 
     /**
-     * Полный путь к базе данных, создаваемой в Application Support.
+     * Полный путь к базе авторизации, общая для проекта KMP.
      */
-    private val databasePath: String by lazy(LazyThreadSafetyMode.NONE) {
+    private val databasePath: String = run {
         val supportDir = NSFileManager.defaultManager.URLForDirectory(
             directory = NSApplicationSupportDirectory,
             inDomain = NSUserDomainMask,
@@ -55,13 +52,19 @@ class IosAuthSessionStorage : AuthSessionStorage {
             create = true,
             error = null,
         ) ?: error("Не удалось получить путь ApplicationSupport для базы авторизации")
-        supportDir.stringByResolvingSymlinksInPath!!.URLByAppendingPathComponent(DB_NAME).path!!
+        supportDir.stringByResolvingSymlinksInPath!!.URLByAppendingPathComponent(runtime.config.name).path!!
     }
 
-    override suspend fun isAuthorized(): Boolean = withContext(Dispatchers.Default) {
+    override fun ensureInitialized() {
         withDatabase { db ->
-            ensureTable(db)
-            val stmt = prepare(db, "SELECT authorized FROM auth_session WHERE id = 1")
+            exec(db, AuthSessionQueries.CREATE_TABLE)
+            exec(db, AuthSessionQueries.INSERT_DEFAULT)
+        }
+    }
+
+    override fun readAuthorized(): Boolean =
+        withDatabase { db ->
+            val stmt = prepare(db, AuthSessionQueries.SELECT_AUTHORIZED)
             try {
                 val step = sqlite3_step_safe(stmt)
                 if (step == SQLITE_ROW) {
@@ -74,19 +77,15 @@ class IosAuthSessionStorage : AuthSessionStorage {
                 sqlite3_reset(stmt)
             }
         }
-    }
 
-    override suspend fun setAuthorized(value: Boolean) {
-        withContext(Dispatchers.Default) {
-            withDatabase { db ->
-                ensureTable(db)
-                exec(db, "UPDATE auth_session SET authorized = ${if (value) 1 else 0} WHERE id = 1")
-            }
+    override fun writeAuthorized(value: Boolean) {
+        withDatabase { db ->
+            exec(db, AuthSessionQueries.UPDATE_AUTHORIZED.replace("?", if (value) "1" else "0"))
         }
     }
 
     /**
-     * Открывает или создаёт базу, гарантируя защиту файла и корректное закрытие соединения.
+     * Открывает/создаёт базу и гарантирует закрытие.
      */
     private inline fun <T> withDatabase(block: (CPointer<sqlite3>) -> T): T = memScoped {
         val dbPtr = alloc<CPointerVar<sqlite3>>()
@@ -104,23 +103,7 @@ class IosAuthSessionStorage : AuthSessionStorage {
     }
 
     /**
-     * Создаёт таблицу статуса и дефолтную запись, если база только создана.
-     */
-    private fun ensureTable(db: CPointer<sqlite3>) {
-        exec(
-            db,
-            """
-            CREATE TABLE IF NOT EXISTS auth_session (
-                id INTEGER PRIMARY KEY CHECK (id = 1),
-                authorized INTEGER NOT NULL DEFAULT 0
-            );
-            """.trimIndent(),
-        )
-        exec(db, "INSERT OR IGNORE INTO auth_session(id, authorized) VALUES(1, 0)")
-    }
-
-    /**
-     * Выполняет произвольный SQL без выборки и проверяет код возврата.
+     * Выполняет SQL без выборки.
      */
     private fun exec(db: CPointer<sqlite3>, sql: String) {
         val errorPtr = memScoped { alloc<CPointerVar<ByteVar>>() }
@@ -132,7 +115,7 @@ class IosAuthSessionStorage : AuthSessionStorage {
     }
 
     /**
-     * Готовит SQL-выражение и возвращает statement.
+     * Готовит statement.
      */
     private fun prepare(db: CPointer<sqlite3>, sql: String): CPointer<sqlite3_stmt> = memScoped {
         val stmtPtr = alloc<CPointerVar<sqlite3_stmt>>()
@@ -144,7 +127,7 @@ class IosAuthSessionStorage : AuthSessionStorage {
     }
 
     /**
-     * Выполняет шаг statement и проверяет ошибки.
+     * Проверяет результат выполнения statement.
      */
     private fun sqlite3_step_safe(stmt: CPointer<sqlite3_stmt>): Int {
         val result = sqlite3_step(stmt)
@@ -155,7 +138,7 @@ class IosAuthSessionStorage : AuthSessionStorage {
     }
 
     /**
-     * Устанавливает защиту файла базы NSFileProtectionComplete.
+     * Включает защиту файла базы.
      */
     private fun protectFile() {
         val manager = NSFileManager.defaultManager
@@ -165,11 +148,10 @@ class IosAuthSessionStorage : AuthSessionStorage {
             null,
         )
     }
-
-    private companion object {
-        /**
-         * Имя файла БД, общей для iOS-платформы.
-         */
-        private const val DB_NAME = "auth_session.db"
-    }
 }
+
+/**
+ * Фабрика платформенного драйвера.
+ */
+internal actual fun createAuthSessionDbDriver(runtime: DatabaseRuntime): AuthSessionDbDriver =
+    IosAuthSessionDbDriver(runtime)

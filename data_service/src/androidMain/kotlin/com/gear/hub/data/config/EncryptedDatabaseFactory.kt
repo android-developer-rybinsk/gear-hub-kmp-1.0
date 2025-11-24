@@ -27,7 +27,7 @@ actual class DatabaseRuntime(
  * Фабрика, подготавливающая шифрованный runtime и отдающая его в фичевые инициализаторы.
  */
 actual class EncryptedDatabaseFactory actual constructor(private val platformContext: PlatformContext) {
-    actual fun initialize(config: DatabaseConfig, registry: DatabaseRegistry) {
+    actual fun initialize(config: DatabaseConfig, registry: DatabaseRegistry): DatabaseRuntime {
         val passphrase: ByteArray = config.passphrase.toByteArray()
         val runtime = DatabaseRuntime(
             context = platformContext,
@@ -35,5 +35,6 @@ actual class EncryptedDatabaseFactory actual constructor(private val platformCon
             supportFactory = SupportFactory(passphrase),
         )
         registry.registeredModules.values.forEach { initializer -> initializer.invoke(runtime) }
+        return runtime
     }
 }

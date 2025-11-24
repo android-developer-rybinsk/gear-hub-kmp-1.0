@@ -17,5 +17,5 @@ fun dataModule(
 ) = module {
     single<DatabaseRegistry> { DefaultDatabaseRegistry().apply { registryConfig?.invoke(this) } }
     single { EncryptedDatabaseFactory(platformContext) }
-    single { get<EncryptedDatabaseFactory>().apply { initialize(config, get()) } }
+    single { get<EncryptedDatabaseFactory>().initialize(config, get()) }
 }

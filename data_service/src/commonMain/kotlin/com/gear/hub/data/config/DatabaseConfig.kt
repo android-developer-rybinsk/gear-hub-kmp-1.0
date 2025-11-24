@@ -46,7 +46,11 @@ class DefaultDatabaseRegistry : DatabaseRegistry {
  * Фабрика шифрованной БД: готовит платформенный runtime и отдает его в модульные инициализаторы.
  */
 expect class EncryptedDatabaseFactory(platformContext: PlatformContext) {
-    fun initialize(config: DatabaseConfig, registry: DatabaseRegistry)
+    /**
+     * Создаёт шифрованный runtime и отдает его в модульные инициализаторы,
+     * возвращая готовый экземпляр для дальнейшей работы фич.
+     */
+    fun initialize(config: DatabaseConfig, registry: DatabaseRegistry): DatabaseRuntime
 }
 
 /**
