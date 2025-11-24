@@ -26,15 +26,24 @@ kotlin {
     val xcfName = "feature_authKit"
 
     iosX64 {
-        binaries.framework { baseName = xcfName }
+        binaries.framework {
+            baseName = xcfName
+            linkerOpts("-lsqlite3")
+        }
     }
 
     iosArm64 {
-        binaries.framework { baseName = xcfName }
+        binaries.framework {
+            baseName = xcfName
+            linkerOpts("-lsqlite3")
+        }
     }
 
     iosSimulatorArm64 {
-        binaries.framework { baseName = xcfName }
+        binaries.framework {
+            baseName = xcfName
+            linkerOpts("-lsqlite3")
+        }
     }
 
     sourceSets {
@@ -89,6 +98,6 @@ kotlin {
 }
 
 dependencies {
-    add("kspAndroid", libs.room.compiler)
+    add("kspAndroid", libs.room.compiler.get())
 }
 
