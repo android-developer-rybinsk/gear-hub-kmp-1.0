@@ -46,6 +46,15 @@ kotlin {
         }
     }
 
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { target ->
+        target.compilations.getByName("main").cinterops {
+            val sqliteDef = projectDir.resolve("src/nativeInterop/cinterop/sqlite3.def")
+            create("sqlite3") {
+                defFile(sqliteDef)
+            }
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -82,6 +91,7 @@ kotlin {
                 implementation(libs.sqlcipher)
                 implementation(libs.room.runtime)
                 implementation(libs.room.ktx)
+                implementation(libs.room.compiler)
             }
         }
 
@@ -93,11 +103,12 @@ kotlin {
             }
         }
 
-        iosMain { dependencies { implementation(libs.koin.core) } }
+        iosMain {
+            dependencies {
+                implementation(libs.koin.core)
+                implementation(libs.sqliter)
+            }
+        }
     }
-}
-
-dependencies {
-    add("kspAndroid", libs.room.compiler.get())
 }
 
