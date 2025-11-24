@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.gear.hub.auth_feature.api.AuthNavigationConfig
 import com.gear.hub.auth_feature.internal.domain.RegisterUserUseCase
 import com.gear.hub.network.model.ApiResponse
+import com.gear.hub.network.model.onError
+import com.gear.hub.network.model.onSuccess
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
 import kotlinx.coroutines.launch
@@ -24,6 +26,7 @@ class AuthViewModel(
             is AuthAction.UpdatePassword -> setState { state -> state.copy(step = state.step.updatePassword(action.value)) }
             is AuthAction.UpdateConfirmPassword -> setState { state -> state.copy(step = state.step.updateConfirmPassword(action.value)) }
             AuthAction.ProceedStep -> proceedToPassword()
+            AuthAction.BackToStepOne -> backToLogin()
             AuthAction.Submit -> register()
         }
     }
@@ -37,6 +40,22 @@ class AuthViewModel(
             setState { it.copy(step = AuthStep.Step2(step.name.trim(), step.login.trim()), errorMessage = null, highlightError = false) }
         } else {
             setState { it.copy(errorMessage = "Введите имя и логин", highlightError = true) }
+        }
+    }
+
+    /**
+     * Возвращает пользователя на первый шаг, сохраняя введённые данные.
+     */
+    private fun backToLogin() {
+        val step = currentState.step
+        if (step is AuthStep.Step2) {
+            setState {
+                it.copy(
+                    step = AuthStep.Step1(name = step.name, login = step.login),
+                    errorMessage = null,
+                    highlightError = false,
+                )
+            }
         }
     }
 
@@ -58,35 +77,37 @@ class AuthViewModel(
         setState { it.copy(isLoading = true, errorMessage = null, highlightError = false) }
 
         viewModelScope.launch {
-            when (val result = registerUserUseCase(step.name, step.login, step.password)) {
-                is ApiResponse.Success -> {
+            registerUserUseCase(step.name, step.login, step.password)
+                .onSuccess {
                     setState { it.copy(isLoading = false) }
                     router.replaceAll(navigationConfig.successDestination)
                 }
+                .onError { error ->
+                    when (error) {
+                        is ApiResponse.HttpError -> {
+                            val message = if (error.code == 409) {
+                                "Пользователь уже зарегистрирован"
+                            } else {
+                                error.message ?: "Ошибка регистрации"
+                            }
+                            setState { it.copy(isLoading = false, errorMessage = message, highlightError = true) }
+                        }
 
-                is ApiResponse.HttpError -> {
-                    val message = if (result.code == 409) {
-                        "Пользователь уже зарегистрирован"
-                    } else {
-                        result.message ?: "Ошибка регистрации"
+                        ApiResponse.NetworkError -> {
+                            setState {
+                                it.copy(
+                                    isLoading = false,
+                                    errorMessage = "Проблема с интернет соединением. Попробуйте позже",
+                                    highlightError = true,
+                                )
+                            }
+                        }
+
+                        is ApiResponse.UnknownError -> {
+                            setState { it.copy(isLoading = false, errorMessage = error.throwable?.message, highlightError = true) }
+                        }
                     }
-                    setState { it.copy(isLoading = false, errorMessage = message, highlightError = true) }
                 }
-
-                ApiResponse.NetworkError -> {
-                    setState {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = "Проблема с интернет соединением. Попробуйте позже",
-                            highlightError = true,
-                        )
-                    }
-                }
-
-                is ApiResponse.UnknownError -> {
-                    setState { it.copy(isLoading = false, errorMessage = result.throwable?.message, highlightError = true) }
-                }
-            }
         }
     }
 }

@@ -10,4 +10,5 @@ sealed class AuthAction {
     data class UpdateConfirmPassword(val value: String) : AuthAction()
     data object ProceedStep : AuthAction()
     data object Submit : AuthAction()
+    data object BackToStepOne : AuthAction()
 }

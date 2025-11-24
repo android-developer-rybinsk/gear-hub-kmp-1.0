@@ -1,20 +1,29 @@
 package com.gear.hub.auth_feature.internal.presentation
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,35 +44,68 @@ fun AuthScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .imePadding(),
-    ) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            AuthTopBar(step = state.step, onBack = { viewModel.onAction(AuthAction.BackToStepOne) })
+        },
+        contentWindowInsets = WindowInsets.systemBars,
+    ) { padding ->
+        val scrollState = rememberScrollState()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 48.dp, bottom = 24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .padding(padding)
+                .imePadding()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            when (val step = state.step) {
-                is AuthStep.Step1 -> StepOne(step = step, state = state, onAction = viewModel::onAction)
-                is AuthStep.Step2 -> StepTwo(step = step, state = state, onAction = viewModel::onAction)
-            }
+            Column(
+                modifier = Modifier
+                    .weight(1f, fill = true)
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                when (val step = state.step) {
+                    is AuthStep.Step1 -> StepOne(step = step, state = state, onAction = viewModel::onAction)
+                    is AuthStep.Step2 -> StepTwo(step = step, state = state, onAction = viewModel::onAction)
+                }
 
-            if (state.errorMessage != null) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = state.errorMessage ?: "", color = MaterialTheme.colorScheme.error)
-            }
+                if (state.errorMessage != null) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(text = state.errorMessage ?: "", color = MaterialTheme.colorScheme.error)
+                }
 
-            if (state.isLoading) {
-                Spacer(modifier = Modifier.height(12.dp))
-                CircularProgressIndicator()
+                if (state.isLoading) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    CircularProgressIndicator()
+                }
             }
         }
     }
+}
+
+/**
+ * Верхний тулбар с центральным тайтлом и стрелкой назад на втором шаге.
+ */
+@Composable
+private fun AuthTopBar(step: AuthStep, onBack: () -> Unit) {
+    val showBack = step is AuthStep.Step2
+    CenterAlignedTopAppBar(
+        title = { Text(text = "Авторизация") },
+        navigationIcon = {
+            if (showBack) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Назад"
+                    )
+                }
+            }
+        },
+    )
 }
 
 /**
