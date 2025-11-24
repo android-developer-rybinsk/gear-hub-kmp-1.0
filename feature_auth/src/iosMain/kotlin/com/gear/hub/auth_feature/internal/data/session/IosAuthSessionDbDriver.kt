@@ -21,19 +21,19 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
 import platform.Foundation.setAttributes
-import platform.SQLite3.SQLITE_DONE
-import platform.SQLite3.SQLITE_OK
-import platform.SQLite3.SQLITE_ROW
-import platform.SQLite3.sqlite3
-import platform.SQLite3.sqlite3_close
-import platform.SQLite3.sqlite3_column_int
-import platform.SQLite3.sqlite3_exec
-import platform.SQLite3.sqlite3_finalize
-import platform.SQLite3.sqlite3_open
-import platform.SQLite3.sqlite3_prepare_v2
-import platform.SQLite3.sqlite3_reset
-import platform.SQLite3.sqlite3_step
-import platform.SQLite3.sqlite3_stmt
+import sqlite3.SQLITE_DONE
+import sqlite3.SQLITE_OK
+import sqlite3.SQLITE_ROW
+import sqlite3.sqlite3
+import sqlite3.sqlite3_close
+import sqlite3.sqlite3_column_int
+import sqlite3.sqlite3_exec
+import sqlite3.sqlite3_finalize
+import sqlite3.sqlite3_open
+import sqlite3.sqlite3_prepare_v2
+import sqlite3.sqlite3_reset
+import sqlite3.sqlite3_step
+import sqlite3.sqlite3_stmt
 
 /**
  * iOS-драйвер для таблицы авторизации. Использует SQLite из Application Support

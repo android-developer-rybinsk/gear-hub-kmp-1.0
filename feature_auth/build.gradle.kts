@@ -46,6 +46,15 @@ kotlin {
         }
     }
 
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { target ->
+        target.compilations.getByName("main").cinterops {
+            val sqliteDef = projectDir.resolve("src/nativeInterop/cinterop/sqlite3.def")
+            create("sqlite3") {
+                defFile(sqliteDef)
+            }
+        }
+    }
+
     sourceSets {
         commonMain {
             dependencies {

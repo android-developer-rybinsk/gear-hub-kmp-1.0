@@ -1,0 +1,4 @@
+headers = sqlite3.h
+package = sqlite3
+compilerOpts = -DSQLITE_ENABLE_COLUMN_METADATA
+linkerOpts = -lsqlite3
