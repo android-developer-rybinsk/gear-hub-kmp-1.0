@@ -1,5 +1,6 @@
 package com.gear.hub.network.di
 
+import com.gear.hub.network.client.NetworkClient
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.util.ensureTrailingSlash
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -20,7 +21,7 @@ private const val CONTENT_TYPE_JSON = "application/json"
  */
 actual fun platformNetworkModule(): Module = module {
     single { provideOkHttpClient() }
-    single { provideRetrofit(get(), get(), get()) }
+    single<NetworkClient> { provideRetrofit(get(), get(), get()) }
 }
 
 /**
