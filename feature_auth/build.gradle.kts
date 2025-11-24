@@ -73,7 +73,7 @@ kotlin {
                 implementation(libs.sqlcipher)
                 implementation(libs.room.runtime)
                 implementation(libs.room.ktx)
-                add("kspAndroid", libs.room.compiler.get())
+                add("kspAndroid", libs.room.compiler)
             }
         }
 
