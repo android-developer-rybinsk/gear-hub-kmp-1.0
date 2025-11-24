@@ -3,6 +3,7 @@ package com.gear.hub.auth_service.internal
 import com.gear.hub.auth_feature.internal.data.model.AuthRegisterRequestDto
 import com.gear.hub.auth_feature.internal.data.model.AuthRegisterResponseDto
 import com.gear.hub.auth_service.api.AuthApi
+import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.model.ApiResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -12,6 +13,7 @@ import retrofit2.http.POST
  */
 class RetrofitAuthApi(
     private val service: AuthRetrofitService,
+    @Suppress("UNUSED_PARAMETER") private val hostProvider: HostProvider,
 ) : AuthApi {
 
     override suspend fun register(request: AuthRegisterRequestDto): ApiResponse<AuthRegisterResponseDto> =

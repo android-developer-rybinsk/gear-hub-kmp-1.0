@@ -7,7 +7,12 @@ import kotlin.ByteArray
 /**
  * Платформенный контейнер Android: хранит Context для создания базы данных.
  */
-actual class PlatformContext actual constructor(val context: Context)
+/**
+ * Платформенный контейнер Android: хранит Context для создания базы данных.
+ */
+actual class PlatformContext actual constructor(val platformValue: Any?) {
+    val context: Context = platformValue as Context
+}
 
 /**
  * Платформенный runtime для Android с SupportFactory SQLCipher.

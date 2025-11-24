@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
-    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.androidLint)
     alias(libs.plugins.kotlinSerialization)
 }
@@ -53,21 +52,3 @@ kotlin {
     }
 }
 
-android {
-    buildFeatures { buildConfig = true }
-
-    val devHost = project.findProperty("devHost") as? String ?: "http://84.54.56.129:8000"
-    val prodHost = project.findProperty("prodHost") as? String ?: "https://prod.example.com"
-
-    buildTypes {
-        debug {
-            buildConfigField("String", "DEV_HOST", "\"$devHost\"")
-            buildConfigField("String", "PROD_HOST", "\"$prodHost\"")
-        }
-        release {
-            buildConfigField("String", "DEV_HOST", "\"$devHost\"")
-            buildConfigField("String", "PROD_HOST", "\"$prodHost\"")
-            isMinifyEnabled = false
-        }
-    }
-}

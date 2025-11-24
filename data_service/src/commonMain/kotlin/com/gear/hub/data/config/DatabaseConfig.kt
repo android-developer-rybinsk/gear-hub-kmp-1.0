@@ -51,5 +51,6 @@ expect class EncryptedDatabaseFactory(platformContext: PlatformContext) {
 
 /**
  * Платформенный контейнер контекста приложения (Android Context / iOS объект окружения).
+ * Для Android внутри хранится `Context`, для iOS может быть `null`, так как он не требуется.
  */
-expect class PlatformContext
+expect class PlatformContext constructor(platformValue: Any?)
