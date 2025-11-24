@@ -7,10 +7,10 @@ import org.koin.dsl.module
  * Koin-модуль для сетевого слоя авторизации.
  */
 val authServiceModule = module {
-    single<AuthApi> { provideAuthApi() }
+    single<AuthApi> { provideAuthApi(get()) }
 }
 
 /**
- * Платформенный способ получить реализацию AuthApi.
+ * Платформенный способ получить реализацию AuthApi, получая сетевой клиент из Koin.
  */
-expect fun provideAuthApi(): AuthApi
+expect fun provideAuthApi(client: Any): AuthApi

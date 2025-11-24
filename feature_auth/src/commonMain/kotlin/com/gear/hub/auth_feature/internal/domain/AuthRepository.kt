@@ -1,7 +1,7 @@
 package com.gear.hub.auth_feature.internal.domain
 
-import com.gear.hub.auth_service.model.AuthRegisterRequest
-import com.gear.hub.auth_service.model.AuthRegisterResponse
+import com.gear.hub.auth_feature.internal.domain.model.RegistrationPayload
+import com.gear.hub.auth_feature.internal.domain.model.RegistrationResult
 import com.gear.hub.network.model.ApiResponse
 
 /**
@@ -11,5 +11,5 @@ interface AuthRepository {
     /**
      * Выполнить регистрацию на бэкенде.
      */
-    suspend fun register(request: AuthRegisterRequest): ApiResponse<AuthRegisterResponse>
+    suspend fun register(payload: RegistrationPayload): ApiResponse<RegistrationResult>
 }

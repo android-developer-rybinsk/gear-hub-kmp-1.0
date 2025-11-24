@@ -1,12 +1,17 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.androidLint)
     alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
     androidLibrary {
+        namespace = "com.gear.hub.network"
+        compileSdk = 36
+        minSdk = 24
+
         withHostTestBuilder { }
 
         withDeviceTestBuilder {
@@ -49,10 +54,6 @@ kotlin {
 }
 
 android {
-    namespace = "com.gear.hub.network"
-    compileSdk = 36
-    defaultConfig { minSdk = 24 }
-
     buildFeatures { buildConfig = true }
 
     val devHost = project.findProperty("devHost") as? String ?: "http://84.54.56.129:8000"

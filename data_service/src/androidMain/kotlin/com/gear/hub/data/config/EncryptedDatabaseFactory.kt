@@ -1,9 +1,13 @@
 package com.gear.hub.data.config
 
+import android.content.Context
 import net.sqlcipher.database.SupportFactory
 import kotlin.ByteArray
 
-actual typealias PlatformContext = android.content.Context
+/**
+ * Платформенный контейнер Android: хранит Context для создания базы данных.
+ */
+actual class PlatformContext actual constructor(val context: Context)
 
 /**
  * Платформенный runtime для Android с SupportFactory SQLCipher.

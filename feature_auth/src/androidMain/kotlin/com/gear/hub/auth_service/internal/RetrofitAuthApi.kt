@@ -1,8 +1,8 @@
 package com.gear.hub.auth_service.internal
 
+import com.gear.hub.auth_feature.internal.data.model.AuthRegisterRequestDto
+import com.gear.hub.auth_feature.internal.data.model.AuthRegisterResponseDto
 import com.gear.hub.auth_service.api.AuthApi
-import com.gear.hub.auth_service.model.AuthRegisterRequest
-import com.gear.hub.auth_service.model.AuthRegisterResponse
 import com.gear.hub.network.model.ApiResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -14,7 +14,7 @@ class RetrofitAuthApi(
     private val service: AuthRetrofitService,
 ) : AuthApi {
 
-    override suspend fun register(request: AuthRegisterRequest): ApiResponse<AuthRegisterResponse> =
+    override suspend fun register(request: AuthRegisterRequestDto): ApiResponse<AuthRegisterResponseDto> =
         try {
             val response = service.register(request)
             ApiResponse.Success(response)
@@ -34,5 +34,5 @@ class RetrofitAuthApi(
  */
 internal interface AuthRetrofitService {
     @POST("api/v1/auth/register")
-    suspend fun register(@Body body: AuthRegisterRequest): AuthRegisterResponse
+    suspend fun register(@Body body: AuthRegisterRequestDto): AuthRegisterResponseDto
 }
