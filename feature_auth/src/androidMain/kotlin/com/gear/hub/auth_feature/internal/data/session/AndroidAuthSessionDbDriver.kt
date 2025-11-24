@@ -147,9 +147,9 @@ internal abstract class AuthSessionDatabase : RoomDatabase() {
  */
 internal object AuthSessionMigrations {
     private val MIGRATION_1_2 = object : Migration(1, 2) {
-        override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL(AuthSessionQueries.CREATE_TABLE_CREDENTIALS)
-            database.execSQL(AuthSessionQueries.CREATE_TABLE_USER)
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(AuthSessionQueries.CREATE_TABLE_CREDENTIALS)
+            db.execSQL(AuthSessionQueries.CREATE_TABLE_USER)
         }
     }
 
