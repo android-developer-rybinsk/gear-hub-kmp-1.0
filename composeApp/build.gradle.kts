@@ -30,6 +30,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":core"))
+            implementation(project(":data_service"))
             implementation(project(":feature_chats"))
             implementation(project(":feature_menu"))
             implementation(project(":feature_profile"))

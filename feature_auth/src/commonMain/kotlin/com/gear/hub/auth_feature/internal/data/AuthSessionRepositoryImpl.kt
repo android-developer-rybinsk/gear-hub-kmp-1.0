@@ -10,7 +10,7 @@ import com.gear.hub.auth_feature.internal.domain.model.RegistrationTokens
 /**
  * Реализация репозитория сессии авторизации через платформенное хранилище.
  */
-class AuthSessionRepositoryImpl(
+internal class AuthSessionRepositoryImpl(
     private val storage: AuthSessionStorage,
 ) : AuthSessionRepository {
 
