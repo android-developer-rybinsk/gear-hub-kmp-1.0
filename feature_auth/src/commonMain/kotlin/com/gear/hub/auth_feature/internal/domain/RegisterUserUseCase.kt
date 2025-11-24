@@ -1,7 +1,7 @@
 package com.gear.hub.auth_feature.internal.domain
 
-import com.gear.hub.auth_service.model.AuthRegisterRequest
-import com.gear.hub.auth_service.model.AuthRegisterResponse
+import com.gear.hub.auth_feature.internal.domain.model.RegistrationPayload
+import com.gear.hub.auth_feature.internal.domain.model.RegistrationResult
 import com.gear.hub.network.model.ApiResponse
 
 /**
@@ -14,7 +14,7 @@ class RegisterUserUseCase(
         name: String,
         login: String,
         password: String,
-    ): ApiResponse<AuthRegisterResponse> {
+    ): ApiResponse<RegistrationResult> {
         val email = login.takeIf { isEmail(it) }
         val phone = login.takeIf { isPhone(it) }
 
@@ -22,12 +22,12 @@ class RegisterUserUseCase(
             return ApiResponse.HttpError(400, "Неверный формат почты или телефона")
         }
 
-        val request = AuthRegisterRequest(
+        val payload = RegistrationPayload(
             name = name.trim(),
-            email = email ?: phone,
+            emailOrPhone = email ?: phone,
             password = password,
         )
-        return repository.register(request)
+        return repository.register(payload)
     }
 
     /**

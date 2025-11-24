@@ -50,6 +50,6 @@ expect class EncryptedDatabaseFactory(platformContext: PlatformContext) {
 }
 
 /**
- * Платформенный контекст, необходимый для создания БД.
+ * Платформенный контейнер контекста приложения (Android Context / iOS объект окружения).
  */
 expect class PlatformContext

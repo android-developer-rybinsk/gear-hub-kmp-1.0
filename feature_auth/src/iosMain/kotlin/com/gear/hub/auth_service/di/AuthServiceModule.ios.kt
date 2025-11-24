@@ -4,14 +4,12 @@ import com.gear.hub.auth_service.api.AuthApi
 import com.gear.hub.auth_service.internal.KtorAuthApi
 import com.gear.hub.network.config.HostProvider
 import io.ktor.client.HttpClient
-import org.koin.core.scope.get
+import org.koin.core.context.getKoin
 
 /**
  * iOS-реализация AuthApi на базе общего HttpClient.
  */
-actual fun provideAuthApi(): AuthApi {
-    val scope = org.koin.core.context.GlobalContext.get().scopeRegistry.rootScope
-    val httpClient: HttpClient = scope.get()
-    val hostProvider: HostProvider = scope.get()
-    return KtorAuthApi(httpClient, hostProvider)
+actual fun provideAuthApi(client: Any): AuthApi {
+    val httpClient = client as HttpClient
+    return KtorAuthApi(httpClient, hostProvider = getKoin().get())
 }

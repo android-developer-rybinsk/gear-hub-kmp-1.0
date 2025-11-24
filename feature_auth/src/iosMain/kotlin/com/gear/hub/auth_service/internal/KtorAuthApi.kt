@@ -1,8 +1,8 @@
 package com.gear.hub.auth_service.internal
 
+import com.gear.hub.auth_feature.internal.data.model.AuthRegisterRequestDto
+import com.gear.hub.auth_feature.internal.data.model.AuthRegisterResponseDto
 import com.gear.hub.auth_service.api.AuthApi
-import com.gear.hub.auth_service.model.AuthRegisterRequest
-import com.gear.hub.auth_service.model.AuthRegisterResponse
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.model.ApiResponse
 import com.gear.hub.network.util.ensureTrailingSlash
@@ -29,13 +29,13 @@ class KtorAuthApi(
     private val hostProvider: HostProvider,
 ) : AuthApi {
 
-    override suspend fun register(request: AuthRegisterRequest): ApiResponse<AuthRegisterResponse> = withContext(Dispatchers.IO) {
+    override suspend fun register(request: AuthRegisterRequestDto): ApiResponse<AuthRegisterResponseDto> = withContext(Dispatchers.IO) {
         try {
             val response = httpClient.post(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/auth/register") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
-            val body: AuthRegisterResponse = response.body()
+            val body: AuthRegisterResponseDto = response.body()
             if (response.status.isSuccess()) {
                 ApiResponse.Success(body)
             } else {

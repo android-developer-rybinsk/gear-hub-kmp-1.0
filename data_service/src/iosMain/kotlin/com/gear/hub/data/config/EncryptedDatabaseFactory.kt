@@ -1,6 +1,9 @@
 package com.gear.hub.data.config
 
-actual typealias PlatformContext = Any?
+/**
+ * Заглушка для iOS: контекст не требуется, но поддерживается общим интерфейсом.
+ */
+actual class PlatformContext actual constructor()
 
 /**
  * Runtime для iOS: пока содержит только конфигурацию, чтобы фичи могли подключить свой storage.
