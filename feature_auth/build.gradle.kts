@@ -8,6 +8,10 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+dependencies {
+    add("kspAndroid", libs.room.compiler)
+}
+
 kotlin {
     androidLibrary {
         namespace = "com.gear.hub.auth"
@@ -82,7 +86,6 @@ kotlin {
                 implementation(libs.sqlcipher)
                 implementation(libs.room.runtime)
                 implementation(libs.room.ktx)
-                implementation(libs.room.compiler)
             }
         }
 
