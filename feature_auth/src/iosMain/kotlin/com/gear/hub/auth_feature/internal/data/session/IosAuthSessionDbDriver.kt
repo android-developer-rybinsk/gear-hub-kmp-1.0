@@ -1,25 +1,20 @@
-@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
-
 package com.gear.hub.auth_feature.internal.data.session
 
+import co.touchlab.sqliter.interop.CPointerVarOf
+import co.touchlab.sqliter.interop.SqliteStatementPointer
+import co.touchlab.sqliter.interop.sqlite3
+import co.touchlab.sqliter.interop.sqlite3_close
+import co.touchlab.sqliter.interop.sqlite3_column_int
+import co.touchlab.sqliter.interop.sqlite3_exec
+import co.touchlab.sqliter.interop.sqlite3_finalize
+import co.touchlab.sqliter.interop.sqlite3_open
+import co.touchlab.sqliter.interop.sqlite3_prepare_v2
+import co.touchlab.sqliter.interop.sqlite3_reset
+import co.touchlab.sqliter.interop.sqlite3_step
 import com.gear.hub.data.config.DatabaseFactory
-import sqlite3.SQLITE_DONE
-import sqlite3.SQLITE_OK
-import sqlite3.SQLITE_ROW
-import sqlite3.sqlite3
-import sqlite3.sqlite3_close
-import sqlite3.sqlite3_column_int
-import sqlite3.sqlite3_exec
-import sqlite3.sqlite3_finalize
-import sqlite3.sqlite3_open
-import sqlite3.sqlite3_prepare_v2
-import sqlite3.sqlite3_reset
-import sqlite3.sqlite3_step
-import sqlite3.sqlite3_stmt
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
-import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
@@ -42,6 +37,15 @@ import platform.Foundation.setAttributes
 internal class IosAuthSessionDbDriver(
     factory: DatabaseFactory,
 ) : AuthSessionDbDriver {
+
+    /**
+     * Базовые коды SQLite для проверки результата вызовов.
+     */
+    private companion object {
+        const val SQLITE_OK_CODE: Int = 0
+        const val SQLITE_ROW_CODE: Int = 100
+        const val SQLITE_DONE_CODE: Int = 101
+    }
 
     /**
      * Полный путь к базе авторизации, общая для проекта KMP.
@@ -75,7 +79,7 @@ internal class IosAuthSessionDbDriver(
             val stmt = prepare(db, AuthSessionQueries.SELECT_AUTHORIZED)
             try {
                 val step = sqlite3_step_safe(stmt)
-                if (step == SQLITE_ROW) {
+                if (step == SQLITE_ROW_CODE) {
                     sqlite3_column_int(stmt, 0) == 1
                 } else {
                     false
@@ -117,9 +121,9 @@ internal class IosAuthSessionDbDriver(
      * Открывает/создаёт базу и гарантирует закрытие.
      */
     private inline fun <T> withDatabase(block: (CPointer<sqlite3>) -> T): T = memScoped {
-        val dbPtr = alloc<CPointerVar<sqlite3>>()
+        val dbPtr: CPointerVar<sqlite3> = alloc<CPointerVarOf<sqlite3>>()
         val openResult = sqlite3_open(databasePath, dbPtr.ptr)
-        if (openResult != SQLITE_OK) {
+        if (openResult != SQLITE_OK_CODE) {
             error("Не удалось открыть базу авторизации: код $openResult")
         }
         protectFile()
@@ -137,7 +141,7 @@ internal class IosAuthSessionDbDriver(
     private fun exec(db: CPointer<sqlite3>, sql: String) {
         val errorPtr = memScoped { alloc<CPointerVar<ByteVar>>() }
         val code = sqlite3_exec(db, sql, null, null, errorPtr.ptr)
-        if (code != SQLITE_OK) {
+        if (code != SQLITE_OK_CODE) {
             val message = errorPtr.value?.toKString() ?: "Неизвестная ошибка"
             throw IllegalStateException("Ошибка SQLite ($code): $message")
         }
@@ -146,10 +150,10 @@ internal class IosAuthSessionDbDriver(
     /**
      * Готовит statement.
      */
-    private fun prepare(db: CPointer<sqlite3>, sql: String): CPointer<sqlite3_stmt> = memScoped {
-        val stmtPtr = alloc<CPointerVar<sqlite3_stmt>>()
+    private fun prepare(db: CPointer<sqlite3>, sql: String): CPointer<SqliteStatementPointer> = memScoped {
+        val stmtPtr = alloc<CPointerVar<SqliteStatementPointer>>()
         val code = sqlite3_prepare_v2(db, sql, sql.length, stmtPtr.ptr, null)
-        if (code != SQLITE_OK) {
+        if (code != SQLITE_OK_CODE) {
             throw IllegalStateException("Не удалось подготовить запрос: код $code")
         }
         stmtPtr.value ?: error("Statement не создан")
@@ -158,9 +162,9 @@ internal class IosAuthSessionDbDriver(
     /**
      * Проверяет результат выполнения statement.
      */
-    private fun sqlite3_step_safe(stmt: CPointer<sqlite3_stmt>): Int {
+    private fun sqlite3_step_safe(stmt: CPointer<SqliteStatementPointer>): Int {
         val result = sqlite3_step(stmt)
-        if (result !in listOf(SQLITE_ROW, SQLITE_DONE)) {
+        if (result !in listOf(SQLITE_ROW_CODE, SQLITE_DONE_CODE)) {
             throw IllegalStateException("Ошибка выполнения запроса: код $result")
         }
         return result
