@@ -1,6 +1,8 @@
 package com.gear.hub.data.config
 
 import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import net.sqlcipher.database.SupportFactory
 import kotlin.ByteArray
 
@@ -21,7 +23,14 @@ actual class DatabaseRuntime(
     val context: PlatformContext,
     val config: DatabaseConfig,
     val supportFactory: SupportFactory,
-)
+) {
+    /**
+     * Создаёт Room-билдер с подключённым SQLCipher, чтобы фичи могли собирать свои базы.
+     */
+    fun <T : RoomDatabase> roomDatabaseBuilder(dbClass: Class<T>): RoomDatabase.Builder<T> =
+        Room.databaseBuilder(context.context, dbClass, config.name)
+            .openHelperFactory(supportFactory)
+}
 
 /**
  * Фабрика, подготавливающая шифрованный runtime и отдающая его в фичевые инициализаторы.

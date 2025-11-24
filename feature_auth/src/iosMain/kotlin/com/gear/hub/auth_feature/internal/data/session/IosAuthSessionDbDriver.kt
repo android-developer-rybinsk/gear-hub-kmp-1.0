@@ -62,7 +62,7 @@ internal class IosAuthSessionDbDriver(
         }
     }
 
-    override fun readAuthorized(): Boolean =
+    override fun getAuthorized(): Boolean =
         withDatabase { db ->
             val stmt = prepare(db, AuthSessionQueries.SELECT_AUTHORIZED)
             try {
@@ -78,9 +78,9 @@ internal class IosAuthSessionDbDriver(
             }
         }
 
-    override fun writeAuthorized(value: Boolean) {
+    override fun setAuthorized(value: Boolean) {
         withDatabase { db ->
-            exec(db, AuthSessionQueries.UPDATE_AUTHORIZED.replace("?", if (value) "1" else "0"))
+            exec(db, AuthSessionQueries.UPDATE_AUTHORIZED.replace(":value", if (value) "1" else "0"))
         }
     }
 

@@ -14,14 +14,14 @@ internal interface AuthSessionDbDriver {
     fun ensureInitialized()
 
     /**
-     * Читает признак авторизации из таблицы.
+     * Получает признак авторизации из таблицы.
      */
-    fun readAuthorized(): Boolean
+    fun getAuthorized(): Boolean
 
     /**
-     * Записывает признак авторизации.
+     * Устанавливает признак авторизации.
      */
-    fun writeAuthorized(value: Boolean)
+    fun setAuthorized(value: Boolean)
 }
 
 /**

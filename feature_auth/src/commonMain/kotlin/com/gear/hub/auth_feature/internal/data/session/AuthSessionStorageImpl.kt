@@ -13,13 +13,13 @@ internal class AuthSessionStorageImpl(
 
     override suspend fun isAuthorized(): Boolean = withContext(Dispatchers.IO) {
         driver.ensureInitialized()
-        driver.readAuthorized()
+        driver.getAuthorized()
     }
 
     override suspend fun setAuthorized(value: Boolean) {
         withContext(Dispatchers.IO) {
             driver.ensureInitialized()
-            driver.writeAuthorized(value)
+            driver.setAuthorized(value)
         }
     }
 }

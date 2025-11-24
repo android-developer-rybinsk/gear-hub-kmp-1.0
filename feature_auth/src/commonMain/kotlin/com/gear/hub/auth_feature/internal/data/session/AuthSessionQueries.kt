@@ -28,5 +28,5 @@ internal object AuthSessionQueries {
     /**
      * Обновление флага авторизации.
      */
-    const val UPDATE_AUTHORIZED = "UPDATE auth_session SET authorized = ? WHERE id = 1"
+    const val UPDATE_AUTHORIZED = "UPDATE auth_session SET authorized = :value WHERE id = 1"
 }

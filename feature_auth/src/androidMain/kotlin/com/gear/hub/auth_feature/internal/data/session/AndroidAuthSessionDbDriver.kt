@@ -1,90 +1,86 @@
 package com.gear.hub.auth_feature.internal.data.session
 
-import android.content.Context
+import androidx.room.Database
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.RoomDatabase
 import com.gear.hub.data.config.DatabaseRuntime
-import com.gear.hub.data.config.DatabaseConfig
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SQLiteOpenHelper
 
 /**
- * Драйвер доступа к таблице сессии на Android, использующий базовую
- * инфраструктуру data_service: имя БД, версию и пароль берём из
- * [DatabaseRuntime.config].
+ * Драйвер доступа к таблице сессии на Android, опирающийся на Room и
+ * шифрование SQLCipher, подготовленное в data_service. Все операции
+ * выполняются через DAO, чтобы минимизировать ручной SQL в платформенном слое.
  */
 internal class AndroidAuthSessionDbDriver(
-    private val runtime: DatabaseRuntime,
+    runtime: DatabaseRuntime,
 ) : AuthSessionDbDriver {
 
     /**
-     * Помощник, создающий таблицу статуса авторизации в шифрованной базе.
+     * Единый Room-инстанс с SQLCipher, создаётся через базовый runtime.
      */
-    private val dbHelper by lazy(LazyThreadSafetyMode.NONE) {
-        AuthSessionDbHelper(runtime.context.context, runtime.config)
+    private val database: AuthSessionDatabase by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
+        runtime.roomDatabaseBuilder(AuthSessionDatabase::class.java)
+            .addCallback(object : RoomDatabase.Callback() {
+                override fun onCreate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                    super.onCreate(db)
+                    db.execSQL(AuthSessionQueries.CREATE_TABLE)
+                    db.execSQL(AuthSessionQueries.INSERT_DEFAULT)
+                }
+            })
+            .build()
     }
 
-    /**
-     * Открытая ссылка на шифрованную базу; создаётся лениво и переиспользуется.
-     */
-    private val database: SQLiteDatabase by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-        SQLiteDatabase.loadLibs(runtime.context.context)
-        dbHelper.getWritableDatabase(runtime.config.passphrase.toCharArray())
-    }
+    private val dao: AuthSessionDao by lazy(LazyThreadSafetyMode.NONE) { database.authSessionDao() }
 
     override fun ensureInitialized() {
-        dbHelper.ensureSchema(database)
+        dao.insertDefault(AuthSessionEntity())
     }
 
-    override fun readAuthorized(): Boolean = dbHelper.readAuthorized(database)
+    override fun getAuthorized(): Boolean {
+        return dao.getAuthorizedFlag() == 1
+    }
 
-    override fun writeAuthorized(value: Boolean) {
-        dbHelper.writeAuthorized(database, value)
+    override fun setAuthorized(value: Boolean) {
+        dao.setAuthorizedFlag(if (value) 1 else 0)
     }
 }
 
 /**
- * SQLiteOpenHelper для таблицы авторизации в общей шифрованной базе.
+ * Room-сущность для таблицы авторизации.
  */
-private class AuthSessionDbHelper(
-    private val appContext: Context,
-    private val config: DatabaseConfig,
-) : SQLiteOpenHelper(appContext, config.name, null, config.version) {
+@androidx.room.Entity(tableName = "auth_session")
+internal data class AuthSessionEntity(
+    @androidx.room.PrimaryKey val id: Int = 1,
+    @androidx.room.ColumnInfo(name = "authorized") val authorized: Int = 0,
+)
 
-    override fun onCreate(db: SQLiteDatabase) {
-        ensureSchema(db)
-    }
+/**
+ * DAO, инкапсулирующее запросы из [AuthSessionQueries].
+ */
+@Dao
+internal interface AuthSessionDao {
+    @Query(AuthSessionQueries.SELECT_AUTHORIZED)
+    fun getAuthorizedFlag(): Int?
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Версия оставлена для будущих миграций конкретной фичи.
-    }
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertDefault(entity: AuthSessionEntity)
 
-    /**
-     * Гарантирует создание таблицы и дефолтной записи.
-     */
-    fun ensureSchema(db: SQLiteDatabase) {
-        db.execSQL(AuthSessionQueries.CREATE_TABLE)
-        db.execSQL(AuthSessionQueries.INSERT_DEFAULT)
-    }
+    @Query(AuthSessionQueries.UPDATE_AUTHORIZED)
+    fun setAuthorizedFlag(value: Int)
+}
 
-    /**
-     * Читает флаг авторизации.
-     */
-    fun readAuthorized(db: SQLiteDatabase): Boolean {
-        val cursor = db.rawQuery(AuthSessionQueries.SELECT_AUTHORIZED, emptyArray())
-        cursor.use {
-            if (it.moveToFirst()) {
-                return it.getInt(0) == 1
-            }
-        }
-        writeAuthorized(db, value = false)
-        return false
-    }
-
-    /**
-     * Обновляет флаг авторизации.
-     */
-    fun writeAuthorized(db: SQLiteDatabase, value: Boolean) {
-        db.execSQL(AuthSessionQueries.UPDATE_AUTHORIZED, arrayOf(if (value) 1 else 0))
-    }
+/**
+ * RoomDatabase, собирающая DAO и схему.
+ */
+@Database(
+    entities = [AuthSessionEntity::class],
+    version = 1,
+    exportSchema = false,
+)
+internal abstract class AuthSessionDatabase : RoomDatabase() {
+    abstract fun authSessionDao(): AuthSessionDao
 }
 
 /**
