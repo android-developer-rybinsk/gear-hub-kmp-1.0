@@ -1,8 +1,9 @@
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+
 package com.gear.hub.auth_feature.internal.data.session
 
-import com.gear.hub.auth_feature.internal.data.session.AuthCredentialsRecord
-import com.gear.hub.auth_feature.internal.data.session.AuthUserRecord
 import com.gear.hub.data.config.DatabaseFactory
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
@@ -16,11 +17,10 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSFileProtectionComplete
 import platform.Foundation.NSFileProtectionKey
 import platform.Foundation.NSString
+import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
-import platform.Foundation.URLByAppendingPathComponent
 import platform.Foundation.create
 import platform.Foundation.setAttributes
-import platform.Foundation.stringByResolvingSymlinksInPath
 import platform.SQLite3.SQLITE_DONE
 import platform.SQLite3.SQLITE_OK
 import platform.SQLite3.SQLITE_ROW
@@ -47,14 +47,18 @@ internal class IosAuthSessionDbDriver(
      * Полный путь к базе авторизации, общая для проекта KMP.
      */
     private val databasePath: String = run {
-        val supportDir = NSFileManager.defaultManager.URLForDirectory(
+        val manager = NSFileManager.defaultManager
+        val supportDir: NSURL = manager.URLForDirectory(
             directory = NSApplicationSupportDirectory,
             inDomain = NSUserDomainMask,
             appropriateForURL = null,
             create = true,
             error = null,
         ) ?: error("Не удалось получить путь ApplicationSupport для базы авторизации")
-        supportDir.stringByResolvingSymlinksInPath!!.URLByAppendingPathComponent(factory.config.name).path!!
+
+        val resolvedUrl = supportDir.URLByAppendingPathComponent(factory.config.name, isDirectory = false)
+            ?: error("Не удалось сформировать путь базы авторизации")
+        resolvedUrl.path ?: error("Путь к базе авторизации пуст")
     }
 
     override fun ensureInitialized() {
