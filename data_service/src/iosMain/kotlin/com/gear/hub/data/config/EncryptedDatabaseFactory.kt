@@ -3,7 +3,7 @@ package com.gear.hub.data.config
 /**
  * Заглушка для iOS: контекст не требуется, но поддерживается общим интерфейсом.
  */
-actual class PlatformContext actual constructor()
+actual class PlatformContext actual constructor(val platformValue: Any?)
 
 /**
  * Runtime для iOS: пока содержит только конфигурацию, чтобы фичи могли подключить свой storage.
