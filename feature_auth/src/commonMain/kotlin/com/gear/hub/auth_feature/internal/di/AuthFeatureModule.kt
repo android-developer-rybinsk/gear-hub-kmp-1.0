@@ -1,7 +1,10 @@
 package com.gear.hub.auth_feature.internal.di
 
 import com.gear.hub.auth_feature.internal.data.AuthRepositoryImpl
+import com.gear.hub.auth_feature.internal.data.AuthSessionRepositoryImpl
 import com.gear.hub.auth_feature.internal.domain.AuthRepository
+import com.gear.hub.auth_feature.internal.domain.AuthSessionRepository
+import com.gear.hub.auth_feature.internal.domain.CheckAuthorizationUseCase
 import com.gear.hub.auth_feature.internal.domain.RegisterUserUseCase
 import com.gear.hub.auth_service.di.authServiceModule
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +20,9 @@ val authFeatureModule: Module = module {
     includes(authServiceModule)
 
     single<AuthRepository> { AuthRepositoryImpl(get()) }
-    factory { RegisterUserUseCase(get()) }
+    single<AuthSessionRepository> { AuthSessionRepositoryImpl(get()) }
+    factory { RegisterUserUseCase(get(), get()) }
+    factory { CheckAuthorizationUseCase(get()) }
 
     scope<AuthFeatureScope> {
         scoped { Dispatchers.IO }

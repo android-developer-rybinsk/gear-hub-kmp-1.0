@@ -2,6 +2,7 @@ package com.gear.hub.auth_feature.internal.domain
 
 import com.gear.hub.auth_feature.internal.domain.model.RegistrationPayload
 import com.gear.hub.auth_feature.internal.domain.model.RegistrationResult
+import com.gear.hub.auth_feature.internal.domain.AuthSessionRepository
 import com.gear.hub.network.model.ApiResponse
 
 /**
@@ -9,6 +10,7 @@ import com.gear.hub.network.model.ApiResponse
  */
 class RegisterUserUseCase(
     private val repository: AuthRepository,
+    private val sessionRepository: AuthSessionRepository,
 ) {
     suspend operator fun invoke(
         name: String,
@@ -27,7 +29,11 @@ class RegisterUserUseCase(
             emailOrPhone = email ?: phone,
             password = password,
         )
-        return repository.register(payload)
+        return repository.register(payload).also { response ->
+            if (response is ApiResponse.Success) {
+                sessionRepository.setAuthorized(true)
+            }
+        }
     }
 
     /**

@@ -68,6 +68,7 @@ kotlin {
                 implementation(libs.retrofit.core)
                 implementation(libs.retrofit.kotlinx.serialization.converter)
                 implementation(libs.okhttp.logging)
+                implementation(libs.sqlcipher)
             }
         }
 
