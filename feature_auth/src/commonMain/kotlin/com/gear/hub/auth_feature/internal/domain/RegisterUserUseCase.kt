@@ -26,7 +26,7 @@ class RegisterUserUseCase(
 
         val payload = RegistrationPayload(
             name = name.trim(),
-            emailOrPhone = email ?: phone,
+            emailOrPhone = email ?: phone!!,
             password = password,
         )
         return repository.register(payload).also { response ->

@@ -1,8 +1,6 @@
 package com.gear.hub.di
 
 import androidx.navigation.NavController
-import com.gear.hub.auth_feature.internal.data.session.AndroidAuthSessionStorage
-import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorage
 import com.gear.hub.auth_feature.internal.domain.CheckAuthorizationUseCase
 import com.gear.hub.navigation.RouterAndroid
 import com.gear.hub.presentation.screens.main.MainViewModel
@@ -19,7 +17,6 @@ import org.koin.dsl.module
 
 val androidModule = module {
     factory { (navController: NavController) -> RouterAndroid(navController) as Router }
-    single<AuthSessionStorage> { AndroidAuthSessionStorage(androidContext()) }
     viewModel { (router: Router) -> MainViewModel(router) }
     viewModel { (router: Router) -> SplashViewModel(router, get<CheckAuthorizationUseCase>()) }
     viewModel { (router: Router, config: AuthNavigationConfig) -> AuthViewModel(get(), router, config) }
