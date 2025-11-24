@@ -3,10 +3,23 @@
 package com.gear.hub.auth_feature.internal.data.session
 
 import com.gear.hub.data.config.DatabaseFactory
-import kotlinx.cinterop.ExperimentalForeignApi
+import co.touchlab.sqliter.interop.SqliteConstants.SQLITE_DONE
+import co.touchlab.sqliter.interop.SqliteConstants.SQLITE_OK
+import co.touchlab.sqliter.interop.SqliteConstants.SQLITE_ROW
+import co.touchlab.sqliter.interop.sqlite3
+import co.touchlab.sqliter.interop.sqlite3_close
+import co.touchlab.sqliter.interop.sqlite3_column_int
+import co.touchlab.sqliter.interop.sqlite3_exec
+import co.touchlab.sqliter.interop.sqlite3_finalize
+import co.touchlab.sqliter.interop.sqlite3_open
+import co.touchlab.sqliter.interop.sqlite3_prepare_v2
+import co.touchlab.sqliter.interop.sqlite3_reset
+import co.touchlab.sqliter.interop.sqlite3_step
+import co.touchlab.sqliter.interop.sqlite3_stmt
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
@@ -21,19 +34,6 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSUserDomainMask
 import platform.Foundation.create
 import platform.Foundation.setAttributes
-import sqlite3.SQLITE_DONE
-import sqlite3.SQLITE_OK
-import sqlite3.SQLITE_ROW
-import sqlite3.sqlite3
-import sqlite3.sqlite3_close
-import sqlite3.sqlite3_column_int
-import sqlite3.sqlite3_exec
-import sqlite3.sqlite3_finalize
-import sqlite3.sqlite3_open
-import sqlite3.sqlite3_prepare_v2
-import sqlite3.sqlite3_reset
-import sqlite3.sqlite3_step
-import sqlite3.sqlite3_stmt
 
 /**
  * iOS-драйвер для таблицы авторизации. Использует SQLite из Application Support
