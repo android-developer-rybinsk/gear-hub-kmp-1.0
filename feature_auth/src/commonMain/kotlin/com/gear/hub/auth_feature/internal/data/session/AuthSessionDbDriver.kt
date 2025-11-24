@@ -1,11 +1,11 @@
 package com.gear.hub.auth_feature.internal.data.session
 
-import com.gear.hub.data.config.DatabaseRuntime
+import com.gear.hub.data.config.DatabaseFactory
 
 /**
  * Общий контракт доступа к таблице авторизации. Платформенные реализации
- * должны использовать базовую инфраструктуру data_service (runtime) и
- * выполнять запросы из [AuthSessionQueries].
+ * должны использовать базовую инфраструктуру data_service (фабрику БД)
+ * и выполнять запросы из [AuthSessionQueries].
  */
 internal interface AuthSessionDbDriver {
     /**
@@ -14,17 +14,27 @@ internal interface AuthSessionDbDriver {
     fun ensureInitialized()
 
     /**
-     * Читает признак авторизации из таблицы.
+     * Получает признак авторизации из таблицы.
      */
-    fun readAuthorized(): Boolean
+    fun getAuthorized(): Boolean
 
     /**
-     * Записывает признак авторизации.
+     * Устанавливает признак авторизации.
      */
-    fun writeAuthorized(value: Boolean)
+    fun setAuthorized(value: Boolean)
+
+    /**
+     * Сохраняет пару access/refresh токенов и срок их жизни.
+     */
+    fun setCredentials(credentials: AuthCredentialsRecord)
+
+    /**
+     * Сохраняет данные пользователя из успешного ответа регистрации.
+     */
+    fun setUser(user: AuthUserRecord)
 }
 
 /**
  * Фабричная функция для создания драйвера на платформе.
  */
-internal expect fun createAuthSessionDbDriver(runtime: DatabaseRuntime): AuthSessionDbDriver
+internal expect fun createAuthSessionDbDriver(factory: DatabaseFactory): AuthSessionDbDriver

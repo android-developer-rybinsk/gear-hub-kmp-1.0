@@ -10,7 +10,7 @@ import com.gear.hub.auth_feature.internal.domain.AuthRepository
 import com.gear.hub.auth_feature.internal.domain.AuthSessionRepository
 import com.gear.hub.auth_feature.internal.domain.CheckAuthorizationUseCase
 import com.gear.hub.auth_feature.internal.domain.RegisterUserUseCase
-import com.gear.hub.data.config.DatabaseRuntime
+import com.gear.hub.data.config.DatabaseFactory
 import com.gear.hub.auth_service.di.authServiceModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -25,7 +25,7 @@ val authFeatureModule: Module = module {
     includes(authServiceModule)
 
     single<AuthRepository> { AuthRepositoryImpl(get()) }
-    single<AuthSessionDbDriver> { createAuthSessionDbDriver(get<DatabaseRuntime>()) }
+    single<AuthSessionDbDriver> { createAuthSessionDbDriver(get<DatabaseFactory>()) }
     single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
     single<AuthSessionRepository> { AuthSessionRepositoryImpl(get()) }
     factory { RegisterUserUseCase(get(), get()) }

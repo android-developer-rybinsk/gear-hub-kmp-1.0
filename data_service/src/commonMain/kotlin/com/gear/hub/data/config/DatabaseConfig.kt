@@ -10,9 +10,9 @@ data class DatabaseConfig(
 )
 
 /**
- * Объект окружения, передаваемый фичевым инициализаторам для создания своих таблиц/DAO.
+ * Фабрика платформенной БД, передаваемая в фичевые инициализаторы для создания своих таблиц/DAO.
  */
-expect class DatabaseRuntime
+expect class DatabaseFactory
 
 /**
  * Реестр инициализаторов БД: каждая фича регистрирует свой модуль с таблицами.
@@ -21,25 +21,25 @@ interface DatabaseRegistry {
     /**
      * Регистрирует инициализатор БД конкретной фичи.
      */
-    fun registerModule(moduleName: String, initializer: (DatabaseRuntime) -> Unit)
+    fun registerModule(moduleName: String, initializer: (DatabaseFactory) -> Unit)
 
     /**
      * Зарегистрированные инициализаторы по имени модуля.
      */
-    val registeredModules: Map<String, (DatabaseRuntime) -> Unit>
+    val registeredModules: Map<String, (DatabaseFactory) -> Unit>
 }
 
 /**
  * Базовая реализация реестра инициализаторов.
  */
 class DefaultDatabaseRegistry : DatabaseRegistry {
-    private val modules = linkedMapOf<String, (DatabaseRuntime) -> Unit>()
+    private val modules = linkedMapOf<String, (DatabaseFactory) -> Unit>()
 
-    override fun registerModule(moduleName: String, initializer: (DatabaseRuntime) -> Unit) {
+    override fun registerModule(moduleName: String, initializer: (DatabaseFactory) -> Unit) {
         modules[moduleName] = initializer
     }
 
-    override val registeredModules: Map<String, (DatabaseRuntime) -> Unit> get() = modules
+    override val registeredModules: Map<String, (DatabaseFactory) -> Unit> get() = modules
 }
 
 /**
@@ -50,7 +50,7 @@ expect class EncryptedDatabaseFactory(platformContext: PlatformContext) {
      * Создаёт шифрованный runtime и отдает его в модульные инициализаторы,
      * возвращая готовый экземпляр для дальнейшей работы фич.
      */
-    fun initialize(config: DatabaseConfig, registry: DatabaseRegistry): DatabaseRuntime
+    fun initialize(config: DatabaseConfig, registry: DatabaseRegistry): DatabaseFactory
 }
 
 /**

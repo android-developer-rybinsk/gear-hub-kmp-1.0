@@ -20,7 +20,7 @@ class App : Application() {
                 dataModule(
                     config = DatabaseConfig(name = "gearhub_auth.db", passphrase = "gearhub_auth_cipher"),
                     platformContext = PlatformContext(this@App),
-                    registryConfig = { registerModule("auth_session") { runtime -> createAuthSessionDbDriver(runtime).ensureInitialized() } },
+                    registryConfig = { registerModule("auth_session") { factory -> createAuthSessionDbDriver(factory).ensureInitialized() } },
                 ),
                 appModule,      // общий модуль из shared
                 androidModule   // Android-специфичный модуль

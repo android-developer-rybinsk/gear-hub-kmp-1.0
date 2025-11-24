@@ -14,4 +14,14 @@ interface AuthSessionStorage {
      * Сохраняет флаг авторизации, чтобы при следующем запуске можно было пропустить экран входа.
      */
     suspend fun setAuthorized(value: Boolean)
+
+    /**
+     * Сохраняет токены авторизации в зашифрованной БД.
+     */
+    suspend fun setCredentials(credentials: AuthCredentialsRecord)
+
+    /**
+     * Сохраняет данные пользователя из ответа регистрации.
+     */
+    suspend fun setUser(user: AuthUserRecord)
 }

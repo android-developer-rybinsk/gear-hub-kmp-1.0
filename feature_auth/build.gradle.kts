@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -69,6 +70,9 @@ kotlin {
                 implementation(libs.retrofit.kotlinx.serialization.converter)
                 implementation(libs.okhttp.logging)
                 implementation(libs.sqlcipher)
+                implementation(libs.room.runtime)
+                implementation(libs.room.ktx)
+                add("kspAndroid", libs.room.compiler)
             }
         }
 
