@@ -2,6 +2,7 @@ package com.gear.hub.network.di
 
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.util.ensureTrailingSlash
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
@@ -10,7 +11,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 private const val CONTENT_TYPE_HEADER = "Content-Type"
 private const val CONTENT_TYPE_JSON = "application/json"

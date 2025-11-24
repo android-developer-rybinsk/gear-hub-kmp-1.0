@@ -7,6 +7,7 @@ import com.gear.hub.auth_feature.internal.domain.RegisterUserUseCase
 import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
 import com.gear.hub.auth_service.di.authServiceModule
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
 import org.koin.dsl.module

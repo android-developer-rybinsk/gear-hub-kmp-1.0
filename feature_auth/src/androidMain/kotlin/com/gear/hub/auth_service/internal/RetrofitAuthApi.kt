@@ -10,7 +10,7 @@ import retrofit2.http.POST
 /**
  * Android-реализация AuthApi на базе общего Retrofit-клиента.
  */
-class RetrofitAuthApi(
+internal class RetrofitAuthApi(
     private val service: AuthRetrofitService,
 ) : AuthApi {
 
