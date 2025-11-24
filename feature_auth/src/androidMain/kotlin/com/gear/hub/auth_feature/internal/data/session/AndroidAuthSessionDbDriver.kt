@@ -6,9 +6,10 @@ import androidx.room.Query
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.gear.hub.auth_feature.api.session.AuthSessionDbDriver
+import com.gear.hub.auth_feature.api.session.AuthCredentialsRecord
+import com.gear.hub.auth_feature.api.session.AuthUserRecord
 import com.gear.hub.data.config.DatabaseFactory
-import com.gear.hub.auth_feature.internal.data.session.AuthCredentialsRecord
-import com.gear.hub.auth_feature.internal.data.session.AuthUserRecord
 
 /**
  * Драйвер доступа к таблице сессии на Android, опирающийся на Room и
@@ -155,8 +156,3 @@ internal object AuthSessionMigrations {
     val ALL = arrayOf(MIGRATION_1_2)
 }
 
-/**
- * Фабрика платформенного драйвера.
- */
-internal actual fun createAuthSessionDbDriver(factory: DatabaseFactory): AuthSessionDbDriver =
-    AndroidAuthSessionDbDriver(factory)

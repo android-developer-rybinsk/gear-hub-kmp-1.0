@@ -1,4 +1,4 @@
-package com.gear.hub.auth_feature.internal.data.session
+package com.gear.hub.auth_feature.api.session
 
 import com.gear.hub.data.config.DatabaseFactory
 
@@ -7,7 +7,7 @@ import com.gear.hub.data.config.DatabaseFactory
  * должны использовать базовую инфраструктуру data_service (фабрику БД)
  * и выполнять запросы из [AuthSessionQueries].
  */
-internal interface AuthSessionDbDriver {
+interface AuthSessionDbDriver {
     /**
      * Создаёт таблицу и дефолтную запись, если она ещё не создана.
      */
@@ -37,4 +37,4 @@ internal interface AuthSessionDbDriver {
 /**
  * Фабричная функция для создания драйвера на платформе.
  */
-internal expect fun createAuthSessionDbDriver(factory: DatabaseFactory): AuthSessionDbDriver
+expect fun createAuthSessionDbDriver(factory: DatabaseFactory): AuthSessionDbDriver
