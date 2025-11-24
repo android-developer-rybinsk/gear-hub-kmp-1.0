@@ -1,8 +1,8 @@
 package com.gear.hub.auth_feature.internal.domain
 
+import com.gear.hub.auth_feature.internal.domain.AuthSessionRepository
 import com.gear.hub.auth_feature.internal.domain.model.RegistrationPayload
 import com.gear.hub.auth_feature.internal.domain.model.RegistrationResult
-import com.gear.hub.auth_feature.internal.domain.AuthSessionRepository
 import com.gear.hub.network.model.ApiResponse
 
 /**
@@ -26,11 +26,15 @@ class RegisterUserUseCase(
 
         val payload = RegistrationPayload(
             name = name.trim(),
-            emailOrPhone = email ?: phone!!,
+            emailOrPhone = email ?: phone.orEmpty(),
             password = password,
         )
         return repository.register(payload).also { response ->
             if (response is ApiResponse.Success) {
+                sessionRepository.persistSession(
+                    tokens = response.data.tokens,
+                    user = response.data.user,
+                )
                 sessionRepository.setAuthorized(true)
             }
         }

@@ -22,4 +22,18 @@ internal class AuthSessionStorageImpl(
             driver.setAuthorized(value)
         }
     }
+
+    override suspend fun setCredentials(credentials: AuthCredentialsRecord) {
+        withContext(Dispatchers.IO) {
+            driver.ensureInitialized()
+            driver.setCredentials(credentials)
+        }
+    }
+
+    override suspend fun setUser(user: AuthUserRecord) {
+        withContext(Dispatchers.IO) {
+            driver.ensureInitialized()
+            driver.setUser(user)
+        }
+    }
 }

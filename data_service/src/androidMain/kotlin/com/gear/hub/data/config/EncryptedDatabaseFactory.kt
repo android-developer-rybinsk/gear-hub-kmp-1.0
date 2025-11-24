@@ -4,11 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import net.sqlcipher.database.SupportFactory
-import kotlin.ByteArray
 
-/**
- * Платформенный контейнер Android: хранит Context для создания базы данных.
- */
 /**
  * Платформенный контейнер Android: хранит Context для создания базы данных.
  */
@@ -17,9 +13,9 @@ actual class PlatformContext actual constructor(val platformValue: Any?) {
 }
 
 /**
- * Платформенный runtime для Android с SupportFactory SQLCipher.
+ * Платформенная фабрика для Room/SQLCipher, подготавливающая базовый билдер.
  */
-actual class DatabaseRuntime(
+actual class DatabaseFactory(
     val context: PlatformContext,
     val config: DatabaseConfig,
     val supportFactory: SupportFactory,
@@ -33,17 +29,17 @@ actual class DatabaseRuntime(
 }
 
 /**
- * Фабрика, подготавливающая шифрованный runtime и отдающая его в фичевые инициализаторы.
+ * Фабрика, подготавливающая шифрованный контейнер БД и отдающая его в фичевые инициализаторы.
  */
 actual class EncryptedDatabaseFactory actual constructor(private val platformContext: PlatformContext) {
-    actual fun initialize(config: DatabaseConfig, registry: DatabaseRegistry): DatabaseRuntime {
-        val passphrase: ByteArray = config.passphrase.toByteArray()
-        val runtime = DatabaseRuntime(
+    actual fun initialize(config: DatabaseConfig, registry: DatabaseRegistry): DatabaseFactory {
+        val passphrase = config.passphrase.toByteArray()
+        val factory = DatabaseFactory(
             context = platformContext,
             config = config,
             supportFactory = SupportFactory(passphrase),
         )
-        registry.registeredModules.values.forEach { initializer -> initializer.invoke(runtime) }
-        return runtime
+        registry.registeredModules.values.forEach { initializer -> initializer.invoke(factory) }
+        return factory
     }
 }

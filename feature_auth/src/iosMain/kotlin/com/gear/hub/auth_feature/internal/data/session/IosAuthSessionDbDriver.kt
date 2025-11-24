@@ -1,6 +1,8 @@
 package com.gear.hub.auth_feature.internal.data.session
 
-import com.gear.hub.data.config.DatabaseRuntime
+import com.gear.hub.auth_feature.internal.data.session.AuthCredentialsRecord
+import com.gear.hub.auth_feature.internal.data.session.AuthUserRecord
+import com.gear.hub.data.config.DatabaseFactory
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
@@ -35,10 +37,10 @@ import platform.SQLite3.sqlite3_stmt
 
 /**
  * iOS-драйвер для таблицы авторизации. Использует SQLite из Application Support
- * и базовые параметры БД из [DatabaseRuntime.config].
+ * и базовые параметры БД из [DatabaseFactory.config].
  */
 internal class IosAuthSessionDbDriver(
-    runtime: DatabaseRuntime,
+    factory: DatabaseFactory,
 ) : AuthSessionDbDriver {
 
     /**
@@ -52,12 +54,14 @@ internal class IosAuthSessionDbDriver(
             create = true,
             error = null,
         ) ?: error("Не удалось получить путь ApplicationSupport для базы авторизации")
-        supportDir.stringByResolvingSymlinksInPath!!.URLByAppendingPathComponent(runtime.config.name).path!!
+        supportDir.stringByResolvingSymlinksInPath!!.URLByAppendingPathComponent(factory.config.name).path!!
     }
 
     override fun ensureInitialized() {
         withDatabase { db ->
             exec(db, AuthSessionQueries.CREATE_TABLE)
+            exec(db, AuthSessionQueries.CREATE_TABLE_CREDENTIALS)
+            exec(db, AuthSessionQueries.CREATE_TABLE_USER)
             exec(db, AuthSessionQueries.INSERT_DEFAULT)
         }
     }
@@ -81,6 +85,27 @@ internal class IosAuthSessionDbDriver(
     override fun setAuthorized(value: Boolean) {
         withDatabase { db ->
             exec(db, AuthSessionQueries.UPDATE_AUTHORIZED.replace(":value", if (value) "1" else "0"))
+        }
+    }
+
+    override fun setCredentials(credentials: AuthCredentialsRecord) {
+        withDatabase { db ->
+            val sql = AuthSessionQueries.UPSERT_CREDENTIALS
+                .replace(":accessToken", "'${credentials.accessToken}'")
+                .replace(":refreshToken", "'${credentials.refreshToken}'")
+                .replace(":expiresIn", credentials.expiresIn.toString())
+            exec(db, sql)
+        }
+    }
+
+    override fun setUser(user: AuthUserRecord) {
+        withDatabase { db ->
+            val sql = AuthSessionQueries.UPSERT_USER
+                .replace(":userId", "'${user.userId}'")
+                .replace(":email", user.email?.let { "'$it'" } ?: "NULL")
+                .replace(":phone", user.phone?.let { "'$it'" } ?: "NULL")
+                .replace(":name", "'${user.name}'")
+            exec(db, sql)
         }
     }
 
@@ -153,5 +178,5 @@ internal class IosAuthSessionDbDriver(
 /**
  * Фабрика платформенного драйвера.
  */
-internal actual fun createAuthSessionDbDriver(runtime: DatabaseRuntime): AuthSessionDbDriver =
-    IosAuthSessionDbDriver(runtime)
+internal actual fun createAuthSessionDbDriver(factory: DatabaseFactory): AuthSessionDbDriver =
+    IosAuthSessionDbDriver(factory)

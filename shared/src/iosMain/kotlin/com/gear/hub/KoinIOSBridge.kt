@@ -26,7 +26,7 @@ class KoinIOSBridge {
                 dataModule(
                     config = DatabaseConfig(name = "gearhub_auth.db", passphrase = "gearhub_auth_cipher"),
                     platformContext = PlatformContext(null),
-                    registryConfig = { registerModule("auth_session") { runtime -> createAuthSessionDbDriver(runtime).ensureInitialized() } },
+                    registryConfig = { registerModule("auth_session") { factory -> createAuthSessionDbDriver(factory).ensureInitialized() } },
                 ),
             )
         },
