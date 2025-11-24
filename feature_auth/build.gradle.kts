@@ -91,6 +91,7 @@ kotlin {
                 implementation(libs.sqlcipher)
                 implementation(libs.room.runtime)
                 implementation(libs.room.ktx)
+                implementation(libs.room.compiler)
             }
         }
 
@@ -102,11 +103,12 @@ kotlin {
             }
         }
 
-        iosMain { dependencies { implementation(libs.koin.core) } }
+        iosMain {
+            dependencies {
+                implementation(libs.koin.core)
+                implementation(libs.sqliter)
+            }
+        }
     }
-}
-
-dependencies {
-    add("kspAndroid", libs.room.compiler.get())
 }
 
