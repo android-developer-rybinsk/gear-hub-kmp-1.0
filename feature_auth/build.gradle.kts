@@ -41,6 +41,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":core"))
+                implementation(project(":data_service"))
                 implementation(project(":network_service"))
 
                 implementation(libs.kotlin.stdlib)
@@ -72,7 +73,7 @@ kotlin {
                 implementation(libs.sqlcipher)
                 implementation(libs.room.runtime)
                 implementation(libs.room.ktx)
-                add("kspAndroid", libs.room.compiler)
+                add("kspAndroid", libs.room.compiler.get())
             }
         }
 
