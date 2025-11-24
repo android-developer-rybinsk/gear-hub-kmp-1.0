@@ -1,5 +1,8 @@
 package com.gear.hub.auth_feature.internal.data.session
 
+import com.gear.hub.auth_feature.api.session.AuthCredentialsRecord
+import com.gear.hub.auth_feature.api.session.AuthSessionDbDriver
+import com.gear.hub.auth_feature.api.session.AuthUserRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

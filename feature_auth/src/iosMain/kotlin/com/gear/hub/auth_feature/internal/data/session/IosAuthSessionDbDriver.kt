@@ -11,6 +11,9 @@ import co.touchlab.sqliter.interop.sqlite3_open
 import co.touchlab.sqliter.interop.sqlite3_prepare_v2
 import co.touchlab.sqliter.interop.sqlite3_reset
 import co.touchlab.sqliter.interop.sqlite3_step
+import com.gear.hub.auth_feature.api.session.AuthSessionDbDriver
+import com.gear.hub.auth_feature.api.session.AuthCredentialsRecord
+import com.gear.hub.auth_feature.api.session.AuthUserRecord
 import com.gear.hub.data.config.DatabaseFactory
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
@@ -183,8 +186,3 @@ internal class IosAuthSessionDbDriver(
     }
 }
 
-/**
- * Фабрика платформенного драйвера.
- */
-internal actual fun createAuthSessionDbDriver(factory: DatabaseFactory): AuthSessionDbDriver =
-    IosAuthSessionDbDriver(factory)

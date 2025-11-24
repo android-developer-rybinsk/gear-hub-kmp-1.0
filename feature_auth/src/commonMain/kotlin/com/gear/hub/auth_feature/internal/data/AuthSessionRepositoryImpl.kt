@@ -1,8 +1,8 @@
 package com.gear.hub.auth_feature.internal.data
 
-import com.gear.hub.auth_feature.internal.data.session.AuthCredentialsRecord
+import com.gear.hub.auth_feature.api.session.AuthCredentialsRecord
+import com.gear.hub.auth_feature.api.session.AuthUserRecord
 import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorage
-import com.gear.hub.auth_feature.internal.data.session.AuthUserRecord
 import com.gear.hub.auth_feature.internal.domain.AuthSessionRepository
 import com.gear.hub.auth_feature.internal.domain.model.RegisteredUser
 import com.gear.hub.auth_feature.internal.domain.model.RegistrationTokens
