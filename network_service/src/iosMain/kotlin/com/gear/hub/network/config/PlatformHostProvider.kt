@@ -1,26 +1,24 @@
-package com.gear.hub.network.platform
+package com.gear.hub.network.config
 
-import com.gear.hub.network.config.Environment
-import com.gear.hub.network.config.HostProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * Android-реализация провайдера хоста: принимает dev/prod хосты из конфигурации
- * и позволяет переключаться между ними в рантайме.
+ * iOS-реализация провайдера хоста: значения хостов передаются снаружи (например, из настроек стенда).
  */
 actual class PlatformHostProvider actual constructor(
     defaultEnv: Environment,
     private val defaultDevHost: String,
     private val defaultProdHost: String
 ) : HostProvider {
-
     private val environmentState = MutableStateFlow(defaultEnv)
     override val environment: StateFlow<Environment> = environmentState
 
-    override fun baseUrl(): String = when (environmentState.value) {
-        Environment.DEV -> defaultDevHost
-        Environment.PROD -> defaultProdHost
+    override fun baseUrl(): String {
+        return when (environmentState.value) {
+            Environment.DEV -> defaultDevHost
+            Environment.PROD -> defaultProdHost
+        }
     }
 
     override fun setEnvironment(target: Environment) {
