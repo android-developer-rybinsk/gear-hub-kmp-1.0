@@ -18,14 +18,16 @@ actual class PlatformContext actual constructor(val platformValue: Any?) {
 actual class DatabaseFactory(
     val context: PlatformContext,
     val config: DatabaseConfig,
-    val supportFactory: SupportFactory,
+    private val passphrase: ByteArray,
 ) {
     /**
      * Создаёт Room-билдер с подключённым SQLCipher, чтобы фичи могли собирать свои базы.
      */
-    fun <T : RoomDatabase> roomDatabaseBuilder(dbClass: Class<T>): RoomDatabase.Builder<T> =
-        Room.databaseBuilder(context.context, dbClass, config.name)
+    fun <T : RoomDatabase> roomDatabaseBuilder(dbClass: Class<T>): RoomDatabase.Builder<T> {
+        val supportFactory = SupportFactory(passphrase.copyOf())
+        return Room.databaseBuilder(context.context, dbClass, config.name)
             .openHelperFactory(supportFactory)
+    }
 }
 
 /**
@@ -37,7 +39,7 @@ actual class EncryptedDatabaseFactory actual constructor(private val platformCon
         val factory = DatabaseFactory(
             context = platformContext,
             config = config,
-            supportFactory = SupportFactory(passphrase),
+            passphrase = passphrase,
         )
         registry.registeredModules.values.forEach { initializer -> initializer.invoke(factory) }
         return factory

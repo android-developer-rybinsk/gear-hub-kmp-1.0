@@ -8,10 +8,6 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-dependencies {
-    add("kspAndroid", libs.room.compiler)
-}
-
 kotlin {
     androidTarget()
 
