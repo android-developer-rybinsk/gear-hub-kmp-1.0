@@ -9,3 +9,9 @@ plugins {
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
     alias(libs.plugins.androidLint) apply false
 }
+
+allprojects {
+    configurations.configureEach {
+        exclude(group = "com.intellij", module = "annotations")
+    }
+}

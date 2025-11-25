@@ -6,9 +6,15 @@ import androidx.room.Query
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.gear.hub.auth_feature.api.session.AuthSessionDbDriver
+import com.gear.hub.auth_feature.api.session.AuthCredentialsRecord
+import com.gear.hub.auth_feature.api.session.AuthUserRecord
 import com.gear.hub.data.config.DatabaseFactory
-import com.gear.hub.auth_feature.internal.data.session.AuthCredentialsRecord
-import com.gear.hub.auth_feature.internal.data.session.AuthUserRecord
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 
 /**
  * Драйвер доступа к таблице сессии на Android, опирающийся на Room и
@@ -30,8 +36,13 @@ internal class AndroidAuthSessionDbDriver(
 
     private val dao: AuthSessionDao by lazy(LazyThreadSafetyMode.NONE) { database.authSessionDao() }
 
-    override fun ensureInitialized() {
-        dao.insertDefault()
+    private val initScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val initJob = lazy {
+        initScope.async(start = CoroutineStart.LAZY) { dao.insertDefault() }
+    }
+
+    override suspend fun ensureInitialized() {
+        initJob.value.await()
     }
 
     override fun getAuthorized(): Boolean = dao.getAuthorizedFlag() == 1
@@ -155,8 +166,3 @@ internal object AuthSessionMigrations {
     val ALL = arrayOf(MIGRATION_1_2)
 }
 
-/**
- * Фабрика платформенного драйвера.
- */
-internal actual fun createAuthSessionDbDriver(factory: DatabaseFactory): AuthSessionDbDriver =
-    AndroidAuthSessionDbDriver(factory)

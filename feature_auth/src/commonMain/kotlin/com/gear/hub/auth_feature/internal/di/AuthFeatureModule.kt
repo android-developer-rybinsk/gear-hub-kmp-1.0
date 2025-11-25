@@ -2,10 +2,10 @@ package com.gear.hub.auth_feature.internal.di
 
 import com.gear.hub.auth_feature.internal.data.AuthRepositoryImpl
 import com.gear.hub.auth_feature.internal.data.AuthSessionRepositoryImpl
-import com.gear.hub.auth_feature.internal.data.session.AuthSessionDbDriver
+import com.gear.hub.auth_feature.api.session.AuthSessionDbDriver
 import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorage
 import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorageImpl
-import com.gear.hub.auth_feature.internal.data.session.createAuthSessionDbDriver
+import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
 import com.gear.hub.auth_feature.internal.domain.AuthRepository
 import com.gear.hub.auth_feature.internal.domain.AuthSessionRepository
 import com.gear.hub.auth_feature.internal.domain.CheckAuthorizationUseCase

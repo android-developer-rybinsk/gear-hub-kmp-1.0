@@ -9,19 +9,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
-        namespace = "com.gear.hub.auth"
-        compileSdk = 36
-        minSdk = 24
-
-        withHostTestBuilder { }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-    }
+    androidTarget()
 
     val xcfName = "feature_authKit"
 
@@ -82,15 +70,6 @@ kotlin {
                 implementation(libs.sqlcipher)
                 implementation(libs.room.runtime)
                 implementation(libs.room.ktx)
-                implementation(libs.room.compiler)
-            }
-        }
-
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.junit)
             }
         }
 
@@ -100,6 +79,15 @@ kotlin {
                 implementation(libs.sqliter)
             }
         }
+    }
+}
+
+android {
+    namespace = "com.gear.hub.auth"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 

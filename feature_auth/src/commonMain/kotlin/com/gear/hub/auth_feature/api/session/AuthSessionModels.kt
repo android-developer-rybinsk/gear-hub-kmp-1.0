@@ -1,9 +1,9 @@
-package com.gear.hub.auth_feature.internal.data.session
+package com.gear.hub.auth_feature.api.session
 
 /**
  * Модель сохранённых токенов в локальной базе.
  */
-internal data class AuthCredentialsRecord(
+data class AuthCredentialsRecord(
     val accessToken: String,
     val refreshToken: String,
     val expiresIn: Long,
@@ -12,7 +12,7 @@ internal data class AuthCredentialsRecord(
 /**
  * Модель сохранённых пользовательских данных в локальной базе.
  */
-internal data class AuthUserRecord(
+data class AuthUserRecord(
     val userId: String,
     val email: String?,
     val phone: String?,

@@ -8,20 +8,7 @@ plugins {
 
 kotlin {
 
-    androidLibrary {
-        namespace = "gearhub.feature.profile"
-        compileSdk = 36
-        minSdk = 24
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-    }
+    androidTarget()
 
     val xcfName = "feature_profileKit"
 
@@ -81,14 +68,6 @@ kotlin {
             }
         }
 
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.junit)
-            }
-        }
-
         iosMain {
             dependencies {
                 implementation(libs.koin.core)
@@ -96,4 +75,13 @@ kotlin {
         }
     }
 
+}
+
+android {
+    namespace = "gearhub.feature.profile"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
