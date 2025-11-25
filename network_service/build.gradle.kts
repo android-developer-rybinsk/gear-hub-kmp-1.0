@@ -9,14 +9,9 @@ kotlin {
     androidLibrary {
         namespace = "com.gear.hub.network"
         compileSdk = 36
-        minSdk = 24
-
-        withHostTestBuilder { }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        defaultConfig {
+            minSdk = 24
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
 

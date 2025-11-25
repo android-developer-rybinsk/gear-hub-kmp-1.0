@@ -11,15 +11,9 @@ kotlin {
     androidLibrary {
         namespace = "gearhub.feature.products"
         compileSdk = 36
-        minSdk = 24
-
-        withHostTestBuilder {
-        }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        defaultConfig {
+            minSdk = 24
+            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
     val xcfName = "feature_productsKit"
@@ -80,7 +74,7 @@ kotlin {
             }
         }
 
-        getByName("androidDeviceTest") {
+        getByName("androidInstrumentedTest") {
             dependencies {
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
