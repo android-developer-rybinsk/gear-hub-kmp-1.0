@@ -11,7 +11,7 @@ interface AuthSessionDbDriver {
     /**
      * Создаёт таблицу и дефолтную запись, если она ещё не создана.
      */
-    fun ensureInitialized()
+    suspend fun ensureInitialized()
 
     /**
      * Получает признак авторизации из таблицы.

@@ -15,6 +15,11 @@ import com.gear.hub.auth_feature.api.session.AuthSessionDbDriver
 import com.gear.hub.auth_feature.api.session.AuthCredentialsRecord
 import com.gear.hub.auth_feature.api.session.AuthUserRecord
 import com.gear.hub.data.config.DatabaseFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
@@ -68,13 +73,20 @@ internal class IosAuthSessionDbDriver(
         resolvedUrl.path ?: error("Путь к базе авторизации пуст")
     }
 
-    override fun ensureInitialized() {
-        withDatabase { db ->
-            exec(db, AuthSessionQueries.CREATE_TABLE)
-            exec(db, AuthSessionQueries.CREATE_TABLE_CREDENTIALS)
-            exec(db, AuthSessionQueries.CREATE_TABLE_USER)
-            exec(db, AuthSessionQueries.INSERT_DEFAULT)
+    private val initScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val initJob = lazy {
+        initScope.async(start = CoroutineStart.LAZY) {
+            withDatabase { db ->
+                exec(db, AuthSessionQueries.CREATE_TABLE)
+                exec(db, AuthSessionQueries.CREATE_TABLE_CREDENTIALS)
+                exec(db, AuthSessionQueries.CREATE_TABLE_USER)
+                exec(db, AuthSessionQueries.INSERT_DEFAULT)
+            }
         }
+    }
+
+    override suspend fun ensureInitialized() {
+        initJob.value.await()
     }
 
     override fun getAuthorized(): Boolean =

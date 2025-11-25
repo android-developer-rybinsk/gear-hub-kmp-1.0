@@ -5,11 +5,11 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.kotlinKapt)
+    alias(libs.plugins.ksp)
 }
 
 dependencies {
-    add("kaptAndroid", libs.room.compiler)
+    add("kspAndroid", libs.room.compiler)
 }
 
 kotlin {
