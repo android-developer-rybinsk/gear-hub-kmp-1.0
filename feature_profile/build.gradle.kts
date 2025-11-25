@@ -68,14 +68,6 @@ kotlin {
             }
         }
 
-        val androidInstrumentedTest by maybeCreating
-
-        androidInstrumentedTest.dependencies {
-            implementation(libs.androidx.runner)
-            implementation(libs.androidx.core)
-            implementation(libs.androidx.junit)
-        }
-
         iosMain {
             dependencies {
                 implementation(libs.koin.core)
@@ -87,9 +79,9 @@ kotlin {
 
 android {
     namespace = "gearhub.feature.profile"
-    compileSdk = 36
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
-        minSdk = 24
+        minSdk = libs.versions.android.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
