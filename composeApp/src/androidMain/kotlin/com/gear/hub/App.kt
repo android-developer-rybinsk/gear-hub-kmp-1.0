@@ -6,7 +6,7 @@ import com.gear.hub.di.appModule
 import com.gear.hub.data.config.DatabaseConfig
 import com.gear.hub.data.config.PlatformContext
 import com.gear.hub.data.di.dataModule
-import com.gear.hub.auth_feature.internal.data.session.createAuthSessionDbDriver
+import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
