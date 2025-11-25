@@ -4,13 +4,14 @@ import com.gear.hub.auth_feature.api.session.AuthCredentialsRecord
 import com.gear.hub.auth_feature.api.session.AuthSessionDbDriver
 import com.gear.hub.auth_feature.api.session.AuthUserRecord
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 /**
  * Общая реализация хранилища статуса авторизации, работающая через
  * платформенный драйвер и единый набор SQL-запросов.
  */
-internal class AuthSessionStorageImpl(
+class AuthSessionStorageImpl(
     private val driver: AuthSessionDbDriver,
 ) : AuthSessionStorage {
 

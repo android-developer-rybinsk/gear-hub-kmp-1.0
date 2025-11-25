@@ -9,7 +9,12 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
+
+    android {
+        namespace = "com.gear.hub.auth"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
 
     val xcfName = "feature_authKit"
 
@@ -81,13 +86,3 @@ kotlin {
         }
     }
 }
-
-android {
-    namespace = "com.gear.hub.auth"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-}
-

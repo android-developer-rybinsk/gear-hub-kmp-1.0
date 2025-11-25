@@ -6,7 +6,12 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
+
+    android {
+        namespace = "com.gear.hub.network"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
 
     iosX64()
     iosArm64()
@@ -37,15 +42,6 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.ktor.client.darwin)
         }
-    }
-}
-
-android {
-    namespace = "com.gear.hub.network"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 

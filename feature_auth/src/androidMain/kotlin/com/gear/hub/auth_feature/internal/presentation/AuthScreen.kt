@@ -11,14 +11,13 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -33,9 +32,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import gear.hub.core.di.koinViewModel
-import gearhubkmp.feature_auth.generated.resources.Res
-import gearhubkmp.feature_auth.generated.resources.ic_arrow_back
-import org.jetbrains.compose.resources.painterResource
 
 /**
  * Экран двухшаговой авторизации для Android. Кнопка учитывает поднятую клавиатуру через imePadding.
@@ -101,10 +97,10 @@ private fun AuthTopBar(step: AuthStep, onBack: () -> Unit) {
         navigationIcon = {
             if (showBack) {
                 IconButton(onClick = onBack) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_back),
-                        contentDescription = "Назад"
-                    )
+//                    Icon(
+//                        painter = painterResource(R.drawable.ic_arrow_back),
+//                        contentDescription = "Назад"
+//                    )
                 }
             }
         },

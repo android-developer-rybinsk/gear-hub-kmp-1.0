@@ -7,7 +7,7 @@ import com.gear.hub.auth_feature.api.session.AuthUserRecord
  * Хранилище статуса авторизации на уровне платформы.
  * Реализация находится в платформенных модулях и отвечает за персистентность флага авторизации.
  */
-internal interface AuthSessionStorage {
+interface AuthSessionStorage {
     /**
      * Возвращает признак того, что пользователь уже авторизован (флаг записан после успешного входа/регистрации).
      */

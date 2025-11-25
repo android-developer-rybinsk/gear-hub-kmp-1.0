@@ -8,7 +8,11 @@ plugins {
 
 kotlin {
 
-    androidTarget()
+    android {
+        namespace = "gear.hub.core"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
 
     val xcfName = "coreKit"
 
@@ -73,12 +77,4 @@ kotlin {
         }
     }
 
-}
-
-android {
-    namespace = "gear.hub.core"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
 }

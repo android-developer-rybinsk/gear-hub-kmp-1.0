@@ -8,7 +8,12 @@ plugins {
 
 kotlin {
 
-    androidTarget()
+    android {
+        namespace = "gearhub.feature.products"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+
     val xcfName = "feature_productsKit"
 
     iosX64 {
@@ -74,13 +79,4 @@ kotlin {
         }
     }
 
-}
-
-android {
-    namespace = "gearhub.feature.products"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
 }
