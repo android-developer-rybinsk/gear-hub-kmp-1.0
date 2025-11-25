@@ -74,12 +74,12 @@ kotlin {
             }
         }
 
-        getByName("androidInstrumentedTest") {
-            dependencies {
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.junit)
-            }
+        val androidInstrumentedTest by maybeCreating
+
+        androidInstrumentedTest.dependencies {
+            implementation(libs.androidx.runner)
+            implementation(libs.androidx.core)
+            implementation(libs.androidx.junit)
         }
 
         iosMain {
