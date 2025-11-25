@@ -65,12 +65,12 @@ internal object AuthSessionQueries {
     /**
      * Чтение сохранённых токенов.
      */
-    const val SELECT_CREDENTIALS = "SELECT access_token, refresh_token, expires_in FROM auth_credentials WHERE id = 1"
+    const val SELECT_CREDENTIALS = "SELECT id, access_token, refresh_token, expires_in FROM auth_credentials WHERE id = 1"
 
     /**
      * Чтение сохранённых данных пользователя.
      */
-    const val SELECT_USER = "SELECT user_id, email, phone, name FROM auth_user WHERE id = 1"
+    const val SELECT_USER = "SELECT id, user_id, email, phone, name FROM auth_user WHERE id = 1"
 
     /**
      * Обновление флага авторизации.

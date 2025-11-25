@@ -8,13 +8,7 @@ plugins {
 
 kotlin {
 
-    androidLibrary {
-        namespace = "gear.hub.core"
-        compileSdk = 36
-        defaultConfig {
-            minSdk = 24
-        }
-    }
+    androidTarget()
 
     val xcfName = "coreKit"
 
@@ -72,14 +66,6 @@ kotlin {
             }
         }
 
-        val androidInstrumentedTest by maybeCreating
-
-        androidInstrumentedTest.dependencies {
-            implementation(libs.androidx.runner)
-            implementation(libs.androidx.core)
-            implementation(libs.androidx.junit)
-        }
-
         iosMain {
             dependencies {
                 implementation(libs.koin.core)
@@ -87,4 +73,12 @@ kotlin {
         }
     }
 
+}
+
+android {
+    namespace = "gear.hub.core"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
 }

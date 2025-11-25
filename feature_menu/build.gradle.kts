@@ -8,14 +8,7 @@ plugins {
 
 kotlin {
 
-    androidLibrary {
-        namespace = "gearhub.feature.menu"
-        compileSdk = 36
-        defaultConfig {
-            minSdk = 24
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-    }
+    androidTarget()
 
     val xcfName = "feature_menuKit"
 
@@ -75,14 +68,6 @@ kotlin {
             }
         }
 
-        val androidInstrumentedTest by maybeCreating
-
-        androidInstrumentedTest.dependencies {
-            implementation(libs.androidx.runner)
-            implementation(libs.androidx.core)
-            implementation(libs.androidx.junit)
-        }
-
         iosMain {
             dependencies {
                 implementation(libs.koin.core)
@@ -90,4 +75,13 @@ kotlin {
         }
     }
 
+}
+
+android {
+    namespace = "gearhub.feature.menu"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }
