@@ -72,7 +72,7 @@ kotlin {
             }
         }
 
-        getByName("androidDeviceTest") {
+        getByName("androidInstrumentedTest") {
             dependencies {
                 implementation(libs.androidx.runner)
                 implementation(libs.androidx.core)
