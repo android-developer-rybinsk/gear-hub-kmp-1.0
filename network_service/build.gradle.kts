@@ -6,14 +6,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
-        namespace = "com.gear.hub.network"
-        compileSdk = 36
-        defaultConfig {
-            minSdk = 24
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-    }
+    androidTarget()
 
     iosX64()
     iosArm64()
@@ -44,6 +37,15 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.ktor.client.darwin)
         }
+    }
+}
+
+android {
+    namespace = "com.gear.hub.network"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 

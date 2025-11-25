@@ -10,14 +10,7 @@ plugins {
 
 kotlin {
 
-    androidLibrary {
-        namespace = "gearhub.feature.chats"
-        compileSdk = 36
-        defaultConfig {
-            minSdk = 24
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-    }
+    androidTarget()
 
     val xcfName = "feature_menuKit"
 
@@ -92,4 +85,13 @@ kotlin {
         }
     }
 
+}
+
+android {
+    namespace = "gearhub.feature.chats"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }

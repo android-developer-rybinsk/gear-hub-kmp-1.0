@@ -8,14 +8,7 @@ plugins {
 
 kotlin {
 
-    androidLibrary {
-        namespace = "gearhub.feature.profile"
-        compileSdk = 36
-        defaultConfig {
-            minSdk = 24
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-    }
+    androidTarget()
 
     val xcfName = "feature_profileKit"
 
@@ -90,4 +83,13 @@ kotlin {
         }
     }
 
+}
+
+android {
+    namespace = "gearhub.feature.profile"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 }

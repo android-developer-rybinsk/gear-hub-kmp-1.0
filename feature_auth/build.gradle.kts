@@ -13,14 +13,7 @@ dependencies {
 }
 
 kotlin {
-    androidLibrary {
-        namespace = "com.gear.hub.auth"
-        compileSdk = 36
-        defaultConfig {
-            minSdk = 24
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-    }
+    androidTarget()
 
     val xcfName = "feature_authKit"
 
@@ -98,6 +91,15 @@ kotlin {
                 implementation(libs.sqliter)
             }
         }
+    }
+}
+
+android {
+    namespace = "com.gear.hub.auth"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 
