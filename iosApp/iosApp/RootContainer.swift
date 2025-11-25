@@ -38,13 +38,18 @@ struct RootContainer: View {
                         vm: ProfileViewModelWrapper(vm: KoinKt.resolveProfileVM()),
                         router: router
                     )
+                case is DestinationApp.AuthScreen:
+                    AuthScreenSwiftUI(
+                        vm: AuthViewModelWrapper(vm: KoinKt.resolveAuthVM()),
+                        router: router
+                    )
                 case is DestinationApp.SplashScreen:
                     SplashScreenSwiftUI(
                         vm: SplashViewModelWrapper(vm: KoinKt.resolveSplashVM()),
                         router: router
                     )
                 default:
-                        EmptyView()
+                    EmptyView()
                 }
             }
         }
