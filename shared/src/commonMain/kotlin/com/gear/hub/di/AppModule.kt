@@ -1,10 +1,11 @@
 package com.gear.hub.di
 
 import com.gear.hub.auth_feature.api.AuthFeatureApi
-import com.gear.hub.navigation.DestinationApp
 import com.gear.hub.auth_feature.api.AuthNavigationConfig
+import com.gear.hub.navigation.DestinationApp
 import com.gear.hub.network.config.Environment
 import com.gear.hub.network.di.networkModule
+import gearhub.feature.profile.api.ProfileNavigationConfig
 import org.koin.dsl.module
 
 /**
@@ -21,4 +22,5 @@ val appModule = module {
     )
 
     single { AuthNavigationConfig(successDestination = DestinationApp.MainScreen) }
+    single { ProfileNavigationConfig(logoutDestination = DestinationApp.AuthScreen) }
 }

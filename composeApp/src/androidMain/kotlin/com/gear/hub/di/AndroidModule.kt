@@ -11,6 +11,7 @@ import gear.hub.core.navigation.Router
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
 import gearhub.feature.menu.presentation.menu.MenuViewModel
 import gearhub.feature.products.presentation.my.MyAdsViewModel
+import gearhub.feature.profile.api.ProfileNavigationConfig
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -23,5 +24,5 @@ val androidModule = module {
     viewModel { (router: Router) -> MenuViewModel(router) }
     viewModel { (router: Router) -> MyAdsViewModel(router) }
     viewModel { (router: Router) -> ChatsViewModel(router) }
-    viewModel { (router: Router) -> ProfileViewModel(router, get()) }
+    viewModel { (router: Router) -> ProfileViewModel(router, get(), get<ProfileNavigationConfig>()) }
 }
