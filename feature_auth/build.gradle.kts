@@ -86,7 +86,3 @@ kotlin {
         }
     }
 }
-
-dependencies {
-    add("kspAndroid", libs.room.compiler)
-}
