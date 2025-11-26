@@ -7,16 +7,16 @@ import kotlinx.cinterop.ExportObjCClass
 import platform.darwin.NSObject
 
 @ExportObjCClass
-open class DestinationChatsAny(
+class DestinationChatsAny(
     val destination: DestinationChats
 ) : NSObject()
 
 @ExportObjCClass
-open class ChatsStateAny(
+class ChatsStateAny(
     val state: ChatsState
 ) : NSObject()
 
 @ExportObjCClass
-open class ChatsActionAny(
+class ChatsActionAny(
     val action: ChatsAction
 ) : NSObject()
