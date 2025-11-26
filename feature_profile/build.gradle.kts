@@ -38,6 +38,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":core"))
+                implementation(project(":feature_auth"))
 
                 implementation(libs.kotlin.stdlib)
                 // Add KMP dependencies here
