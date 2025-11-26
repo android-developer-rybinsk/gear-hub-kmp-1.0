@@ -33,7 +33,10 @@ fun AppContent() {
             AuthScreen(vm)
         }
         composable(DestinationApp.MainScreen.route) {
-            MainScreenAndroid(getKoin().get { parametersOf(router) })
+            MainScreenAndroid(
+                viewModel = getKoin().get { parametersOf(router) },
+                rootRouter = router,
+            )
         }
     }
 }

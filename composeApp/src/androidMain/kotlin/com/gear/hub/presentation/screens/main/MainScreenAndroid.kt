@@ -26,7 +26,7 @@ import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
-fun MainScreenAndroid(viewModel: MainViewModel ) {
+fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
     val navController = rememberNavController()
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
@@ -65,7 +65,7 @@ fun MainScreenAndroid(viewModel: MainViewModel ) {
             ChatsScreen(vm)
         }
         composable(DestinationProfile.ProfileScreen.route) {
-            val vm: ProfileViewModel = getKoin().get { parametersOf(router) }
+            val vm: ProfileViewModel = getKoin().get { parametersOf(rootRouter) }
             ProfileScreen(vm)
         }
     }
