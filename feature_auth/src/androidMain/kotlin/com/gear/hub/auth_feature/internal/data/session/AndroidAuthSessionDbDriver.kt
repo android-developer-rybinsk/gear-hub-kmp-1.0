@@ -34,7 +34,7 @@ internal class AndroidAuthSessionDbDriver(
             .build()
     }
 
-    private val dao: AuthSessionDao by lazy(LazyThreadSafetyMode.NONE) { database.authSessionDao() }
+    private val dao: AuthSessionDaoV2 by lazy(LazyThreadSafetyMode.NONE) { database.authSessionDao() }
 
     private val initScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val initJob = lazy {
@@ -106,7 +106,7 @@ internal data class AuthUserEntity(
  * DAO, инкапсулирующее запросы из [AuthSessionQueries].
  */
 @Dao
-internal interface AuthSessionDao {
+internal interface AuthSessionDaoV2 {
     @Query(AuthSessionQueries.UPSERT_CREDENTIALS)
     fun setCredentials(
         accessToken: String,
@@ -147,7 +147,7 @@ internal interface AuthSessionDao {
     exportSchema = false,
 )
 internal abstract class AuthSessionDatabase : RoomDatabase() {
-    abstract fun authSessionDao(): AuthSessionDao
+    abstract fun authSessionDao(): AuthSessionDaoV2
 }
 
 /**
