@@ -1,6 +1,5 @@
 package com.gear.hub.auth_feature.internal.data.session
 
-import co.touchlab.sqliter.interop.CPointerVarOf
 import co.touchlab.sqliter.interop.SqliteStatementPointer
 import co.touchlab.sqliter.interop.sqlite3
 import co.touchlab.sqliter.interop.sqlite3_close
@@ -24,11 +23,13 @@ import kotlinx.coroutines.async
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
+import kotlinx.cinterop.CPointerVarOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSFileProtectionComplete
@@ -43,6 +44,7 @@ import platform.Foundation.setAttributes
  * iOS-драйвер для таблицы авторизации. Использует SQLite из Application Support
  * и базовые параметры БД из [DatabaseFactory.config].
  */
+@OptIn(ExperimentalForeignApi::class)
 internal class IosAuthSessionDbDriver(
     factory: DatabaseFactory,
 ) : AuthSessionDbDriver {
