@@ -31,18 +31,6 @@ internal object AuthSessionQueries {
     """
 
     /**
-     * Вставка или обновление токенов.
-     */
-    const val UPSERT_CREDENTIALS =
-        "INSERT OR REPLACE INTO auth_credentials(id, access_token, refresh_token, expires_in) VALUES(1, :accessToken, :refreshToken, :expiresIn)"
-
-    /**
-     * Вставка или обновление данных пользователя.
-     */
-    const val UPSERT_USER =
-        "INSERT OR REPLACE INTO auth_user(id, user_id, email, phone, name) VALUES(1, :userId, :email, :phone, :name)"
-
-    /**
      * Чтение сохранённых токенов.
      */
     const val SELECT_CREDENTIALS = "SELECT id, access_token, refresh_token, expires_in FROM auth_credentials WHERE id = 1"

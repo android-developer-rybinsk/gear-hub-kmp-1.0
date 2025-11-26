@@ -2,26 +2,18 @@ package com.gear.hub.auth_feature.internal.data.session
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Upsert
 
 /**
  * DAO, инкапсулирующее запросы из [AuthSessionQueries].
  */
 @Dao
 internal interface AuthSessionDao {
-    @Query(AuthSessionQueries.UPSERT_CREDENTIALS)
-    fun setCredentials(
-        accessToken: String,
-        refreshToken: String,
-        expiresIn: Long,
-    )
+    @Upsert
+    fun upsertCredentials(entity: AuthCredentialsEntity)
 
-    @Query(AuthSessionQueries.UPSERT_USER)
-    fun setUser(
-        userId: String,
-        email: String?,
-        phone: String?,
-        name: String,
-    )
+    @Upsert
+    fun upsertUser(entity: AuthUserEntity)
 
     @Query(AuthSessionQueries.SELECT_CREDENTIALS)
     fun getCredentials(): AuthCredentialsEntity?

@@ -54,6 +54,10 @@ internal class IosAuthSessionDbDriver(
         const val SQLITE_OK_CODE: Int = 0
         const val SQLITE_ROW_CODE: Int = 100
         const val SQLITE_DONE_CODE: Int = 101
+        const val UPSERT_CREDENTIALS_SQL =
+            "INSERT OR REPLACE INTO auth_credentials(id, access_token, refresh_token, expires_in) VALUES(1, :accessToken, :refreshToken, :expiresIn)"
+        const val UPSERT_USER_SQL =
+            "INSERT OR REPLACE INTO auth_user(id, user_id, email, phone, name) VALUES(1, :userId, :email, :phone, :name)"
     }
 
     /**
@@ -90,7 +94,7 @@ internal class IosAuthSessionDbDriver(
 
     override fun setCredentials(credentials: AuthCredentialsRecord) {
         withDatabase { db ->
-            val sql = AuthSessionQueries.UPSERT_CREDENTIALS
+            val sql = UPSERT_CREDENTIALS_SQL
                 .replace(":accessToken", "'${credentials.accessToken}'")
                 .replace(":refreshToken", "'${credentials.refreshToken}'")
                 .replace(":expiresIn", credentials.expiresIn.toString())
@@ -129,7 +133,7 @@ internal class IosAuthSessionDbDriver(
 
     override fun setUser(user: AuthUserRecord) {
         withDatabase { db ->
-            val sql = AuthSessionQueries.UPSERT_USER
+            val sql = UPSERT_USER_SQL
                 .replace(":userId", "'${user.userId}'")
                 .replace(":email", user.email?.let { "'$it'" } ?: "NULL")
                 .replace(":phone", user.phone?.let { "'$it'" } ?: "NULL")

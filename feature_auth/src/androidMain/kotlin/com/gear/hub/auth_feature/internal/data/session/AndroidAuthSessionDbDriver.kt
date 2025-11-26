@@ -34,10 +34,12 @@ internal class AndroidAuthSessionDbDriver(
     }
 
     override fun setCredentials(credentials: AuthCredentialsRecord) {
-        dao.setCredentials(
-            accessToken = credentials.accessToken,
-            refreshToken = credentials.refreshToken,
-            expiresIn = credentials.expiresIn,
+        dao.upsertCredentials(
+            AuthCredentialsEntity(
+                accessToken = credentials.accessToken,
+                refreshToken = credentials.refreshToken,
+                expiresIn = credentials.expiresIn,
+            ),
         )
     }
 
@@ -54,11 +56,13 @@ internal class AndroidAuthSessionDbDriver(
     }
 
     override fun setUser(user: AuthUserRecord) {
-        dao.setUser(
-            userId = user.userId,
-            email = user.email,
-            phone = user.phone,
-            name = user.name,
+        dao.upsertUser(
+            AuthUserEntity(
+                userId = user.userId,
+                email = user.email,
+                phone = user.phone,
+                name = user.name,
+            ),
         )
     }
 
