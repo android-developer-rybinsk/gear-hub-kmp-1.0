@@ -6,7 +6,6 @@ import com.gear.hub.auth_feature.api.session.AuthSessionDbDriver
 import com.gear.hub.data.config.DatabaseFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import platform.Foundation.NSNumber
 import platform.Foundation.NSUserDefaults
 
 /**
@@ -28,15 +27,17 @@ internal class IosAuthSessionDbDriver(
     override fun setCredentials(credentials: AuthCredentialsRecord) {
         defaults.setObject(credentials.accessToken, ACCESS_TOKEN_KEY)
         defaults.setObject(credentials.refreshToken, REFRESH_TOKEN_KEY)
-        defaults.setObject(NSNumber.numberWithLongLong(credentials.expiresIn), EXPIRES_IN_KEY)
+        defaults.setInteger(credentials.expiresIn, EXPIRES_IN_KEY)
     }
 
     override fun getCredentials(): AuthCredentialsRecord? {
         val accessToken = defaults.stringForKey(ACCESS_TOKEN_KEY)
         val refreshToken = defaults.stringForKey(REFRESH_TOKEN_KEY)
-        val expiresIn = defaults.objectForKey(EXPIRES_IN_KEY) as? NSNumber
+        val expiresInValue = defaults.objectForKey(EXPIRES_IN_KEY)
+        val expiresIn = if (expiresInValue != null) defaults.integerForKey(EXPIRES_IN_KEY) else null
+
         return if (accessToken != null && refreshToken != null && expiresIn != null) {
-            AuthCredentialsRecord(accessToken, refreshToken, expiresIn.longLongValue)
+            AuthCredentialsRecord(accessToken, refreshToken, expiresIn)
         } else {
             null
         }
