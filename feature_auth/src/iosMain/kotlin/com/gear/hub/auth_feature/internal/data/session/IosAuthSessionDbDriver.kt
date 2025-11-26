@@ -28,7 +28,7 @@ internal class IosAuthSessionDbDriver(
     override fun setCredentials(credentials: AuthCredentialsRecord) {
         defaults.setObject(credentials.accessToken, ACCESS_TOKEN_KEY)
         defaults.setObject(credentials.refreshToken, REFRESH_TOKEN_KEY)
-        defaults.setObject(NSNumber(credentials.expiresIn), EXPIRES_IN_KEY)
+        defaults.setObject(NSNumber.numberWithLongLong(credentials.expiresIn), EXPIRES_IN_KEY)
     }
 
     override fun getCredentials(): AuthCredentialsRecord? {
