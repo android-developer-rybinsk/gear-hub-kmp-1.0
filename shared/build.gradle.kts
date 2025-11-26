@@ -30,6 +30,15 @@ kotlin {
             baseName = "Shared"
             isStatic = true
 
+            export(project(":core"))
+            export(project(":feature_auth"))
+            export(project(":feature_chats"))
+            export(project(":feature_menu"))
+            export(project(":feature_profile"))
+            export(project(":feature_products"))
+            export(project(":network_service"))
+            export(project(":data_service"))
+
             // ✅ новый способ задать минимальную iOS
             binaryOptions["iosDeploymentTarget"] = "17.0"
 
