@@ -21,7 +21,6 @@ internal class AndroidAuthSessionDbDriver(
      */
     private val database: AuthSessionDatabase by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         factory.roomDatabaseBuilder(AuthSessionDatabase::class.java)
-            .addMigrations(*AuthSessionMigrations.ALL)
             .build()
     }
 
@@ -29,7 +28,7 @@ internal class AndroidAuthSessionDbDriver(
 
     override suspend fun ensureInitialized() {
         withContext(Dispatchers.IO) {
-            // Прогреваем базу и DAO, чтобы Room собрал синглтон и выполнил ленивые миграции.
+            // Прогреваем базу и DAO, чтобы Room собрал синглтон и создал таблицы.
             dao
         }
     }
@@ -67,4 +66,3 @@ internal class AndroidAuthSessionDbDriver(
         dao.deleteUser()
     }
 }
-

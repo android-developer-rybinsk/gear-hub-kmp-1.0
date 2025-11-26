@@ -2,8 +2,6 @@ package com.gear.hub.auth_feature.internal.data.session
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Таблица для хранения токенов в зашифрованной БД.
@@ -33,29 +31,9 @@ internal data class AuthUserEntity(
  */
 @Database(
     entities = [AuthCredentialsEntity::class, AuthUserEntity::class],
-    version = 3,
+    version = 1,
     exportSchema = false,
 )
 internal abstract class AuthSessionDatabase : RoomDatabase() {
     abstract fun authSessionDao(): AuthSessionDao
-}
-
-/**
- * Миграции схемы Room для таблиц авторизации.
- */
-internal object AuthSessionMigrations {
-    private val MIGRATION_1_2 = object : Migration(1, 2) {
-        override fun migrate(db: SupportSQLiteDatabase) {
-            db.execSQL(AuthSessionQueries.CREATE_TABLE_CREDENTIALS)
-            db.execSQL(AuthSessionQueries.CREATE_TABLE_USER)
-        }
-    }
-
-    private val MIGRATION_2_3 = object : Migration(2, 3) {
-        override fun migrate(db: SupportSQLiteDatabase) {
-            db.execSQL("DROP TABLE IF EXISTS auth_session")
-        }
-    }
-
-    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3)
 }
