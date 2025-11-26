@@ -17,14 +17,12 @@ class AuthSessionStorageImpl(
 
     override suspend fun isAuthorized(): Boolean = withContext(Dispatchers.IO) {
         driver.ensureInitialized()
-        driver.getAuthorized()
+        driver.getCredentials() != null
     }
 
-    override suspend fun setAuthorized(value: Boolean) {
-        withContext(Dispatchers.IO) {
-            driver.ensureInitialized()
-            driver.setAuthorized(value)
-        }
+    override suspend fun getCredentials(): AuthCredentialsRecord? = withContext(Dispatchers.IO) {
+        driver.ensureInitialized()
+        driver.getCredentials()
     }
 
     override suspend fun setCredentials(credentials: AuthCredentialsRecord) {
@@ -38,6 +36,14 @@ class AuthSessionStorageImpl(
         withContext(Dispatchers.IO) {
             driver.ensureInitialized()
             driver.setUser(user)
+        }
+    }
+
+    override suspend fun clear() {
+        withContext(Dispatchers.IO) {
+            driver.ensureInitialized()
+            driver.deleteCredentials()
+            driver.deleteUser()
         }
     }
 }

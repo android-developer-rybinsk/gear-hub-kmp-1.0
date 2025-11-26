@@ -23,5 +23,5 @@ val androidModule = module {
     viewModel { (router: Router) -> MenuViewModel(router) }
     viewModel { (router: Router) -> MyAdsViewModel(router) }
     viewModel { (router: Router) -> ChatsViewModel(router) }
-    viewModel { (router: Router) -> ProfileViewModel(router) }
+    viewModel { (router: Router) -> ProfileViewModel(router, get()) }
 }

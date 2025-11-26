@@ -5,6 +5,7 @@ import co.touchlab.sqliter.interop.SqliteStatementPointer
 import co.touchlab.sqliter.interop.sqlite3
 import co.touchlab.sqliter.interop.sqlite3_close
 import co.touchlab.sqliter.interop.sqlite3_column_int
+import co.touchlab.sqliter.interop.sqlite3_column_text
 import co.touchlab.sqliter.interop.sqlite3_exec
 import co.touchlab.sqliter.interop.sqlite3_finalize
 import co.touchlab.sqliter.interop.sqlite3_open
@@ -77,38 +78,14 @@ internal class IosAuthSessionDbDriver(
     private val initJob = lazy {
         initScope.async(start = CoroutineStart.LAZY) {
             withDatabase { db ->
-                exec(db, AuthSessionQueries.CREATE_TABLE)
                 exec(db, AuthSessionQueries.CREATE_TABLE_CREDENTIALS)
                 exec(db, AuthSessionQueries.CREATE_TABLE_USER)
-                exec(db, AuthSessionQueries.INSERT_DEFAULT)
             }
         }
     }
 
     override suspend fun ensureInitialized() {
         initJob.value.await()
-    }
-
-    override fun getAuthorized(): Boolean =
-        withDatabase { db ->
-            val stmt = prepare(db, AuthSessionQueries.SELECT_AUTHORIZED)
-            try {
-                val step = sqlite3_step_safe(stmt)
-                if (step == SQLITE_ROW_CODE) {
-                    sqlite3_column_int(stmt, 0) == 1
-                } else {
-                    false
-                }
-            } finally {
-                sqlite3_finalize(stmt)
-                sqlite3_reset(stmt)
-            }
-        }
-
-    override fun setAuthorized(value: Boolean) {
-        withDatabase { db ->
-            exec(db, AuthSessionQueries.UPDATE_AUTHORIZED.replace(":value", if (value) "1" else "0"))
-        }
     }
 
     override fun setCredentials(credentials: AuthCredentialsRecord) {
@@ -121,6 +98,35 @@ internal class IosAuthSessionDbDriver(
         }
     }
 
+    override fun getCredentials(): AuthCredentialsRecord? =
+        withDatabase { db ->
+            val stmt = prepare(db, AuthSessionQueries.SELECT_CREDENTIALS)
+            try {
+                val step = sqlite3_step_safe(stmt)
+                if (step == SQLITE_ROW_CODE) {
+                    val accessToken = sqlite3_column_text(stmt, 1)?.toKString()
+                    val refreshToken = sqlite3_column_text(stmt, 2)?.toKString()
+                    val expiresIn = sqlite3_column_int(stmt, 3).toLong()
+                    if (accessToken != null && refreshToken != null) {
+                        AuthCredentialsRecord(accessToken, refreshToken, expiresIn)
+                    } else {
+                        null
+                    }
+                } else {
+                    null
+                }
+            } finally {
+                sqlite3_finalize(stmt)
+                sqlite3_reset(stmt)
+            }
+        }
+
+    override fun deleteCredentials() {
+        withDatabase { db ->
+            exec(db, AuthSessionQueries.DELETE_CREDENTIALS)
+        }
+    }
+
     override fun setUser(user: AuthUserRecord) {
         withDatabase { db ->
             val sql = AuthSessionQueries.UPSERT_USER
@@ -129,6 +135,12 @@ internal class IosAuthSessionDbDriver(
                 .replace(":phone", user.phone?.let { "'$it'" } ?: "NULL")
                 .replace(":name", "'${user.name}'")
             exec(db, sql)
+        }
+    }
+
+    override fun deleteUser() {
+        withDatabase { db ->
+            exec(db, AuthSessionQueries.DELETE_USER)
         }
     }
 

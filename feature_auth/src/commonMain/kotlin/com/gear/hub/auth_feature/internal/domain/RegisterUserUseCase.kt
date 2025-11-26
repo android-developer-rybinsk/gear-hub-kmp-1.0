@@ -35,7 +35,6 @@ class RegisterUserUseCase(
                     tokens = response.data.tokens,
                     user = response.data.user,
                 )
-                sessionRepository.setAuthorized(true)
             }
         }
     }

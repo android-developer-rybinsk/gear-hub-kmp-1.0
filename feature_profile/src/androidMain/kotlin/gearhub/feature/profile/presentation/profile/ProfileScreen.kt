@@ -25,8 +25,8 @@ fun ProfileScreen(
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Button(onClick = { viewModel.onAction(ProfileAction.Back) }) {
-            Text(state.title)
+        Button(onClick = { viewModel.onAction(ProfileAction.Logout) }) {
+            Text("Выход")
         }
     }
 }

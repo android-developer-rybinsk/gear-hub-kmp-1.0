@@ -9,6 +9,7 @@ import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
 import com.gear.hub.auth_feature.internal.domain.AuthRepository
 import com.gear.hub.auth_feature.internal.domain.AuthSessionRepository
 import com.gear.hub.auth_feature.internal.domain.CheckAuthorizationUseCase
+import com.gear.hub.auth_feature.internal.domain.LogoutUseCase
 import com.gear.hub.auth_feature.internal.domain.RegisterUserUseCase
 import com.gear.hub.data.config.DatabaseFactory
 import com.gear.hub.auth_service.di.authServiceModule
@@ -30,6 +31,7 @@ val authFeatureModule: Module = module {
     single<AuthSessionRepository> { AuthSessionRepositoryImpl(get()) }
     factory { RegisterUserUseCase(get(), get()) }
     factory { CheckAuthorizationUseCase(get()) }
+    factory { LogoutUseCase(get()) }
 
     scope<AuthFeatureScope> {
         scoped { Dispatchers.IO }

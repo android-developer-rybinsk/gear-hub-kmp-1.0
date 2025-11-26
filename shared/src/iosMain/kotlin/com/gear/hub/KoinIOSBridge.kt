@@ -47,7 +47,7 @@ class KoinIOSBridge {
             factory { MenuViewModel(get()) }
             factory { MyAdsViewModel(get()) }
             factory { ChatsViewModel(get()) }
-            factory { ProfileViewModel(get()) }
+            factory { ProfileViewModel(get(), get()) }
         }
     )
 }

@@ -16,8 +16,8 @@ internal class AuthSessionRepositoryImpl(
 
     override suspend fun isAuthorized(): Boolean = storage.isAuthorized()
 
-    override suspend fun setAuthorized(value: Boolean) {
-        storage.setAuthorized(value)
+    override suspend fun clearSession() {
+        storage.clear()
     }
 
     override suspend fun persistSession(tokens: RegistrationTokens, user: RegisteredUser) {

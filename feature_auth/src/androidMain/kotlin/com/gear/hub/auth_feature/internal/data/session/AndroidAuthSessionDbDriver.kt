@@ -38,17 +38,11 @@ internal class AndroidAuthSessionDbDriver(
 
     private val initScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val initJob = lazy {
-        initScope.async(start = CoroutineStart.LAZY) { dao.insertDefault() }
+        initScope.async(start = CoroutineStart.LAZY) { /* Room создаст таблицы лениво */ }
     }
 
     override suspend fun ensureInitialized() {
         initJob.value.await()
-    }
-
-    override fun getAuthorized(): Boolean = dao.getAuthorizedFlag() == 1
-
-    override fun setAuthorized(value: Boolean) {
-        dao.setAuthorizedFlag(if (value) 1 else 0)
     }
 
     override fun setCredentials(credentials: AuthCredentialsRecord) {
@@ -59,6 +53,18 @@ internal class AndroidAuthSessionDbDriver(
         )
     }
 
+    override fun getCredentials(): AuthCredentialsRecord? = dao.getCredentials()?.let {
+        AuthCredentialsRecord(
+            accessToken = it.accessToken,
+            refreshToken = it.refreshToken,
+            expiresIn = it.expiresIn,
+        )
+    }
+
+    override fun deleteCredentials() {
+        dao.deleteCredentials()
+    }
+
     override fun setUser(user: AuthUserRecord) {
         dao.setUser(
             userId = user.userId,
@@ -67,16 +73,11 @@ internal class AndroidAuthSessionDbDriver(
             name = user.name,
         )
     }
-}
 
-/**
- * Room-сущность для таблицы авторизации.
- */
-@androidx.room.Entity(tableName = "auth_session")
-internal data class AuthSessionEntity(
-    @androidx.room.PrimaryKey val id: Int = 1,
-    @androidx.room.ColumnInfo(name = "authorized") val authorized: Int = 0,
-)
+    override fun deleteUser() {
+        dao.deleteUser()
+    }
+}
 
 /**
  * Таблица для хранения токенов в зашифрованной БД.
@@ -106,15 +107,6 @@ internal data class AuthUserEntity(
  */
 @Dao
 internal interface AuthSessionDao {
-    @Query(AuthSessionQueries.SELECT_AUTHORIZED)
-    fun getAuthorizedFlag(): Int?
-
-    @Query(AuthSessionQueries.INSERT_DEFAULT)
-    fun insertDefault()
-
-    @Query(AuthSessionQueries.UPDATE_AUTHORIZED)
-    fun setAuthorizedFlag(value: Int)
-
     @Query(AuthSessionQueries.UPSERT_CREDENTIALS)
     fun setCredentials(
         accessToken: String,
@@ -135,17 +127,23 @@ internal interface AuthSessionDao {
 
     @Query(AuthSessionQueries.SELECT_USER)
     fun getUser(): AuthUserEntity?
+
+    @Query(AuthSessionQueries.DELETE_CREDENTIALS)
+    fun deleteCredentials()
+
+    @Query(AuthSessionQueries.DELETE_USER)
+    fun deleteUser()
 }
 
 /**
  * RoomDatabase, собирающая DAO и схему.
  */
 /**
- * Шифрованная база сессии авторизации (флаг, токены, пользователь).
+ * Шифрованная база сессии авторизации (токены, пользователь).
  */
 @Database(
-    entities = [AuthSessionEntity::class, AuthCredentialsEntity::class, AuthUserEntity::class],
-    version = 2,
+    entities = [AuthCredentialsEntity::class, AuthUserEntity::class],
+    version = 3,
     exportSchema = false,
 )
 internal abstract class AuthSessionDatabase : RoomDatabase() {
@@ -163,6 +161,12 @@ internal object AuthSessionMigrations {
         }
     }
 
-    val ALL = arrayOf(MIGRATION_1_2)
+    private val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("DROP TABLE IF EXISTS auth_session")
+        }
+    }
+
+    val ALL = arrayOf(MIGRATION_1_2, MIGRATION_2_3)
 }
 

@@ -9,14 +9,14 @@ import com.gear.hub.auth_feature.api.session.AuthUserRecord
  */
 interface AuthSessionStorage {
     /**
-     * Возвращает признак того, что пользователь уже авторизован (флаг записан после успешного входа/регистрации).
+     * Проверяет сохранённые токены, чтобы определить авторизацию пользователя.
      */
     suspend fun isAuthorized(): Boolean
 
     /**
-     * Сохраняет флаг авторизации, чтобы при следующем запуске можно было пропустить экран входа.
+     * Возвращает сохранённые токены, если они есть.
      */
-    suspend fun setAuthorized(value: Boolean)
+    suspend fun getCredentials(): AuthCredentialsRecord?
 
     /**
      * Сохраняет токены авторизации в зашифрованной БД.
@@ -27,4 +27,9 @@ interface AuthSessionStorage {
      * Сохраняет данные пользователя из ответа регистрации.
      */
     suspend fun setUser(user: AuthUserRecord)
+
+    /**
+     * Полностью очищает таблицы сессии и пользователя.
+     */
+    suspend fun clear()
 }

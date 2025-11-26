@@ -9,14 +9,14 @@ import com.gear.hub.auth_feature.internal.domain.model.RegistrationTokens
  */
 interface AuthSessionRepository {
     /**
-     * Проверяет сохранённый признак авторизации пользователя.
+     * Проверяет сохранённые токены пользователя.
      */
     suspend fun isAuthorized(): Boolean
 
     /**
-     * Сохраняет статус авторизации после успешной регистрации или логина.
+     * Удаляет токены и данные пользователя при выходе из системы.
      */
-    suspend fun setAuthorized(value: Boolean)
+    suspend fun clearSession()
 
     /**
      * Сохраняет токены и данные пользователя в зашифрованной БД.

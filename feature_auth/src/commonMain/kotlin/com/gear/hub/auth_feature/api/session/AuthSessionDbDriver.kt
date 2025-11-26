@@ -14,24 +14,29 @@ interface AuthSessionDbDriver {
     suspend fun ensureInitialized()
 
     /**
-     * Получает признак авторизации из таблицы.
-     */
-    fun getAuthorized(): Boolean
-
-    /**
-     * Устанавливает признак авторизации.
-     */
-    fun setAuthorized(value: Boolean)
-
-    /**
      * Сохраняет пару access/refresh токенов и срок их жизни.
      */
     fun setCredentials(credentials: AuthCredentialsRecord)
 
     /**
+     * Возвращает сохранённые токены, если они есть.
+     */
+    fun getCredentials(): AuthCredentialsRecord?
+
+    /**
+     * Удаляет сохранённые токены.
+     */
+    fun deleteCredentials()
+
+    /**
      * Сохраняет данные пользователя из успешного ответа регистрации.
      */
     fun setUser(user: AuthUserRecord)
+
+    /**
+     * Удаляет сохранённые данные пользователя.
+     */
+    fun deleteUser()
 }
 
 /**

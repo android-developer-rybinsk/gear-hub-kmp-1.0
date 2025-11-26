@@ -1,20 +1,10 @@
 package com.gear.hub.auth_feature.internal.data.session
 
 /**
- * SQL-запросы для таблицы статуса авторизации. Хранятся отдельно, чтобы
+ * SQL-запросы для таблиц сессии авторизации. Хранятся отдельно, чтобы
  * использовать один и тот же текст на Android и iOS.
  */
 internal object AuthSessionQueries {
-    /**
-     * Создание таблицы и единственной строки состояния авторизации.
-     */
-    const val CREATE_TABLE = """
-        CREATE TABLE IF NOT EXISTS auth_session (
-            id INTEGER PRIMARY KEY CHECK (id = 1),
-            authorized INTEGER NOT NULL DEFAULT 0
-        );
-    """
-
     /**
      * Создание таблицы для токенов авторизации.
      */
@@ -41,11 +31,6 @@ internal object AuthSessionQueries {
     """
 
     /**
-     * Вставка дефолтной строки, если её ещё нет.
-     */
-    const val INSERT_DEFAULT = "INSERT OR IGNORE INTO auth_session(id, authorized) VALUES(1, 0)"
-
-    /**
      * Вставка или обновление токенов.
      */
     const val UPSERT_CREDENTIALS =
@@ -58,11 +43,6 @@ internal object AuthSessionQueries {
         "INSERT OR REPLACE INTO auth_user(id, user_id, email, phone, name) VALUES(1, :userId, :email, :phone, :name)"
 
     /**
-     * Чтение флага авторизации.
-     */
-    const val SELECT_AUTHORIZED = "SELECT authorized FROM auth_session WHERE id = 1"
-
-    /**
      * Чтение сохранённых токенов.
      */
     const val SELECT_CREDENTIALS = "SELECT id, access_token, refresh_token, expires_in FROM auth_credentials WHERE id = 1"
@@ -73,7 +53,12 @@ internal object AuthSessionQueries {
     const val SELECT_USER = "SELECT id, user_id, email, phone, name FROM auth_user WHERE id = 1"
 
     /**
-     * Обновление флага авторизации.
+     * Удаление всех сохранённых токенов.
      */
-    const val UPDATE_AUTHORIZED = "UPDATE auth_session SET authorized = :value WHERE id = 1"
+    const val DELETE_CREDENTIALS = "DELETE FROM auth_credentials"
+
+    /**
+     * Удаление сохранённых данных пользователя.
+     */
+    const val DELETE_USER = "DELETE FROM auth_user"
 }
