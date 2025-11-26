@@ -1,8 +1,6 @@
 package com.gear.hub.auth_feature.internal.data.session
 
 import androidx.room.Database
-import androidx.room.Dao
-import androidx.room.Query
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -101,39 +99,6 @@ internal data class AuthUserEntity(
     @androidx.room.ColumnInfo(name = "phone") val phone: String?,
     @androidx.room.ColumnInfo(name = "name") val name: String,
 )
-
-/**
- * DAO, инкапсулирующее запросы из [AuthSessionQueries].
- */
-@Dao
-internal interface AuthSessionDao {
-    @Query(AuthSessionQueries.UPSERT_CREDENTIALS)
-    fun setCredentials(
-        accessToken: String,
-        refreshToken: String,
-        expiresIn: Long,
-    )
-
-    @Query(AuthSessionQueries.UPSERT_USER)
-    fun setUser(
-        userId: String,
-        email: String?,
-        phone: String?,
-        name: String,
-    )
-
-    @Query(AuthSessionQueries.SELECT_CREDENTIALS)
-    fun getCredentials(): AuthCredentialsEntity?
-
-    @Query(AuthSessionQueries.SELECT_USER)
-    fun getUser(): AuthUserEntity?
-
-    @Query(AuthSessionQueries.DELETE_CREDENTIALS)
-    fun deleteCredentials()
-
-    @Query(AuthSessionQueries.DELETE_USER)
-    fun deleteUser()
-}
 
 /**
  * RoomDatabase, собирающая DAO и схему.
