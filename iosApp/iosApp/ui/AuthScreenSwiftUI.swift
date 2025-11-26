@@ -3,49 +3,48 @@ import Shared
 
 struct AuthScreenSwiftUI: View {
     @ObservedObject var vm: AuthViewModelWrapper
+    let router: RouterIOS
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    switch vm.state.step {
-                    case let step as AuthStep.Step1:
-                        StepOneView(step: step, state: vm.state, onAction: vm.onAction)
-                    case let step as AuthStep.Step2:
-                        StepTwoView(step: step, state: vm.state, onAction: vm.onAction)
-                    default:
-                        EmptyView()
-                    }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                switch vm.state.step {
+                case let step as AuthStep.Step1:
+                    StepOneView(step: step, state: vm.state, onAction: vm.onAction)
+                case let step as AuthStep.Step2:
+                    StepTwoView(step: step, state: vm.state, onAction: vm.onAction)
+                default:
+                    EmptyView()
+                }
 
-                    if let error = vm.state.errorMessage, !error.isEmpty {
-                        Text(error)
-                            .foregroundColor(.red)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                if let error = vm.state.errorMessage, !error.isEmpty {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
 
-                    if vm.state.isLoading {
-                        HStack {
-                            Spacer()
-                            ProgressView()
-                            Spacer()
-                        }
+                if vm.state.isLoading {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
                     }
                 }
-                .padding(.vertical, 24)
             }
-            .scrollDismissesKeyboard(.interactively)
-            .padding(.horizontal, 16)
-            .background(Color.white)
-            .navigationTitle("Авторизация")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    if vm.state.step is AuthStep.Step2 {
-                        Button(action: { vm.onAction(action: AuthAction.BackToStepOne()) }) {
-                            HStack(spacing: 6) {
-                                Image(systemName: "chevron.left")
-                                Text("Назад")
-                            }
+            .padding(.vertical, 24)
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .padding(.horizontal, 16)
+        .background(Color.white)
+        .navigationTitle("Авторизация")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                if vm.state.step is AuthStep.Step2 {
+                    Button(action: { vm.onAction(action: AuthAction.BackToStepOne()) }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "chevron.left")
+                            Text("Назад")
                         }
                     }
                 }
