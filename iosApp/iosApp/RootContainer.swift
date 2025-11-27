@@ -11,7 +11,7 @@ struct RootContainer: View {
                 vm: SplashViewModelWrapper(vm: KoinKt.resolveSplashVM()),
                 router: router
             )
-            .navigationDestination(for: DestinationAny.self) { dest in
+            .navigationDestination(for: Destination.self) { dest in
                 switch dest {
                 case is DestinationApp.MainScreen:
                     MainScreenSwiftUI(

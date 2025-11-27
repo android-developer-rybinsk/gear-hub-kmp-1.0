@@ -30,11 +30,24 @@ kotlin {
             baseName = "Shared"
             isStatic = true
 
+            // ✅ экспорт всех фич-модулей
+            export(project(":core"))
+            export(project(":feature_chats"))
+            export(project(":feature_menu"))
+            export(project(":feature_profile"))
+            export(project(":feature_products"))
+            export(project(":feature_auth"))
+            export(project(":network_service"))
+            export(project(":data_service"))
+
             // ✅ новый способ задать минимальную iOS
             binaryOptions["iosDeploymentTarget"] = "17.0"
 
             // ✅ добавляем в XCFramework
             xcf.add(this)
+
+            // ✅ Экспорт DI, Compose и др. необходимых зависимостей
+            export(libs.koin.core)
         }
     }
 

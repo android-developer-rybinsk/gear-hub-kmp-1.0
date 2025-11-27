@@ -7,16 +7,16 @@ import kotlinx.cinterop.ExportObjCClass
 import platform.darwin.NSObject
 
 @ExportObjCClass
-open class DestinationProfileAny(
+class DestinationProfileAny(
     val destination: DestinationProfile
 ) : NSObject()
 
 @ExportObjCClass
-open class ProfileStateAny(
+class ProfileStateAny(
     val state: ProfileState
 ) : NSObject()
 
 @ExportObjCClass
-open class ProfileActionAny(
+class ProfileActionAny(
     val action: ProfileAction
 ) : NSObject()

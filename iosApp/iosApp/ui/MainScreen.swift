@@ -5,13 +5,13 @@ struct MainScreenSwiftUI: View {
     @ObservedObject var vm: MainViewModelWrapper
     let router: RouterIOS
 
-    @State private var selectedTab: DestinationAny = DestinationApp.MenuScreen()
+    @State private var selectedTab: Destination = DestinationMenu.MenuScreen()
 
     var body: some View {
         VStack(spacing: 0) {
             Group {
                 switch selectedTab {
-                case is DestinationApp.MenuScreen:
+                case is DestinationMenu.MenuScreen:
                     let menuVM = KoinKt.resolveMenuVM()
                     MenuScreenSwiftUI(vm: MenuViewModelWrapper(vm: menuVM), router: router)
 
@@ -38,26 +38,26 @@ struct MainScreenSwiftUI: View {
                 TabButton(
                     icon: "icon_test",
                     label: "Главная",
-                    isSelected: selectedTab is Destination.MenuScreen
-                ) { selectedTab = Destination.MenuScreen() }
+                    isSelected: selectedTab is DestinationMenu.MenuScreen
+                ) { selectedTab = DestinationMenu.MenuScreen() }
 
                 TabButton(
                     icon: "icon_test",
                     label: "Объявления",
-                    isSelected: selectedTab is Destination.MyAdsScreen
-                ) { selectedTab = Destination.MyAdsScreen() }
+                    isSelected: selectedTab is DestinationProducts.MyAdsScreen
+                ) { selectedTab = DestinationProducts.MyAdsScreen() }
 
                 TabButton(
                     icon: "icon_test",
                     label: "Сообщения",
-                    isSelected: selectedTab is Destination.ChatsScreen
-                ) { selectedTab = Destination.ChatsScreen() }
+                    isSelected: selectedTab is DestinationChats.ChatsScreen
+                ) { selectedTab = DestinationChats.ChatsScreen() }
 
                 TabButton(
                     icon: "icon_test",
                     label: "Профиль",
-                    isSelected: selectedTab is Destination.ProfileScreen
-                ) { selectedTab = Destination.ProfileScreen() }
+                    isSelected: selectedTab is DestinationProfile.ProfileScreen
+                ) { selectedTab = DestinationProfile.ProfileScreen() }
             }
             .padding(.vertical, 8)
             .safeAreaInset(edge: .bottom) {

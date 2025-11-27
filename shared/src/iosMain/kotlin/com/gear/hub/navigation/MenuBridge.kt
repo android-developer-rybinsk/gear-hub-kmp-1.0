@@ -7,16 +7,16 @@ import kotlinx.cinterop.ExportObjCClass
 import platform.darwin.NSObject
 
 @ExportObjCClass
-open class DestinationMenuAny(
+class DestinationMenuAny(
     val destination: DestinationMenu
 ) : NSObject()
 
 @ExportObjCClass
-open class MenuStateAny(
+class MenuStateAny(
     val state: MenuState
 ) : NSObject()
 
 @ExportObjCClass
-open class MenuActionAny(
+class MenuActionAny(
     val action: MenuAction
 ) : NSObject()
