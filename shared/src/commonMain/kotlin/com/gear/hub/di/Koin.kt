@@ -1,5 +1,6 @@
 package com.gear.hub.di
 
+import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
 import com.gear.hub.presentation.screens.main.MainViewModel
 import com.gear.hub.presentation.screens.splash.SplashViewModel
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
@@ -33,3 +34,4 @@ fun resolveMenuVM(): MenuViewModel = getKoin().get()
 fun resolveMyAdsVM(): MyAdsViewModel = getKoin().get()
 fun resolveChatsVM(): ChatsViewModel = getKoin().get()
 fun resolveProfileVM(): ProfileViewModel = getKoin().get()
+fun resolveAuthVM(): AuthViewModel = getKoin().get()
