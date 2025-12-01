@@ -53,14 +53,14 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":core"))
-            implementation(project(":feature_chats"))
-            implementation(project(":feature_menu"))
-            implementation(project(":feature_profile"))
-            implementation(project(":feature_products"))
-            implementation(project(":feature_auth"))
-            implementation(project(":network_service"))
-            implementation(project(":data_service"))
+            api(project(":core"))
+            api(project(":feature_chats"))
+            api(project(":feature_menu"))
+            api(project(":feature_profile"))
+            api(project(":feature_products"))
+            api(project(":feature_auth"))
+            api(project(":network_service"))
+            api(project(":data_service"))
 
             // Compose MPP
             implementation(compose.runtime)
@@ -71,7 +71,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
 
             // DI
-            implementation(libs.koin.core)
+            api(libs.koin.core)
             implementation(libs.koin.compose)
 
             implementation(compose.components.resources)
@@ -87,7 +87,7 @@ kotlin {
         }
 
         iosMain.dependencies {
-            implementation(libs.koin.core)
+            api(libs.koin.core)
         }
 
         commonTest.dependencies {
