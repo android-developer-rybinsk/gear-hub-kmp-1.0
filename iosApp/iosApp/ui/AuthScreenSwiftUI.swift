@@ -36,8 +36,10 @@ struct AuthScreenSwiftUI: View {
         .scrollDismissesKeyboard(.interactively)
         .padding(.horizontal, 16)
         .background(Color.white)
+        .foregroundColor(.black)
         .navigationTitle("Авторизация")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 if vm.state.step is AuthStep.Step2 {
@@ -45,6 +47,7 @@ struct AuthScreenSwiftUI: View {
                         HStack(spacing: 6) {
                             Image(systemName: "chevron.left")
                             Text("Назад")
+                                .foregroundColor(.black)
                         }
                     }
                 }
@@ -86,6 +89,7 @@ private struct StepOneView: View {
                 Text("Продолжить")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
+                    .foregroundColor(.black)
             }
             .buttonStyle(.borderedProminent)
             .tint(Color(red: 235/255, green: 169/255, blue: 55/255))
@@ -127,6 +131,7 @@ private struct StepTwoView: View {
                 Text("Отправить")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
+                    .foregroundColor(.black)
             }
             .buttonStyle(.borderedProminent)
             .tint(Color(red: 235/255, green: 169/255, blue: 55/255))
@@ -154,6 +159,7 @@ private struct InputField: View {
                 .submitLabel(submitLabel)
                 .onSubmit(onSubmit)
                 .textContentType(.password)
+                .foregroundColor(.black)
                 .padding(12)
                 .background(RoundedRectangle(cornerRadius: 10).strokeBorder(borderColor, lineWidth: 1))
             } else {
@@ -165,6 +171,7 @@ private struct InputField: View {
                 .onSubmit(onSubmit)
                 .autocorrectionDisabled(true)
                 .textInputAutocapitalization(.never)
+                .foregroundColor(.black)
                 .padding(12)
                 .background(RoundedRectangle(cornerRadius: 10).strokeBorder(borderColor, lineWidth: 1))
             }
