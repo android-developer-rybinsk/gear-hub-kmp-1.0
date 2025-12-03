@@ -151,8 +151,12 @@ private struct InputField: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.black)
+
             if isSecure {
-                SecureField(title, text: Binding(
+                SecureField("", text: Binding(
                     get: { text },
                     set: { onChange($0) }
                 ))
@@ -163,7 +167,7 @@ private struct InputField: View {
                 .padding(12)
                 .background(RoundedRectangle(cornerRadius: 10).strokeBorder(borderColor, lineWidth: 1))
             } else {
-                TextField(title, text: Binding(
+                TextField("", text: Binding(
                     get: { text },
                     set: { onChange($0) }
                 ))

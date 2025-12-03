@@ -7,6 +7,7 @@ import io.ktor.client.engine.darwin.Darwin
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -14,14 +15,14 @@ import org.koin.dsl.module
  * Платформенный модуль сети для iOS: единый HttpClient c JSON сериализацией и базовым URL.
  */
 actual fun platformNetworkModule(): Module = module {
-    single { provideIosHttpClient(get()) }
+    single { provideIosHttpClient(get(), get()) }
 }
 
 /**
  * Создаёт HttpClient с базовым URL и обработкой JSON через kotlinx.serialization.
  */
-private fun provideIosHttpClient(hostProvider: HostProvider): HttpClient = HttpClient(Darwin) {
-    install(ContentNegotiation) { json() }
+private fun provideIosHttpClient(hostProvider: HostProvider, jsonSerializer: Json): HttpClient = HttpClient(Darwin) {
+    install(ContentNegotiation) { json(jsonSerializer) }
     install(DefaultRequest) {
         url(hostProvider.baseUrl().ensureTrailingSlash())
         headers.append("Content-Type", "application/json")
