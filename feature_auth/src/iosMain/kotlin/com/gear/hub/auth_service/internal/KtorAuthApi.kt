@@ -8,6 +8,7 @@ import com.gear.hub.network.model.ApiResponse
 import com.gear.hub.network.util.ensureTrailingSlash
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.statement.bodyAsText
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
@@ -35,11 +36,14 @@ class KtorAuthApi(
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
-            val body: AuthRegisterResponseDto = response.body()
-            if (response.status.isSuccess()) {
+            return if (response.status.isSuccess()) {
+                val body: AuthRegisterResponseDto = response.body()
                 ApiResponse.Success(body)
             } else {
-                ApiResponse.HttpError(response.status.value, response.status.description)
+                ApiResponse.HttpError(
+                    response.status.value,
+                    response.bodyAsText(),
+                )
             }
         } catch (client: ClientRequestException) {
             ApiResponse.HttpError(client.response.status.value, client.message)
