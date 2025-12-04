@@ -5,7 +5,6 @@ import com.gear.hub.auth_feature.internal.domain.model.RegistrationTokens
 import com.gear.hub.auth_feature.internal.domain.model.RegisteredUser
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
 
 /**
  * DTO ответа регистрации, приходящего с бэкенда.
@@ -13,13 +12,10 @@ import kotlinx.serialization.json.JsonNames
 @Serializable
 data class AuthRegisterResponseDto(
     @SerialName("accessToken")
-    @JsonNames("access_token")
     val accessToken: String,
     @SerialName("refreshToken")
-    @JsonNames("refresh_token")
     val refreshToken: String,
     @SerialName("expiresIn")
-    @JsonNames("expires_in")
     val expiresIn: Long,
     val user: AuthUserDto,
 )
@@ -31,8 +27,6 @@ data class AuthRegisterResponseDto(
 data class AuthUserDto(
     val email: String?,
     val phone: String?,
-    @SerialName("name")
-    @JsonNames("full_name", "fullName")
     val name: String,
     val id: String,
 )
