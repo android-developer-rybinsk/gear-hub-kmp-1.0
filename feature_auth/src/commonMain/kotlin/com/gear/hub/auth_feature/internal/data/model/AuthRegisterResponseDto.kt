@@ -12,14 +12,14 @@ import kotlinx.serialization.json.JsonNames
  */
 @Serializable
 data class AuthRegisterResponseDto(
-    @SerialName("access_token")
-    @JsonNames("accessToken")
+    @SerialName("accessToken")
+    @JsonNames("access_token")
     val accessToken: String,
-    @SerialName("refresh_token")
-    @JsonNames("refreshToken")
+    @SerialName("refreshToken")
+    @JsonNames("refresh_token")
     val refreshToken: String,
-    @SerialName("expires_in")
-    @JsonNames("expiresIn")
+    @SerialName("expiresIn")
+    @JsonNames("expires_in")
     val expiresIn: Long,
     val user: AuthUserDto,
 )

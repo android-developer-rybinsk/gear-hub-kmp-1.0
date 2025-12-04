@@ -21,6 +21,7 @@ internal class AndroidAuthSessionDbDriver(
      */
     private val database: AuthSessionDatabase by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         factory.roomDatabaseBuilder(AuthSessionDatabase::class.java)
+            .addMigrations(AuthSessionDatabase.MIGRATION_1_2)
             .build()
     }
 
