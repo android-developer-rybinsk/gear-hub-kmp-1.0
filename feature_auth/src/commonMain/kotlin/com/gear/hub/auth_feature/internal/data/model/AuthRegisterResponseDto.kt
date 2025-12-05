@@ -3,6 +3,7 @@ package com.gear.hub.auth_feature.internal.data.model
 import com.gear.hub.auth_feature.internal.domain.model.RegistrationResult
 import com.gear.hub.auth_feature.internal.domain.model.RegistrationTokens
 import com.gear.hub.auth_feature.internal.domain.model.RegisteredUser
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -10,8 +11,11 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class AuthRegisterResponseDto(
+    @SerialName("accessToken")
     val accessToken: String,
+    @SerialName("refreshToken")
     val refreshToken: String,
+    @SerialName("expiresIn")
     val expiresIn: Long,
     val user: AuthUserDto,
 )

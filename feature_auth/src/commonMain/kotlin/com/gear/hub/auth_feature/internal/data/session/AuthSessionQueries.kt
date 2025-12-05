@@ -11,9 +11,9 @@ internal object AuthSessionQueries {
     const val CREATE_TABLE_CREDENTIALS = """
         CREATE TABLE IF NOT EXISTS auth_credentials (
             id INTEGER PRIMARY KEY CHECK (id = 1),
-            access_token TEXT NOT NULL,
-            refresh_token TEXT NOT NULL,
-            expires_in INTEGER NOT NULL
+            accessToken TEXT NOT NULL,
+            refreshToken TEXT NOT NULL,
+            expiresIn INTEGER NOT NULL
         );
     """
 
@@ -23,7 +23,7 @@ internal object AuthSessionQueries {
     const val CREATE_TABLE_USER = """
         CREATE TABLE IF NOT EXISTS auth_user (
             id INTEGER PRIMARY KEY CHECK (id = 1),
-            user_id TEXT NOT NULL,
+            userId TEXT NOT NULL,
             email TEXT,
             phone TEXT,
             name TEXT NOT NULL
@@ -33,12 +33,12 @@ internal object AuthSessionQueries {
     /**
      * Чтение сохранённых токенов.
      */
-    const val SELECT_CREDENTIALS = "SELECT id, access_token, refresh_token, expires_in FROM auth_credentials WHERE id = 1"
+    const val SELECT_CREDENTIALS = "SELECT id, accessToken, refreshToken, expiresIn FROM auth_credentials WHERE id = 1"
 
     /**
      * Чтение сохранённых данных пользователя.
      */
-    const val SELECT_USER = "SELECT id, user_id, email, phone, name FROM auth_user WHERE id = 1"
+    const val SELECT_USER = "SELECT id, userId, email, phone, name FROM auth_user WHERE id = 1"
 
     /**
      * Удаление всех сохранённых токенов.

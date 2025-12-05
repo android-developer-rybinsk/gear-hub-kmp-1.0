@@ -9,9 +9,9 @@ import androidx.room.RoomDatabase
 @androidx.room.Entity(tableName = "auth_credentials")
 internal data class AuthCredentialsEntity(
     @androidx.room.PrimaryKey val id: Int = 1,
-    @androidx.room.ColumnInfo(name = "access_token") val accessToken: String,
-    @androidx.room.ColumnInfo(name = "refresh_token") val refreshToken: String,
-    @androidx.room.ColumnInfo(name = "expires_in") val expiresIn: Long,
+    @androidx.room.ColumnInfo(name = "accessToken") val accessToken: String,
+    @androidx.room.ColumnInfo(name = "refreshToken") val refreshToken: String,
+    @androidx.room.ColumnInfo(name = "expiresIn") val expiresIn: Long,
 )
 
 /**
@@ -20,7 +20,7 @@ internal data class AuthCredentialsEntity(
 @androidx.room.Entity(tableName = "auth_user")
 internal data class AuthUserEntity(
     @androidx.room.PrimaryKey val id: Int = 1,
-    @androidx.room.ColumnInfo(name = "user_id") val userId: String,
+    @androidx.room.ColumnInfo(name = "userId") val userId: String,
     @androidx.room.ColumnInfo(name = "email") val email: String?,
     @androidx.room.ColumnInfo(name = "phone") val phone: String?,
     @androidx.room.ColumnInfo(name = "name") val name: String,
