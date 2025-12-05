@@ -45,28 +45,28 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
                 }
             }
         }
-    )
-
-    NavHost(
-        navController = navController,
-        startDestination = DestinationMenu.MenuScreen.route,
-        modifier = Modifier
-    ) {
-        composable(DestinationMenu.MenuScreen.route) {
-            val vm: MenuViewModel = getKoin().get { parametersOf(router) }
-            MenuScreen(vm)
-        }
-        composable(DestinationProducts.MyAdsScreen.route) {
-            val vm: MyAdsViewModel = getKoin().get { parametersOf(router) }
-            MyAdsScreen(vm)
-        }
-        composable(DestinationChats.ChatsScreen.route) {
-            val vm: ChatsViewModel = getKoin().get { parametersOf(router) }
-            ChatsScreen(vm)
-        }
-        composable(DestinationProfile.ProfileScreen.route) {
-            val vm: ProfileViewModel = getKoin().get { parametersOf(rootRouter) }
-            ProfileScreen(vm)
+    ) { innerModifier ->
+        NavHost(
+            navController = navController,
+            startDestination = DestinationMenu.MenuScreen.route,
+            modifier = innerModifier
+        ) {
+            composable(DestinationMenu.MenuScreen.route) {
+                val vm: MenuViewModel = getKoin().get { parametersOf(router) }
+                MenuScreen(vm, modifier = innerModifier)
+            }
+            composable(DestinationProducts.MyAdsScreen.route) {
+                val vm: MyAdsViewModel = getKoin().get { parametersOf(router) }
+                MyAdsScreen(vm)
+            }
+            composable(DestinationChats.ChatsScreen.route) {
+                val vm: ChatsViewModel = getKoin().get { parametersOf(router) }
+                ChatsScreen(vm)
+            }
+            composable(DestinationProfile.ProfileScreen.route) {
+                val vm: ProfileViewModel = getKoin().get { parametersOf(rootRouter) }
+                ProfileScreen(vm)
+            }
         }
     }
 }

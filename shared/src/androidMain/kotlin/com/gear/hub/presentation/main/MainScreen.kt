@@ -20,7 +20,8 @@ import org.jetbrains.compose.resources.painterResource
 fun MainScreen(
     tabs: List<TabItem>,
     currentRoute: String?,
-    onTabSelected: (TabItem) -> Unit
+    onTabSelected: (TabItem) -> Unit,
+    content: @Composable (Modifier) -> Unit = {}
 ) {
     Scaffold(
         bottomBar = {
@@ -31,7 +32,7 @@ fun MainScreen(
             )
         }
     ) { innerPadding ->
-        Box(Modifier.padding(innerPadding)) { }
+        content(Modifier.padding(innerPadding))
     }
 }
 
