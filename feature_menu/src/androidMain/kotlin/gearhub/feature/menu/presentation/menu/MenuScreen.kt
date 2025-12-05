@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import gearhub.feature.menu.R
 import gear.hub.core.di.koinViewModel
@@ -49,11 +50,13 @@ import kotlinx.coroutines.flow.map
 
 @Composable
 fun MenuScreen(
+    modifier: Modifier = Modifier,
     viewModel: MenuViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             Surface(shadowElevation = 4.dp) {
                 Row(
@@ -201,9 +204,9 @@ private fun AdsGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         state = gridState,
-        contentPadding = PaddingValues(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(state.ads, key = { it.id }) { ad ->
             AdCard(ad)
@@ -249,7 +252,7 @@ private fun AdCard(ad: MenuAd) {
                     .fillMaxWidth()
                     .clip(MaterialTheme.shapes.medium)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .height(140.dp),
+                    .aspectRatio(4f / 3f),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -264,7 +267,8 @@ private fun AdCard(ad: MenuAd) {
             Text(
                 text = ad.title,
                 style = MaterialTheme.typography.titleMedium,
-                maxLines = 2
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -272,7 +276,9 @@ private fun AdCard(ad: MenuAd) {
             Text(
                 text = "${formatPrice(ad.price)} ₽",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
