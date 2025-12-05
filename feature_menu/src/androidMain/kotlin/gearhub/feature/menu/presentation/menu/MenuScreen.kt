@@ -116,11 +116,6 @@ fun MenuScreen(
 }
 
 @Composable
-fun MenuScreen(viewModel: MenuViewModel) {
-    MenuScreen(viewModel = viewModel, modifier = Modifier)
-}
-
-@Composable
 private fun MenuContent(
     modifier: Modifier,
     state: MenuState,
