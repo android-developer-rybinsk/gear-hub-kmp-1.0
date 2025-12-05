@@ -7,12 +7,7 @@ plugins {
 }
 
 kotlin {
-
-    android {
-        namespace = "gearhub.feature.menu"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
+    androidTarget()
 
     val xcfName = "feature_menuKit"
 
@@ -80,4 +75,13 @@ kotlin {
         }
     }
 
+}
+
+android {
+    namespace = "gearhub.feature.menu"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
 }
