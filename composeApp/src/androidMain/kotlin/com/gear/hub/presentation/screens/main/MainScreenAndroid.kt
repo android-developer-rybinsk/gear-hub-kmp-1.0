@@ -23,6 +23,7 @@ import gearhub.feature.profile.navigation.DestinationProfile
 import gearhub.feature.profile.presentation.profile.ProfileScreen
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import org.koin.core.parameter.parametersOf
+import org.koin.androidx.compose.koinViewModel
 import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
@@ -52,19 +53,19 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
             modifier = innerModifier
         ) {
             composable(DestinationMenu.MenuScreen.route) {
-                val vm: MenuViewModel = getKoin().get { parametersOf(router) }
+                val vm: MenuViewModel = koinViewModel(parameters = { parametersOf(router) })
                 MenuScreen(vm, modifier = innerModifier)
             }
             composable(DestinationProducts.MyAdsScreen.route) {
-                val vm: MyAdsViewModel = getKoin().get { parametersOf(router) }
+                val vm: MyAdsViewModel = koinViewModel(parameters = { parametersOf(router) })
                 MyAdsScreen(vm)
             }
             composable(DestinationChats.ChatsScreen.route) {
-                val vm: ChatsViewModel = getKoin().get { parametersOf(router) }
+                val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(router) })
                 ChatsScreen(vm)
             }
             composable(DestinationProfile.ProfileScreen.route) {
-                val vm: ProfileViewModel = getKoin().get { parametersOf(rootRouter) }
+                val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(rootRouter) })
                 ProfileScreen(vm)
             }
         }
