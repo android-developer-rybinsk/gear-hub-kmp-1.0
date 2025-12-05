@@ -50,8 +50,8 @@ import kotlinx.coroutines.flow.map
 
 @Composable
 fun MenuScreen(
-    modifier: Modifier = Modifier,
-    viewModel: MenuViewModel = koinViewModel()
+    viewModel: MenuViewModel = koinViewModel(),
+    modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
 
