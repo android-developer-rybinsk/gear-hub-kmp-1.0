@@ -7,8 +7,6 @@ plugins {
 }
 
 kotlin {
-    androidTarget()
-
     android {
         namespace = "gearhub.feature.menu"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
