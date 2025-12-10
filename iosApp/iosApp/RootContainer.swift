@@ -28,9 +28,9 @@ struct RootContainer: View {
                         vm: MenuViewModelWrapper(vm: KoinKt.resolveMenuVM()),
                         router: router
                     )
-                case is DestinationProducts.MyAdsScreen:
-                    MyAdsScreenSwiftUI(
-                        vm: MyAdsViewModelWrapper(vm: KoinKt.resolveMyAdsVM()),
+                case is DestinationProducts.MyProductsScreen:
+                    MyProductsScreenSwiftUI(
+                        vm: MyProductsViewModelWrapper(vm: KoinKt.resolveMyProductsVM()),
                         router: router
                     )
                 case is DestinationProfile.ProfileScreen:

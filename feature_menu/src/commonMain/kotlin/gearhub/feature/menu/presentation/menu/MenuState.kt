@@ -5,7 +5,7 @@ data class MenuCategory(
     val title: String
 )
 
-data class MenuAd(
+data class MenuProduct(
     val id: String,
     val title: String,
     val price: Double,
@@ -16,7 +16,7 @@ data class MenuAd(
 data class MenuState(
     val searchQuery: String = "",
     val categories: List<MenuCategory> = emptyList(),
-    val ads: List<MenuAd> = emptyList(),
+    val products: List<MenuProduct> = emptyList(),
     val isLoading: Boolean = true,
     val isPaginating: Boolean = false,
     val endReached: Boolean = false,

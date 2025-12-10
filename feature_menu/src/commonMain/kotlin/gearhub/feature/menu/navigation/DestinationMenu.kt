@@ -15,10 +15,10 @@ sealed class DestinationMenu(override val route: String) : Destination(route) {
         }
     }
 
-    data class DetailsScreen(val adId: String) : DestinationMenu("menu/details/$adId") {
+    data class DetailsScreen(val productId: String) : DestinationMenu("menu/details/$productId") {
         companion object {
-            const val AD_ID_ARG = "adId"
-            const val ROUTE_PATTERN = "menu/details/{$AD_ID_ARG}"
+            const val PRODUCT_ID_ARG = "productId"
+            const val ROUTE_PATTERN = "menu/details/{$PRODUCT_ID_ARG}"
         }
     }
 }

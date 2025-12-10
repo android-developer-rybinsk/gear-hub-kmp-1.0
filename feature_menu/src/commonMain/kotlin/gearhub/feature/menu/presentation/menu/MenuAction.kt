@@ -5,7 +5,7 @@ sealed class MenuAction {
     data class SearchChanged(val query: String) : MenuAction()
     data object FilterClicked : MenuAction()
     data class CategorySelected(val categoryId: String) : MenuAction()
-    data class AdClicked(val adId: String) : MenuAction()
+    data class ProductClicked(val productId: String) : MenuAction()
     data object LoadNextPage : MenuAction()
     data object Retry : MenuAction()
 }

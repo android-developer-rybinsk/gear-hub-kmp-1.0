@@ -16,13 +16,13 @@ import gearhub.feature.menu.navigation.DestinationMenu
 import gearhub.feature.chats.navigation.DestinationChats
 import gearhub.feature.chats.presentation.chats.ChatsScreen
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
-import gearhub.feature.menu.presentation.detail.AdDetailsScreen
+import gearhub.feature.menu.presentation.detail.ProductDetailsScreen
 import gearhub.feature.menu.presentation.filter.FilterScreen
 import gearhub.feature.menu.presentation.menu.MenuScreen
 import gearhub.feature.menu.presentation.menu.MenuViewModel
-import gearhub.feature.products.MyAdsScreen
+import gearhub.feature.products.MyProductsScreen
 import gearhub.feature.products.navigation.DestinationProducts
-import gearhub.feature.products.presentation.my.MyAdsViewModel
+import gearhub.feature.products.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.navigation.DestinationProfile
 import gearhub.feature.profile.presentation.profile.ProfileScreen
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
@@ -77,15 +77,15 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
             composable(
                 route = DestinationMenu.DetailsScreen.ROUTE_PATTERN,
                 arguments = listOf(
-                    navArgument(DestinationMenu.DetailsScreen.AD_ID_ARG) { type = NavType.StringType }
+                    navArgument(DestinationMenu.DetailsScreen.PRODUCT_ID_ARG) { type = NavType.StringType }
                 )
             ) { backStackEntry ->
-                val adId = backStackEntry.arguments?.getString(DestinationMenu.DetailsScreen.AD_ID_ARG).orEmpty()
-                AdDetailsScreen(adId = adId) { navController.popBackStack() }
+                val productId = backStackEntry.arguments?.getString(DestinationMenu.DetailsScreen.PRODUCT_ID_ARG).orEmpty()
+                ProductDetailsScreen(productId = productId) { navController.popBackStack() }
             }
-            composable(DestinationProducts.MyAdsScreen.route) {
-                val vm: MyAdsViewModel = koinViewModel(parameters = { parametersOf(router) })
-                MyAdsScreen(vm)
+            composable(DestinationProducts.MyProductsScreen.route) {
+                val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })
+                MyProductsScreen(vm)
             }
             composable(DestinationChats.ChatsScreen.route) {
                 val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(router) })

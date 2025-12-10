@@ -13,7 +13,7 @@ import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
 import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
 import gearhub.feature.menu.presentation.menu.MenuViewModel
-import gearhub.feature.products.presentation.my.MyAdsViewModel
+import gearhub.feature.products.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import com.gear.hub.data.config.DatabaseConfig
 import com.gear.hub.data.config.PlatformContext
@@ -47,7 +47,7 @@ class KoinIOSBridge {
             factory { MainViewModel(get()) }
             factory { SplashViewModel(get(), get()) }
             factory { MenuViewModel(get()) }
-            factory { MyAdsViewModel(get()) }
+            factory { MyProductsViewModel(get()) }
             factory { ChatsViewModel(get()) }
             factory { ProfileViewModel(get(), get(), get()) }
             factory { AuthViewModel(get(), get(), get<AuthNavigationConfig>()) }

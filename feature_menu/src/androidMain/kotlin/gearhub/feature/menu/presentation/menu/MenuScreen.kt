@@ -110,7 +110,7 @@ fun MenuScreen(
             onCategoryClick = { categoryId ->
                 viewModel.onAction(MenuAction.CategorySelected(categoryId))
             },
-            onAdClick = { adId -> viewModel.onAction(MenuAction.AdClicked(adId)) },
+            onProductClick = { productId -> viewModel.onAction(MenuAction.ProductClicked(productId)) },
             onLoadMore = { viewModel.onAction(MenuAction.LoadNextPage) },
             onRetry = { viewModel.onAction(MenuAction.Retry) }
         )
@@ -122,7 +122,7 @@ private fun MenuContent(
     modifier: Modifier,
     state: MenuState,
     onCategoryClick: (String) -> Unit,
-    onAdClick: (String) -> Unit,
+    onProductClick: (String) -> Unit,
     onLoadMore: () -> Unit,
     onRetry: () -> Unit
 ) {
@@ -136,11 +136,11 @@ private fun MenuContent(
 
         Box(modifier = Modifier.fillMaxSize()) {
             when {
-                state.isLoading && state.ads.isEmpty() -> {
+                state.isLoading && state.products.isEmpty() -> {
                     Loading(modifier = Modifier.align(Alignment.Center))
                 }
 
-                state.errorMessage != null && state.ads.isEmpty() -> {
+                state.errorMessage != null && state.products.isEmpty() -> {
                     ErrorPlaceholder(
                         message = state.errorMessage,
                         onRetry = onRetry,
@@ -149,9 +149,9 @@ private fun MenuContent(
                 }
 
                 else -> {
-                    AdsGrid(
+                    ProductsGrid(
                         state = state,
-                        onAdClick = onAdClick,
+                        onProductClick = onProductClick,
                         onLoadMore = onLoadMore,
                         onRetry = onRetry
                     )
@@ -183,21 +183,21 @@ private fun CategoryRow(
 }
 
 @Composable
-private fun AdsGrid(
+private fun ProductsGrid(
     state: MenuState,
-    onAdClick: (String) -> Unit,
+    onProductClick: (String) -> Unit,
     onLoadMore: () -> Unit,
     onRetry: () -> Unit
 ) {
     val gridState = rememberLazyGridState()
 
-    LaunchedEffect(gridState, state.ads.size, state.endReached) {
+    LaunchedEffect(gridState, state.products.size, state.endReached) {
         snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .filter { it != null }
             .map { it!! }
             .distinctUntilChanged()
             .collect { lastVisible ->
-                if (lastVisible >= state.ads.lastIndex - 2 && !state.endReached && !state.isPaginating && !state.isLoading) {
+                if (lastVisible >= state.products.lastIndex - 2 && !state.endReached && !state.isPaginating && !state.isLoading) {
                     onLoadMore()
                 }
             }
@@ -210,8 +210,8 @@ private fun AdsGrid(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(state.ads, key = { it.id }) { ad ->
-            AdCard(ad, onClick = { onAdClick(ad.id) })
+        items(state.products, key = { it.id }) { product ->
+            ProductCard(product, onClick = { onProductClick(product.id) })
         }
 
         item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) {
@@ -239,7 +239,7 @@ private fun AdsGrid(
 }
 
 @Composable
-private fun AdCard(ad: MenuAd, onClick: () -> Unit) {
+private fun ProductCard(product: MenuProduct, onClick: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier
@@ -269,7 +269,7 @@ private fun AdCard(ad: MenuAd, onClick: () -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = ad.title,
+                text = product.title,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -278,7 +278,7 @@ private fun AdCard(ad: MenuAd, onClick: () -> Unit) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "${formatPrice(ad.price)} ₽",
+                text = "${formatPrice(product.price)} ₽",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,

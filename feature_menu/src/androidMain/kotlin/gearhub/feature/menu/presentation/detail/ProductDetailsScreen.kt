@@ -15,14 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun AdDetailsScreen(
-    adId: String,
+fun ProductDetailsScreen(
+    productId: String,
     onBack: () -> Unit
 ) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "Детали объявления") },
+                title = { Text(text = "Детали продукта") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -40,7 +40,7 @@ fun AdDetailsScreen(
                 .padding(padding),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "ID объявления: $adId")
+            Text(text = "ID продукта: $productId")
         }
     }
 }

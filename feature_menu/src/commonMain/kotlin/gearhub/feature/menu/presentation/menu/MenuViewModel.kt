@@ -21,7 +21,7 @@ class MenuViewModel(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val categoriesSource = MutableStateFlow(seedCategories())
-    private val adsSource = MutableStateFlow(seedAds())
+    private val productsSource = MutableStateFlow(seedProducts())
 
     private var currentPage = 0
     private val pageSize = 6
@@ -30,7 +30,7 @@ class MenuViewModel(
         scope.launch {
             combine(
                 categoriesSource,
-                adsSource
+                productsSource
             ) { categories, _ ->
                 categories to Unit
             }.collect { (categories, _) ->
@@ -41,7 +41,7 @@ class MenuViewModel(
         }
 
         scope.launch {
-            adsSource.collectLatest {
+            productsSource.collectLatest {
                 loadInitial()
             }
         }
@@ -61,7 +61,7 @@ class MenuViewModel(
             }
             MenuAction.FilterClicked -> router.navigate(DestinationMenu.FilterScreen())
             is MenuAction.CategorySelected -> router.navigate(DestinationMenu.FilterScreen(action.categoryId))
-            is MenuAction.AdClicked -> router.navigate(DestinationMenu.DetailsScreen(action.adId))
+            is MenuAction.ProductClicked -> router.navigate(DestinationMenu.DetailsScreen(action.productId))
             MenuAction.LoadNextPage -> loadNextPage()
             MenuAction.Retry -> loadInitial()
         }
@@ -74,18 +74,18 @@ class MenuViewModel(
                     isLoading = true,
                     errorMessage = null,
                     endReached = false,
-                    ads = emptyList()
+                    products = emptyList()
                 )
             }
 
             try {
                 delay(250)
                 currentPage = 0
-                val filtered = filterAds()
+                val filtered = filterProducts()
                 val page = filtered.take(pageSize)
                 setState {
                     it.copy(
-                        ads = page,
+                        products = page,
                         isLoading = false,
                         endReached = page.size >= filtered.size
                     )
@@ -109,7 +109,7 @@ class MenuViewModel(
             setState { it.copy(isPaginating = true, errorMessage = null) }
             try {
                 delay(300)
-                val filtered = filterAds()
+                val filtered = filterProducts()
                 val nextPage = currentPage + 1
                 val fromIndex = nextPage * pageSize
                 if (fromIndex >= filtered.size) {
@@ -120,7 +120,7 @@ class MenuViewModel(
                 val nextItems = filtered.subList(fromIndex, toIndex)
                 setState {
                     it.copy(
-                        ads = it.ads + nextItems,
+                        products = it.products + nextItems,
                         isPaginating = false,
                         endReached = toIndex >= filtered.size
                     )
@@ -137,11 +137,11 @@ class MenuViewModel(
         }
     }
 
-    private fun filterAds(): List<MenuAd> {
+    private fun filterProducts(): List<MenuProduct> {
         val query = currentState.searchQuery.trim()
 
-        return adsSource.value.filter { ad ->
-            query.isBlank() || ad.title.contains(query, ignoreCase = true)
+        return productsSource.value.filter { product ->
+            query.isBlank() || product.title.contains(query, ignoreCase = true)
         }
     }
 
@@ -153,7 +153,7 @@ class MenuViewModel(
         MenuCategory("accessories", "Аксессуары")
     )
 
-    private fun seedAds(): List<MenuAd> {
+    private fun seedProducts(): List<MenuProduct> {
         val prices = listOf(4500.0, 18990.0, 12999.0, 7500.0, 3990.0, 6200.0, 28450.0, 1190.0)
         val titles = listOf(
             "Надувная лодка",
@@ -169,8 +169,8 @@ class MenuViewModel(
 
         return List(40) { index ->
                 val category = categories.random()
-                MenuAd(
-                    id = "ad-$index",
+                MenuProduct(
+                    id = "product-$index",
                     title = titles[index % titles.size] + " #${index + 1}",
                     price = prices[index % prices.size] + Random.nextInt(0, 5000),
                     imageUrl = null,
