@@ -1,6 +1,7 @@
 package gearhub.feature.menu.presentation.menu
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,8 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -109,6 +110,7 @@ fun MenuScreen(
             onCategoryClick = { categoryId ->
                 viewModel.onAction(MenuAction.CategorySelected(categoryId))
             },
+            onAdClick = { adId -> viewModel.onAction(MenuAction.AdClicked(adId)) },
             onLoadMore = { viewModel.onAction(MenuAction.LoadNextPage) },
             onRetry = { viewModel.onAction(MenuAction.Retry) }
         )
@@ -119,7 +121,8 @@ fun MenuScreen(
 private fun MenuContent(
     modifier: Modifier,
     state: MenuState,
-    onCategoryClick: (String?) -> Unit,
+    onCategoryClick: (String) -> Unit,
+    onAdClick: (String) -> Unit,
     onLoadMore: () -> Unit,
     onRetry: () -> Unit
 ) {
@@ -128,7 +131,6 @@ private fun MenuContent(
     ) {
         CategoryRow(
             categories = state.categories,
-            selectedId = state.selectedCategoryId,
             onCategoryClick = onCategoryClick
         )
 
@@ -149,6 +151,7 @@ private fun MenuContent(
                 else -> {
                     AdsGrid(
                         state = state,
+                        onAdClick = onAdClick,
                         onLoadMore = onLoadMore,
                         onRetry = onRetry
                     )
@@ -161,8 +164,7 @@ private fun MenuContent(
 @Composable
 private fun CategoryRow(
     categories: List<MenuCategory>,
-    selectedId: String?,
-    onCategoryClick: (String?) -> Unit
+    onCategoryClick: (String) -> Unit
 ) {
     val listState = rememberLazyListState()
     androidx.compose.foundation.lazy.LazyRow(
@@ -171,10 +173,9 @@ private fun CategoryRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(categories) { category ->
-            val selected = category.id == selectedId || (category.id == "all" && selectedId == null)
             FilterChip(
-                selected = selected,
-                onClick = { onCategoryClick(if (category.id == "all") null else category.id) },
+                selected = false,
+                onClick = { onCategoryClick(category.id) },
                 label = { Text(category.title) }
             )
         }
@@ -184,6 +185,7 @@ private fun CategoryRow(
 @Composable
 private fun AdsGrid(
     state: MenuState,
+    onAdClick: (String) -> Unit,
     onLoadMore: () -> Unit,
     onRetry: () -> Unit
 ) {
@@ -209,7 +211,7 @@ private fun AdsGrid(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(state.ads, key = { it.id }) { ad ->
-            AdCard(ad)
+            AdCard(ad, onClick = { onAdClick(ad.id) })
         }
 
         item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }) {
@@ -237,10 +239,12 @@ private fun AdsGrid(
 }
 
 @Composable
-private fun AdCard(ad: MenuAd) {
+private fun AdCard(ad: MenuAd, onClick: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
     ) {
         Column(
             modifier = Modifier

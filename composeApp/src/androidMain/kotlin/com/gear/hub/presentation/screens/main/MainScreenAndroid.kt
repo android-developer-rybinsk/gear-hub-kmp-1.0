@@ -4,16 +4,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.gear.hub.presentation.main.MainScreen
 import gear.hub.core.navigation.Router
+import gearhub.feature.menu.navigation.DestinationMenu
 import gearhub.feature.chats.navigation.DestinationChats
 import gearhub.feature.chats.presentation.chats.ChatsScreen
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
-import gearhub.feature.menu.navigation.DestinationMenu
+import gearhub.feature.menu.presentation.detail.AdDetailsScreen
+import gearhub.feature.menu.presentation.filter.FilterScreen
 import gearhub.feature.menu.presentation.menu.MenuScreen
 import gearhub.feature.menu.presentation.menu.MenuViewModel
 import gearhub.feature.products.MyAdsScreen
@@ -55,6 +59,29 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
             composable(DestinationMenu.MenuScreen.route) {
                 val vm: MenuViewModel = koinViewModel(parameters = { parametersOf(router) })
                 MenuScreen(vm, modifier = innerModifier)
+            }
+            composable(
+                route = DestinationMenu.FilterScreen.ROUTE_PATTERN,
+                arguments = listOf(
+                    navArgument(DestinationMenu.FilterScreen.CATEGORY_ARG) {
+                        type = NavType.StringType
+                        nullable = true
+                    }
+                )
+            ) { backStackEntry ->
+                val categoryId = backStackEntry.arguments
+                    ?.getString(DestinationMenu.FilterScreen.CATEGORY_ARG)
+                    ?.takeIf { it.isNotBlank() }
+                FilterScreen(categoryId = categoryId) { navController.popBackStack() }
+            }
+            composable(
+                route = DestinationMenu.DetailsScreen.ROUTE_PATTERN,
+                arguments = listOf(
+                    navArgument(DestinationMenu.DetailsScreen.AD_ID_ARG) { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val adId = backStackEntry.arguments?.getString(DestinationMenu.DetailsScreen.AD_ID_ARG).orEmpty()
+                AdDetailsScreen(adId = adId) { navController.popBackStack() }
             }
             composable(DestinationProducts.MyAdsScreen.route) {
                 val vm: MyAdsViewModel = koinViewModel(parameters = { parametersOf(router) })

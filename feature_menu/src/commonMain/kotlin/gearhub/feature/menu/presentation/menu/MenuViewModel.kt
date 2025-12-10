@@ -2,6 +2,7 @@ package gearhub.feature.menu.presentation.menu
 
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
+import gearhub.feature.menu.navigation.DestinationMenu
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -58,11 +59,9 @@ class MenuViewModel(
                 setState { it.copy(searchQuery = action.query) }
                 loadInitial()
             }
-            MenuAction.FilterClicked -> setState { it.copy(isFilterDialogOpen = !it.isFilterDialogOpen) }
-            is MenuAction.CategorySelected -> {
-                setState { it.copy(selectedCategoryId = action.categoryId) }
-                loadInitial()
-            }
+            MenuAction.FilterClicked -> router.navigate(DestinationMenu.FilterScreen())
+            is MenuAction.CategorySelected -> router.navigate(DestinationMenu.FilterScreen(action.categoryId))
+            is MenuAction.AdClicked -> router.navigate(DestinationMenu.DetailsScreen(action.adId))
             MenuAction.LoadNextPage -> loadNextPage()
             MenuAction.Retry -> loadInitial()
         }
@@ -140,16 +139,13 @@ class MenuViewModel(
 
     private fun filterAds(): List<MenuAd> {
         val query = currentState.searchQuery.trim()
-        val categoryId = currentState.selectedCategoryId
 
         return adsSource.value.filter { ad ->
-            (categoryId == null || ad.categoryId == categoryId) &&
-                (query.isBlank() || ad.title.contains(query, ignoreCase = true))
+            query.isBlank() || ad.title.contains(query, ignoreCase = true)
         }
     }
 
     private fun seedCategories(): List<MenuCategory> = listOf(
-        MenuCategory("all", "Все"),
         MenuCategory("boats", "Лодки"),
         MenuCategory("service", "Сервис"),
         MenuCategory("tackle", "Снасти"),
@@ -172,14 +168,14 @@ class MenuViewModel(
         val categories = seedCategories()
 
         return List(40) { index ->
-            val category = categories.random()
-            MenuAd(
-                id = "ad-$index",
-                title = titles[index % titles.size] + " #${index + 1}",
-                price = prices[index % prices.size] + Random.nextInt(0, 5000),
-                imageUrl = null,
-                categoryId = if (category.id == "all") null else category.id
-            )
+                val category = categories.random()
+                MenuAd(
+                    id = "ad-$index",
+                    title = titles[index % titles.size] + " #${index + 1}",
+                    price = prices[index % prices.size] + Random.nextInt(0, 5000),
+                    imageUrl = null,
+                    categoryId = category.id
+                )
         }
     }
 }

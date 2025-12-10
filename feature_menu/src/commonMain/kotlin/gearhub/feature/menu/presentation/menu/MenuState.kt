@@ -16,11 +16,9 @@ data class MenuAd(
 data class MenuState(
     val searchQuery: String = "",
     val categories: List<MenuCategory> = emptyList(),
-    val selectedCategoryId: String? = null,
     val ads: List<MenuAd> = emptyList(),
     val isLoading: Boolean = true,
     val isPaginating: Boolean = false,
     val endReached: Boolean = false,
-    val errorMessage: String? = null,
-    val isFilterDialogOpen: Boolean = false
+    val errorMessage: String? = null
 )
