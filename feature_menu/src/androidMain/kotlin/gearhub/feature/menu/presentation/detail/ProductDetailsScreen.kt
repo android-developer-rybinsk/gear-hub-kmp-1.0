@@ -13,10 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import gearhub.feature.menu.navigation.ProductDetailsArgs
 
 @Composable
 fun ProductDetailsScreen(
-    productId: String,
+    args: ProductDetailsArgs,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -40,7 +41,7 @@ fun ProductDetailsScreen(
                 .padding(padding),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "ID продукта: $productId")
+            Text(text = "ID продукта: ${args.productId}")
         }
     }
 }

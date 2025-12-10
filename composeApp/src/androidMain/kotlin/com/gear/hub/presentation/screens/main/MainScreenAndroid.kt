@@ -16,6 +16,8 @@ import gearhub.feature.menu.navigation.DestinationMenu
 import gearhub.feature.chats.navigation.DestinationChats
 import gearhub.feature.chats.presentation.chats.ChatsScreen
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
+import gearhub.feature.menu.navigation.FilterArgs
+import gearhub.feature.menu.navigation.ProductDetailsArgs
 import gearhub.feature.menu.presentation.detail.ProductDetailsScreen
 import gearhub.feature.menu.presentation.filter.FilterScreen
 import gearhub.feature.menu.presentation.menu.MenuScreen
@@ -72,7 +74,8 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
                 val categoryId = backStackEntry.arguments
                     ?.getString(DestinationMenu.FilterScreen.CATEGORY_ARG)
                     ?.takeIf { it.isNotBlank() }
-                FilterScreen(categoryId = categoryId) { navController.popBackStack() }
+                val args = FilterArgs(categoryId = categoryId)
+                FilterScreen(args = args) { navController.popBackStack() }
             }
             composable(
                 route = DestinationMenu.DetailsScreen.ROUTE_PATTERN,
@@ -81,7 +84,8 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
                 )
             ) { backStackEntry ->
                 val productId = backStackEntry.arguments?.getString(DestinationMenu.DetailsScreen.PRODUCT_ID_ARG).orEmpty()
-                ProductDetailsScreen(productId = productId) { navController.popBackStack() }
+                val args = ProductDetailsArgs(productId = productId)
+                ProductDetailsScreen(args = args) { navController.popBackStack() }
             }
             composable(DestinationProducts.MyProductsScreen.route) {
                 val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })

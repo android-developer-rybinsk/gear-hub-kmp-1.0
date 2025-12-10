@@ -3,6 +3,8 @@ package gearhub.feature.menu.presentation.menu
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
 import gearhub.feature.menu.navigation.DestinationMenu
+import gearhub.feature.menu.navigation.FilterArgs
+import gearhub.feature.menu.navigation.ProductDetailsArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -60,8 +62,12 @@ class MenuViewModel(
                 loadInitial()
             }
             MenuAction.FilterClicked -> router.navigate(DestinationMenu.FilterScreen())
-            is MenuAction.CategorySelected -> router.navigate(DestinationMenu.FilterScreen(action.categoryId))
-            is MenuAction.ProductClicked -> router.navigate(DestinationMenu.DetailsScreen(action.productId))
+            is MenuAction.CategorySelected -> router.navigate(
+                DestinationMenu.FilterScreen(FilterArgs(categoryId = action.categoryId))
+            )
+            is MenuAction.ProductClicked -> router.navigate(
+                DestinationMenu.DetailsScreen(ProductDetailsArgs(productId = action.productId))
+            )
             MenuAction.LoadNextPage -> loadNextPage()
             MenuAction.Retry -> loadInitial()
         }

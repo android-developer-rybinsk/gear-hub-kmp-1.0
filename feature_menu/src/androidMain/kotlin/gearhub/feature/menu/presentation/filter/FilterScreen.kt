@@ -14,10 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import gearhub.feature.menu.navigation.FilterArgs
 
 @Composable
 fun FilterScreen(
-    categoryId: String?,
+    args: FilterArgs,
     onClose: () -> Unit
 ) {
     Scaffold(
@@ -41,9 +42,9 @@ fun FilterScreen(
                 .padding(padding),
             contentAlignment = Alignment.Center
         ) {
-            if (categoryId != null) {
+            if (args.categoryId != null) {
                 Text(
-                    text = "Предустановленная категория: $categoryId",
+                    text = "Предустановленная категория: ${args.categoryId}",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
