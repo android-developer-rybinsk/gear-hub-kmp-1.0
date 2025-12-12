@@ -1,5 +1,6 @@
 package gearhub.feature.menu.presentation.menu
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -78,6 +79,10 @@ fun MenuScreen(
             focusManager.clearFocus(force = true)
         }
         wasKeyboardVisible = isKeyboardVisible
+    }
+
+    BackHandler(enabled = isSearchFocused) {
+        focusManager.clearFocus(force = true)
     }
 
     Scaffold(
