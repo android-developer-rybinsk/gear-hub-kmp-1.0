@@ -1,28 +1,21 @@
 package com.gear.hub.presentation.main
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.FontWeight
 import com.gear.hub.presentation.models.TabItem
 import org.jetbrains.compose.resources.painterResource
 
@@ -59,45 +52,42 @@ fun CustomNavigationBar(
     tabs: List<TabItem>,
     onTabSelected: (TabItem) -> Unit
 ) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF101010))
-            .padding(vertical = 8.dp),
-        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly
+    NavigationBar(
+        modifier = Modifier.height(76.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 8.dp
     ) {
         tabs.forEach { tab ->
             val isSelected = currentRoute == tab.route
-            val background = if (isSelected) Color(0xFFEBA937) else Color.Transparent
-            val contentColor = if (isSelected) Color.White else Color.White.copy(alpha = 0.6f)
-
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(50))
-                        .background(background)
-                        .clickable { onTabSelected(tab) }
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
+            val iconSize = if (isSelected) 26.dp else 24.dp
+            NavigationBarItem(
+                selected = isSelected,
+                onClick = { onTabSelected(tab) },
+                icon = {
                     Icon(
                         painter = painterResource(tab.icon),
                         contentDescription = tab.label,
-                        tint = contentColor,
-                        modifier = Modifier.size(24.dp)
+                        tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .height(iconSize)
                     )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = tab.label,
-                    color = contentColor,
-                    fontSize = if (isSelected) 14.sp else 12.sp,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                },
+                label = {
+                    Text(
+                        text = tab.label,
+                        fontSize = if (isSelected) 13.sp else 12.sp,
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
+                    )
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
+            )
         }
     }
 }

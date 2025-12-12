@@ -2,9 +2,11 @@ package gearhub.feature.menu.presentation.menu
 
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
+import gearhub.feature.menu.data.MenuDataProvider
 import gearhub.feature.menu.navigation.DestinationMenu
 import gearhub.feature.menu.navigation.FilterArgs
 import gearhub.feature.menu.navigation.ProductDetailsArgs
+import gearhub.feature.menu.navigation.SearchArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -14,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 class MenuViewModel(
     private val router: Router
@@ -22,11 +23,12 @@ class MenuViewModel(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private val categoriesSource = MutableStateFlow(seedCategories())
-    private val productsSource = MutableStateFlow(seedProducts())
+    private val categoriesSource = MutableStateFlow(MenuDataProvider.categories())
+    private val productsSource = MutableStateFlow(MenuDataProvider.products())
 
     private var currentPage = 0
     private val pageSize = 6
+    private var lastSearchNavigationQuery: String? = null
 
     init {
         scope.launch {
@@ -59,6 +61,13 @@ class MenuViewModel(
             MenuAction.Back -> router.back()
             is MenuAction.SearchChanged -> {
                 setState { it.copy(searchQuery = action.query) }
+                val trimmed = action.query.trim()
+                if (trimmed.isEmpty()) {
+                    lastSearchNavigationQuery = null
+                } else if (trimmed != lastSearchNavigationQuery) {
+                    lastSearchNavigationQuery = trimmed
+                    router.navigate(DestinationMenu.SearchResultsScreen(SearchArgs(trimmed)))
+                }
                 loadInitial()
             }
             MenuAction.FilterClicked -> router.navigate(DestinationMenu.FilterScreen())
@@ -148,40 +157,6 @@ class MenuViewModel(
 
         return productsSource.value.filter { product ->
             query.isBlank() || product.title.contains(query, ignoreCase = true)
-        }
-    }
-
-    private fun seedCategories(): List<MenuCategory> = listOf(
-        MenuCategory("boats", "Лодки"),
-        MenuCategory("service", "Сервис"),
-        MenuCategory("tackle", "Снасти"),
-        MenuCategory("outfit", "Экипировка"),
-        MenuCategory("accessories", "Аксессуары")
-    )
-
-    private fun seedProducts(): List<MenuProduct> {
-        val prices = listOf(4500.0, 18990.0, 12999.0, 7500.0, 3990.0, 6200.0, 28450.0, 1190.0)
-        val titles = listOf(
-            "Надувная лодка",
-            "Эхолот Garmin",
-            "Набор для сервиса",
-            "Спиннинг для трофея",
-            "Костюм для рыбалки",
-            "Набор воблеров",
-            "Электромотор",
-            "Шнур плетеный"
-        )
-        val categories = seedCategories()
-
-        return List(40) { index ->
-                val category = categories.random()
-                MenuProduct(
-                    id = "product-$index",
-                    title = titles[index % titles.size] + " #${index + 1}",
-                    price = prices[index % prices.size] + Random.nextInt(0, 5000),
-                    imageUrl = null,
-                    categoryId = category.id
-                )
         }
     }
 }

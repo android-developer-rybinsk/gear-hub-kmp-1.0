@@ -20,10 +20,13 @@ import gearhub.feature.chats.presentation.chats.ChatsViewModel
 import gearhub.feature.menu.navigation.DestinationMenu
 import gearhub.feature.menu.navigation.FilterArgs
 import gearhub.feature.menu.navigation.ProductDetailsArgs
+import gearhub.feature.menu.navigation.SearchArgs
 import gearhub.feature.menu.presentation.detail.ProductDetailsScreen
 import gearhub.feature.menu.presentation.filter.FilterScreen
 import gearhub.feature.menu.presentation.menu.MenuScreen
 import gearhub.feature.menu.presentation.menu.MenuViewModel
+import gearhub.feature.menu.presentation.search.SearchResultsScreen
+import gearhub.feature.menu.presentation.search.SearchResultsViewModel
 import gearhub.feature.products.MyProductsScreen
 import gearhub.feature.products.navigation.DestinationProducts
 import gearhub.feature.products.presentation.my.MyProductsViewModel
@@ -74,6 +77,17 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
             val productId = backStackEntry.arguments?.getString(DestinationMenu.DetailsScreen.PRODUCT_ID_ARG).orEmpty()
             val args = ProductDetailsArgs(productId = productId)
             ProductDetailsScreen(args = args) { rootNavController.popBackStack() }
+        }
+        composable(
+            route = DestinationMenu.SearchResultsScreen.ROUTE_PATTERN,
+            arguments = listOf(
+                navArgument(DestinationMenu.SearchResultsScreen.QUERY_ARG) { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString(DestinationMenu.SearchResultsScreen.QUERY_ARG).orEmpty()
+            val args = SearchArgs(query = query)
+            val vm: SearchResultsViewModel = koinViewModel(parameters = { parametersOf(router, query) })
+            SearchResultsScreen(args = args, viewModel = vm)
         }
     }
 }

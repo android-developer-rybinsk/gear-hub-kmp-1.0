@@ -6,6 +6,8 @@ data class FilterArgs(val categoryId: String? = null)
 
 data class ProductDetailsArgs(val productId: String)
 
+data class SearchArgs(val query: String)
+
 sealed class DestinationMenu(override val route: String) : Destination(route) {
     data object MenuScreen : DestinationMenu("menu")
 
@@ -23,6 +25,15 @@ sealed class DestinationMenu(override val route: String) : Destination(route) {
         companion object {
             const val PRODUCT_ID_ARG = "productId"
             const val ROUTE_PATTERN = "menu/details/{$PRODUCT_ID_ARG}"
+        }
+    }
+
+    data class SearchResultsScreen(val args: SearchArgs) : DestinationMenu(buildRoute(args)) {
+        companion object {
+            const val QUERY_ARG = "query"
+            const val ROUTE_PATTERN = "menu/search?${QUERY_ARG}={${QUERY_ARG}}"
+
+            fun buildRoute(args: SearchArgs): String = "menu/search?$QUERY_ARG=${args.query}"
         }
     }
 }
