@@ -220,7 +220,7 @@ private fun CategoryRow(
                     colors = FilterChipDefaults.elevatedFilterChipColors(
                         containerColor = Color.White.copy(alpha = 0.18f),
                         labelColor = Color.White,
-                        leadingIconContentColor = Color.White,
+                        iconColor = Color.White,
                         selectedContainerColor = Color.White.copy(alpha = 0.24f),
                         selectedLabelColor = Color.White
                     )
