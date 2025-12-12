@@ -2,9 +2,18 @@ package com.gear.hub.presentation.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,26 +31,23 @@ fun MainScreen(
     tabs: List<TabItem>,
     currentRoute: String?,
     onTabSelected: (TabItem) -> Unit,
-    content: @Composable (Modifier) -> Unit = {}
+    content: @Composable (Modifier) -> Unit = {},
 ) {
-    val showBottomBar = currentRoute == null || tabs.any { it.route == currentRoute }
     val layoutDirection = LocalLayoutDirection.current
     Scaffold(
         bottomBar = {
-            if (showBottomBar) {
-                CustomNavigationBar(
-                    currentRoute = currentRoute,
-                    tabs = tabs,
-                    onTabSelected = onTabSelected
-                )
-            }
+            CustomNavigationBar(
+                currentRoute = currentRoute,
+                tabs = tabs,
+                onTabSelected = onTabSelected
+            )
         }
     ) { innerPadding ->
         val adjustedPadding = PaddingValues(
             start = innerPadding.calculateStartPadding(layoutDirection),
             top = innerPadding.calculateTopPadding(),
             end = innerPadding.calculateEndPadding(layoutDirection),
-            bottom = if (showBottomBar) 0.dp else innerPadding.calculateBottomPadding()
+            bottom = innerPadding.calculateBottomPadding()
         )
         content(Modifier.padding(adjustedPadding))
     }
@@ -58,7 +64,7 @@ fun CustomNavigationBar(
             .fillMaxWidth()
             .background(Color(0xFF101010))
             .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly
     ) {
         tabs.forEach { tab ->
             val isSelected = currentRoute == tab.route
