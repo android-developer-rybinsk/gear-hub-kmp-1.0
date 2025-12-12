@@ -65,7 +65,6 @@ class MenuViewModel(
                 if (trimmed.isEmpty()) {
                     lastSearchNavigationQuery = null
                 }
-                loadInitial()
             }
             MenuAction.SearchSubmitted -> {
                 val trimmed = currentState.searchQuery.trim()
@@ -75,8 +74,9 @@ class MenuViewModel(
                 }
 
                 if (trimmed != lastSearchNavigationQuery) {
-                    lastSearchNavigationQuery = trimmed
                     router.navigate(DestinationMenu.SearchResultsScreen(SearchArgs(trimmed)))
+                    setState { it.copy(searchQuery = "") }
+                    lastSearchNavigationQuery = null
                 }
             }
             MenuAction.FilterClicked -> router.navigate(DestinationMenu.FilterScreen())
@@ -162,10 +162,6 @@ class MenuViewModel(
     }
 
     private fun filterProducts(): List<MenuProduct> {
-        val query = currentState.searchQuery.trim()
-
-        return productsSource.value.filter { product ->
-            query.isBlank() || product.title.contains(query, ignoreCase = true)
-        }
+        return productsSource.value
     }
 }

@@ -19,10 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import gearhub.feature.menu.presentation.menu.MenuProduct
+
+private val BrandPrimary = Color(0xFF0A2841)
 
 @Composable
 fun ProductCard(
@@ -34,7 +37,7 @@ fun ProductCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.94f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -74,7 +77,7 @@ fun ProductCard(
             Text(
                 text = "${formatPrice(product.price)} ₽",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary,
+                color = BrandPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

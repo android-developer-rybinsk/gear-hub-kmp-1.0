@@ -19,9 +19,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ElevatedFilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,7 +38,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.ImeAction
@@ -51,20 +54,24 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
+private val BrandPrimary = Color(0xFF0A2841)
+
 @Composable
 fun MenuScreen(
     viewModel: MenuViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     var isSearchFocused by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
 
     Scaffold(
-        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        modifier = Modifier.background(BrandPrimary),
         topBar = {
             Surface(
-                tonalElevation = 6.dp,
-                shadowElevation = 8.dp,
-                color = MaterialTheme.colorScheme.surface
+                tonalElevation = 10.dp,
+                shadowElevation = 12.dp,
+                color = BrandPrimary
             ) {
                 Row(
                     modifier = Modifier
@@ -78,6 +85,7 @@ fun MenuScreen(
                         modifier = Modifier
                             .weight(1f)
                             .padding(end = 12.dp)
+                            .focusRequester(focusRequester)
                             .onFocusChanged { isSearchFocused = it.isFocused },
                         placeholder = { Text(text = "Поиск объявлений") },
                         singleLine = true,
@@ -91,26 +99,36 @@ fun MenuScreen(
                         },
                         trailingIcon = {
                             if (isSearchFocused) {
-                                IconButton(onClick = { viewModel.onAction(MenuAction.SearchSubmitted) }) {
+                                IconButton(onClick = {
+                                    focusManager.clearFocus()
+                                    viewModel.onAction(MenuAction.SearchSubmitted)
+                                }) {
                                     Icon(
                                         painter = painterResource(R.drawable.search),
                                         contentDescription = "Поиск",
-                                        tint = MaterialTheme.colorScheme.primary
+                                        tint = BrandPrimary
                                     )
                                 }
                             }
                         },
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        keyboardActions = KeyboardActions(onSearch = { viewModel.onAction(MenuAction.SearchSubmitted) }),
+                        keyboardActions = KeyboardActions(onSearch = {
+                            focusManager.clearFocus()
+                            viewModel.onAction(MenuAction.SearchSubmitted)
+                        }),
                         colors = TextFieldDefaults.colors(
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            focusedTextColor = BrandPrimary,
+                            unfocusedTextColor = BrandPrimary,
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White.copy(alpha = 0.96f),
+                            disabledContainerColor = Color.White.copy(alpha = 0.8f),
+                            focusedPlaceholderColor = BrandPrimary.copy(alpha = 0.6f),
+                            unfocusedPlaceholderColor = BrandPrimary.copy(alpha = 0.6f),
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
                             errorIndicatorColor = Color.Transparent,
-                            cursorColor = MaterialTheme.colorScheme.primary
+                            cursorColor = BrandPrimary
                         )
                     )
 
@@ -119,14 +137,14 @@ fun MenuScreen(
                             Icon(
                                 painter = painterResource(R.drawable.filter),
                                 contentDescription = "Фильтры",
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = Color.White
                             )
                         }
                     }
                 }
             }
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = BrandPrimary
     ) { paddingValues ->
         MenuContent(
             modifier = Modifier.padding(paddingValues),
@@ -151,7 +169,7 @@ private fun MenuContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(BrandPrimary)
     ) {
         CategoryRow(
             categories = state.categories,
@@ -188,17 +206,24 @@ private fun CategoryRow(
     onCategoryClick: (String) -> Unit
 ) {
     val listState = rememberLazyListState()
-    Surface(color = MaterialTheme.colorScheme.surface, tonalElevation = 1.dp) {
+    Surface(color = BrandPrimary, tonalElevation = 0.dp) {
         androidx.compose.foundation.lazy.LazyRow(
             state = listState,
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(categories) { category ->
                 ElevatedFilterChip(
                     selected = false,
                     onClick = { onCategoryClick(category.id) },
-                    label = { Text(category.title) }
+                    label = { Text(category.title) },
+                    colors = FilterChipDefaults.elevatedFilterChipColors(
+                        containerColor = Color.White.copy(alpha = 0.18f),
+                        labelColor = Color.White,
+                        leadingIconContentColor = Color.White,
+                        selectedContainerColor = Color.White.copy(alpha = 0.24f),
+                        selectedLabelColor = Color.White
+                    )
                 )
             }
         }
