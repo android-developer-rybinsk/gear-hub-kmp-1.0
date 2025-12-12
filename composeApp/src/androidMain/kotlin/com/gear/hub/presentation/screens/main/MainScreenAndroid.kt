@@ -11,7 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navigation
 import com.gear.hub.presentation.main.MainScreen
 import com.gear.hub.presentation.models.TabItem
 import gear.hub.core.navigation.Router
@@ -37,70 +36,19 @@ import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
 fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
-    val navController = rememberNavController()
-    val navBackStackEntry = navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry.value?.destination?.route
-    val router: Router = getKoin().get { parametersOf(navController) }
+    val rootNavController = rememberNavController()
+    val router: Router = getKoin().get { parametersOf(rootNavController) }
     val state by viewModel.state.collectAsState()
-
-    val onTabSelected: (TabItem) -> Unit = { tab ->
-        if (currentRoute != tab.route) {
-            navController.navigate(tab.route) {
-                launchSingleTop = true
-                restoreState = true
-                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-            }
-        }
-    }
-
     NavHost(
-        navController = navController,
-        startDestination = MAIN_GRAPH_ROUTE
+        navController = rootNavController,
+        startDestination = MAIN_TABS_ROUTE
     ) {
-        navigation(
-            startDestination = DestinationMenu.MenuScreen.route,
-            route = MAIN_GRAPH_ROUTE
-        ) {
-            composable(DestinationMenu.MenuScreen.route) {
-                val vm: MenuViewModel = koinViewModel(parameters = { parametersOf(router) })
-                TabScaffold(
-                    tabs = state.tabs,
-                    currentRoute = currentRoute,
-                    onTabSelected = onTabSelected
-                ) { modifier ->
-                    MenuScreen(vm, modifier = modifier)
-                }
-            }
-            composable(DestinationProducts.MyProductsScreen.route) {
-                val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })
-                TabScaffold(
-                    tabs = state.tabs,
-                    currentRoute = currentRoute,
-                    onTabSelected = onTabSelected
-                ) { modifier ->
-                    MyProductsScreen(vm, modifier = modifier)
-                }
-            }
-            composable(DestinationChats.ChatsScreen.route) {
-                val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(router) })
-                TabScaffold(
-                    tabs = state.tabs,
-                    currentRoute = currentRoute,
-                    onTabSelected = onTabSelected
-                ) { modifier ->
-                    ChatsScreen(vm, modifier = modifier)
-                }
-            }
-            composable(DestinationProfile.ProfileScreen.route) {
-                val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(rootRouter) })
-                TabScaffold(
-                    tabs = state.tabs,
-                    currentRoute = currentRoute,
-                    onTabSelected = onTabSelected
-                ) { modifier ->
-                    ProfileScreen(vm, modifier = modifier)
-                }
-            }
+        composable(MAIN_TABS_ROUTE) {
+            TabsHost(
+                tabs = state.tabs,
+                router = router,
+                rootRouter = rootRouter
+            )
         }
         composable(
             route = DestinationMenu.FilterScreen.ROUTE_PATTERN,
@@ -115,7 +63,7 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
                 ?.getString(DestinationMenu.FilterScreen.CATEGORY_ARG)
                 ?.takeIf { it.isNotBlank() }
             val args = FilterArgs(categoryId = categoryId)
-            FilterScreen(args = args) { navController.popBackStack() }
+            FilterScreen(args = args) { rootNavController.popBackStack() }
         }
         composable(
             route = DestinationMenu.DetailsScreen.ROUTE_PATTERN,
@@ -125,24 +73,59 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getString(DestinationMenu.DetailsScreen.PRODUCT_ID_ARG).orEmpty()
             val args = ProductDetailsArgs(productId = productId)
-            ProductDetailsScreen(args = args) { navController.popBackStack() }
+            ProductDetailsScreen(args = args) { rootNavController.popBackStack() }
         }
     }
 }
 
-private const val MAIN_GRAPH_ROUTE = "main_graph"
+private const val MAIN_TABS_ROUTE = "main_tabs"
 
 @Composable
-private fun TabScaffold(
+private fun TabsHost(
     tabs: List<TabItem>,
-    currentRoute: String?,
-    onTabSelected: (TabItem) -> Unit,
-    content: @Composable (Modifier) -> Unit
+    router: Router,
+    rootRouter: Router
 ) {
+    val tabNavController = rememberNavController()
+    val tabBackStackEntry = tabNavController.currentBackStackEntryAsState()
+    val currentRoute = tabBackStackEntry.value?.destination?.route
+
+    val onTabSelected: (TabItem) -> Unit = { tab ->
+        if (currentRoute != tab.route) {
+            tabNavController.navigate(tab.route) {
+                launchSingleTop = true
+                restoreState = true
+                popUpTo(tabNavController.graph.findStartDestination().id) { saveState = true }
+            }
+        }
+    }
+
     MainScreen(
         tabs = tabs,
         currentRoute = currentRoute,
-        onTabSelected = onTabSelected,
-        content = content
-    )
+        onTabSelected = onTabSelected
+    ) { innerModifier ->
+        NavHost(
+            navController = tabNavController,
+            startDestination = DestinationMenu.MenuScreen.route,
+            modifier = innerModifier
+        ) {
+            composable(DestinationMenu.MenuScreen.route) {
+                val vm: MenuViewModel = koinViewModel(parameters = { parametersOf(router) })
+                MenuScreen(vm, modifier = innerModifier)
+            }
+            composable(DestinationProducts.MyProductsScreen.route) {
+                val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })
+                MyProductsScreen(vm, modifier = innerModifier)
+            }
+            composable(DestinationChats.ChatsScreen.route) {
+                val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(router) })
+                ChatsScreen(vm, modifier = innerModifier)
+            }
+            composable(DestinationProfile.ProfileScreen.route) {
+                val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(rootRouter) })
+                ProfileScreen(vm, modifier = innerModifier)
+            }
+        }
+    }
 }
