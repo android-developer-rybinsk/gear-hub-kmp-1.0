@@ -126,19 +126,19 @@ private fun TabsHost(
         ) {
             composable(DestinationMenu.MenuScreen.route) {
                 val vm: MenuViewModel = koinViewModel(parameters = { parametersOf(router) })
-                MenuScreen(vm, modifier = innerModifier)
+                MenuScreen(vm)
             }
             composable(DestinationProducts.MyProductsScreen.route) {
                 val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })
-                MyProductsScreen(vm, modifier = innerModifier)
+                MyProductsScreen(vm)
             }
             composable(DestinationChats.ChatsScreen.route) {
                 val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(router) })
-                ChatsScreen(vm, modifier = innerModifier)
+                ChatsScreen(vm)
             }
             composable(DestinationProfile.ProfileScreen.route) {
                 val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(rootRouter) })
-                ProfileScreen(vm, modifier = innerModifier)
+                ProfileScreen(vm)
             }
         }
     }

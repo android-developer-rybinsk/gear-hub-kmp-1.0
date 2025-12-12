@@ -46,13 +46,12 @@ import kotlinx.coroutines.flow.map
 
 @Composable
 fun MenuScreen(
-    viewModel: MenuViewModel = koinViewModel(),
-    modifier: Modifier = Modifier
+    viewModel: MenuViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
     Scaffold(
-        modifier = modifier.background(MaterialTheme.colorScheme.background),
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
         topBar = {
             Surface(
                 tonalElevation = 6.dp,

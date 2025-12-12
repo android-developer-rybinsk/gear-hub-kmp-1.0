@@ -15,13 +15,12 @@ import gear.hub.core.di.koinViewModel
 
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = koinViewModel(),
-    modifier: Modifier = Modifier
+    viewModel: ProfileViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         contentAlignment = Alignment.Center
