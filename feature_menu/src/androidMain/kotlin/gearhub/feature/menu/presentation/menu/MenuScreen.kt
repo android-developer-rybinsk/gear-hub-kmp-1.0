@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,12 +31,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.ImeAction
 import gear.hub.core.di.koinViewModel
 import gearhub.feature.menu.R
 import gearhub.feature.menu.presentation.menu.components.ErrorPlaceholder
@@ -49,6 +56,7 @@ fun MenuScreen(
     viewModel: MenuViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    var isSearchFocused by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
@@ -69,15 +77,31 @@ fun MenuScreen(
                         onValueChange = { query -> viewModel.onAction(MenuAction.SearchChanged(query)) },
                         modifier = Modifier
                             .weight(1f)
-                            .padding(end = 12.dp),
+                            .padding(end = 12.dp)
+                            .onFocusChanged { isSearchFocused = it.isFocused },
                         placeholder = { Text(text = "Поиск объявлений") },
                         singleLine = true,
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.search),
-                                contentDescription = "Поиск"
-                            )
+                        leadingIcon = if (isSearchFocused) null else {
+                            {
+                                Icon(
+                                    painter = painterResource(R.drawable.search),
+                                    contentDescription = "Поиск"
+                                )
+                            }
                         },
+                        trailingIcon = {
+                            if (isSearchFocused) {
+                                IconButton(onClick = { viewModel.onAction(MenuAction.SearchSubmitted) }) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.search),
+                                        contentDescription = "Поиск",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = { viewModel.onAction(MenuAction.SearchSubmitted) }),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -90,12 +114,14 @@ fun MenuScreen(
                         )
                     )
 
-                    IconButton(onClick = { viewModel.onAction(MenuAction.FilterClicked) }) {
-                        Icon(
-                            painter = painterResource(R.drawable.filter),
-                            contentDescription = "Фильтры",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                    if (!isSearchFocused) {
+                        IconButton(onClick = { viewModel.onAction(MenuAction.FilterClicked) }) {
+                            Icon(
+                                painter = painterResource(R.drawable.filter),
+                                contentDescription = "Фильтры",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }

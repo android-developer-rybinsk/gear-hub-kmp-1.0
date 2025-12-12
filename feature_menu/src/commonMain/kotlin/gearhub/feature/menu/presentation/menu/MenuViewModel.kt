@@ -64,11 +64,20 @@ class MenuViewModel(
                 val trimmed = action.query.trim()
                 if (trimmed.isEmpty()) {
                     lastSearchNavigationQuery = null
-                } else if (trimmed != lastSearchNavigationQuery) {
+                }
+                loadInitial()
+            }
+            MenuAction.SearchSubmitted -> {
+                val trimmed = currentState.searchQuery.trim()
+                if (trimmed.isEmpty()) {
+                    lastSearchNavigationQuery = null
+                    return
+                }
+
+                if (trimmed != lastSearchNavigationQuery) {
                     lastSearchNavigationQuery = trimmed
                     router.navigate(DestinationMenu.SearchResultsScreen(SearchArgs(trimmed)))
                 }
-                loadInitial()
             }
             MenuAction.FilterClicked -> router.navigate(DestinationMenu.FilterScreen())
             is MenuAction.CategorySelected -> router.navigate(
