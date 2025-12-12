@@ -41,9 +41,6 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
     val router: Router = getKoin().get { parametersOf(navController) }
     val state by viewModel.state.collectAsState()
 
-    val tabRoutes = state.tabs.map { it.route }.toSet()
-    val showBottomBar = currentRoute == null || tabRoutes.contains(currentRoute)
-
     val onTabSelected: (TabItem) -> Unit = { tab ->
         if (currentRoute != tab.route) {
             navController.navigate(tab.route) {
@@ -54,78 +51,57 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
         }
     }
 
-    NavHost(
-        navController = navController,
-        startDestination = DestinationMenu.MenuScreen.route
-    ) {
-        composable(DestinationMenu.MenuScreen.route) {
-            val vm: MenuViewModel = koinViewModel(parameters = { parametersOf(router) })
-            MainScreen(
-                tabs = state.tabs,
-                currentRoute = currentRoute,
-                onTabSelected = onTabSelected,
-                showBottomBar = showBottomBar
-            ) { innerModifier ->
+    MainScreen(
+        tabs = state.tabs,
+        currentRoute = currentRoute,
+        onTabSelected = onTabSelected
+    ) { innerModifier ->
+        NavHost(
+            navController = navController,
+            startDestination = DestinationMenu.MenuScreen.route,
+            modifier = innerModifier
+        ) {
+            composable(DestinationMenu.MenuScreen.route) {
+                val vm: MenuViewModel = koinViewModel(parameters = { parametersOf(router) })
                 MenuScreen(vm, modifier = innerModifier)
             }
-        }
-        composable(DestinationProducts.MyProductsScreen.route) {
-            val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })
-            MainScreen(
-                tabs = state.tabs,
-                currentRoute = currentRoute,
-                onTabSelected = onTabSelected,
-                showBottomBar = showBottomBar
-            ) { innerModifier ->
+            composable(DestinationProducts.MyProductsScreen.route) {
+                val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })
                 MyProductsScreen(vm, modifier = innerModifier)
             }
-        }
-        composable(DestinationChats.ChatsScreen.route) {
-            val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(router) })
-            MainScreen(
-                tabs = state.tabs,
-                currentRoute = currentRoute,
-                onTabSelected = onTabSelected,
-                showBottomBar = showBottomBar
-            ) { innerModifier ->
+            composable(DestinationChats.ChatsScreen.route) {
+                val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(router) })
                 ChatsScreen(vm, modifier = innerModifier)
             }
-        }
-        composable(DestinationProfile.ProfileScreen.route) {
-            val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(rootRouter) })
-            MainScreen(
-                tabs = state.tabs,
-                currentRoute = currentRoute,
-                onTabSelected = onTabSelected,
-                showBottomBar = showBottomBar
-            ) { innerModifier ->
+            composable(DestinationProfile.ProfileScreen.route) {
+                val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(rootRouter) })
                 ProfileScreen(vm, modifier = innerModifier)
             }
-        }
-        composable(
-            route = DestinationMenu.FilterScreen.ROUTE_PATTERN,
-            arguments = listOf(
-                navArgument(DestinationMenu.FilterScreen.CATEGORY_ARG) {
-                    type = NavType.StringType
-                    nullable = true
-                }
-            )
-        ) { backStackEntry ->
-            val categoryId = backStackEntry.arguments
-                ?.getString(DestinationMenu.FilterScreen.CATEGORY_ARG)
-                ?.takeIf { it.isNotBlank() }
-            val args = FilterArgs(categoryId = categoryId)
-            FilterScreen(args = args) { navController.popBackStack() }
-        }
-        composable(
-            route = DestinationMenu.DetailsScreen.ROUTE_PATTERN,
-            arguments = listOf(
-                navArgument(DestinationMenu.DetailsScreen.PRODUCT_ID_ARG) { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val productId = backStackEntry.arguments?.getString(DestinationMenu.DetailsScreen.PRODUCT_ID_ARG).orEmpty()
-            val args = ProductDetailsArgs(productId = productId)
-            ProductDetailsScreen(args = args) { navController.popBackStack() }
+            composable(
+                route = DestinationMenu.FilterScreen.ROUTE_PATTERN,
+                arguments = listOf(
+                    navArgument(DestinationMenu.FilterScreen.CATEGORY_ARG) {
+                        type = NavType.StringType
+                        nullable = true
+                    }
+                )
+            ) { backStackEntry ->
+                val categoryId = backStackEntry.arguments
+                    ?.getString(DestinationMenu.FilterScreen.CATEGORY_ARG)
+                    ?.takeIf { it.isNotBlank() }
+                val args = FilterArgs(categoryId = categoryId)
+                FilterScreen(args = args) { navController.popBackStack() }
+            }
+            composable(
+                route = DestinationMenu.DetailsScreen.ROUTE_PATTERN,
+                arguments = listOf(
+                    navArgument(DestinationMenu.DetailsScreen.PRODUCT_ID_ARG) { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val productId = backStackEntry.arguments?.getString(DestinationMenu.DetailsScreen.PRODUCT_ID_ARG).orEmpty()
+                val args = ProductDetailsArgs(productId = productId)
+                ProductDetailsScreen(args = args) { navController.popBackStack() }
+            }
         }
     }
 }

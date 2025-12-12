@@ -22,9 +22,9 @@ fun MainScreen(
     tabs: List<TabItem>,
     currentRoute: String?,
     onTabSelected: (TabItem) -> Unit,
-    showBottomBar: Boolean = true,
     content: @Composable (Modifier) -> Unit = {}
 ) {
+    val showBottomBar = currentRoute == null || tabs.any { it.route == currentRoute }
     val layoutDirection = LocalLayoutDirection.current
     Scaffold(
         bottomBar = {
