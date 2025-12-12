@@ -17,12 +17,13 @@ import gearhub.feature.products.presentation.my.MyProductsViewModel
 
 @Composable
 fun MyProductsScreen(
-    viewModel: MyProductsViewModel = koinViewModel()
+    viewModel: MyProductsViewModel = koinViewModel(),
+    modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         contentAlignment = Alignment.Center

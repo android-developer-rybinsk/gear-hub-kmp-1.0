@@ -13,12 +13,13 @@ import gear.hub.core.di.koinViewModel
 
 @Composable
 fun ChatsScreen(
-    viewModel: ChatsViewModel = koinViewModel()
+    viewModel: ChatsViewModel = koinViewModel(),
+    modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         contentAlignment = Alignment.Center
