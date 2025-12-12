@@ -1,18 +1,12 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidKotlinMultiplatformLibrary)
-    alias(libs.plugins.androidLint)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
-
-    android {
-        namespace = "gearhub.feature.menu"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-    }
+    androidTarget()
 
     val xcfName = "feature_menuKit"
 
@@ -46,6 +40,7 @@ kotlin {
                 implementation(compose.material3)
                 implementation(compose.ui)
                 implementation(compose.components.resources)
+                implementation(compose.materialIconsExtended)
 
                 // DI
                 implementation(libs.koin.core)
@@ -79,4 +74,14 @@ kotlin {
         }
     }
 
+}
+
+android {
+    namespace = "gearhub.feature.menu"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+
+    sourceSets["main"].res.srcDirs("src/androidMain/res")
 }
