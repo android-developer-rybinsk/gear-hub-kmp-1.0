@@ -66,15 +66,18 @@ fun MenuScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var isSearchFocused by remember { mutableStateOf(false) }
+    var wasKeyboardVisible by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
     val density = LocalDensity.current
     val imeBottom = WindowInsets.ime.getBottom(density)
 
-    LaunchedEffect(imeBottom, isSearchFocused) {
-        if (imeBottom == 0 && isSearchFocused) {
+    LaunchedEffect(imeBottom) {
+        val isKeyboardVisible = imeBottom > 0
+        if (!isKeyboardVisible && wasKeyboardVisible) {
             focusManager.clearFocus(force = true)
         }
+        wasKeyboardVisible = isKeyboardVisible
     }
 
     Scaffold(
