@@ -39,6 +39,7 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
     val currentRoute = navBackStackEntry.value?.destination?.route
     val router: Router = getKoin().get { parametersOf(navController) }
     val state by viewModel.state.collectAsState()
+    val showBottomBar = currentRoute == null || state.tabs.any { it.route == currentRoute }
 
     MainScreen(
         tabs = state.tabs,
@@ -51,7 +52,8 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
                     popUpTo(navController.graph.startDestinationId) { saveState = true }
                 }
             }
-        }
+        },
+        showBottomBar = showBottomBar
     ) { innerModifier ->
         NavHost(
             navController = navController,

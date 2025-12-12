@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
@@ -21,18 +22,28 @@ fun MainScreen(
     tabs: List<TabItem>,
     currentRoute: String?,
     onTabSelected: (TabItem) -> Unit,
+    showBottomBar: Boolean = true,
     content: @Composable (Modifier) -> Unit = {}
 ) {
+    val layoutDirection = LocalLayoutDirection.current
     Scaffold(
         bottomBar = {
-            CustomNavigationBar(
-                currentRoute = currentRoute,
-                tabs = tabs,
-                onTabSelected = onTabSelected
-            )
+            if (showBottomBar) {
+                CustomNavigationBar(
+                    currentRoute = currentRoute,
+                    tabs = tabs,
+                    onTabSelected = onTabSelected
+                )
+            }
         }
     ) { innerPadding ->
-        content(Modifier.padding(innerPadding))
+        val adjustedPadding = PaddingValues(
+            start = innerPadding.calculateStartPadding(layoutDirection),
+            top = innerPadding.calculateTopPadding(),
+            end = innerPadding.calculateEndPadding(layoutDirection),
+            bottom = if (showBottomBar) 0.dp else innerPadding.calculateBottomPadding()
+        )
+        content(Modifier.padding(adjustedPadding))
     }
 }
 
