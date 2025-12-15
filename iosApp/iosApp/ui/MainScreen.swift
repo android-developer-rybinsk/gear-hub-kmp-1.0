@@ -15,9 +15,9 @@ struct MainScreenSwiftUI: View {
                     let menuVM = KoinKt.resolveMenuVM()
                     MenuScreenSwiftUI(vm: MenuViewModelWrapper(vm: menuVM), router: router)
 
-                case is DestinationProducts.MyAdsScreen:
-                    let adsVM = KoinKt.resolveMyAdsVM()
-                    MyAdsScreenSwiftUI(vm: MyAdsViewModelWrapper(vm: adsVM), router: router)
+                case is DestinationProducts.MyProductsScreen:
+                    let productsVM = KoinKt.resolveMyProductsVM()
+                    MyProductsScreenSwiftUI(vm: MyProductsViewModelWrapper(vm: productsVM), router: router)
 
                 case is DestinationChats.ChatsScreen:
                     let chatsVM = KoinKt.resolveChatsVM()
@@ -44,8 +44,8 @@ struct MainScreenSwiftUI: View {
                 TabButton(
                     icon: "icon_test",
                     label: "Объявления",
-                    isSelected: selectedTab is DestinationProducts.MyAdsScreen
-                ) { selectedTab = DestinationProducts.MyAdsScreen() }
+                    isSelected: selectedTab is DestinationProducts.MyProductsScreen
+                ) { selectedTab = DestinationProducts.MyProductsScreen() }
 
                 TabButton(
                     icon: "icon_test",

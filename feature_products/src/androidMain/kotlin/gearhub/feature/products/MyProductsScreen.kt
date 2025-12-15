@@ -12,12 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import gear.hub.core.di.koinViewModel
-import gearhub.feature.products.presentation.my.MyAdsAction
-import gearhub.feature.products.presentation.my.MyAdsViewModel
+import gearhub.feature.products.presentation.my.MyProductsAction
+import gearhub.feature.products.presentation.my.MyProductsViewModel
 
 @Composable
-fun MyAdsScreen(
-    viewModel: MyAdsViewModel = koinViewModel()
+fun MyProductsScreen(
+    viewModel: MyProductsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -27,7 +27,7 @@ fun MyAdsScreen(
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Button(onClick = { viewModel.onAction(MyAdsAction.Back) }) {
+        Button(onClick = { viewModel.onAction(MyProductsAction.Back) }) {
             Text(state.title)
         }
     }
