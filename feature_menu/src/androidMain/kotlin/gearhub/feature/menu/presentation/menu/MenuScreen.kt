@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -67,9 +68,10 @@ fun MenuScreen(
     var wasKeyboardVisible by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
-    val imeInsets = androidx.compose.foundation.layout.WindowInsets.ime
-    val isKeyboardVisible by remember {
-        derivedStateOf { imeInsets.getBottom(LocalDensity.current) > 0 }
+    val imeInsets = WindowInsets.ime
+    val density = LocalDensity.current
+    val isKeyboardVisible by remember(imeInsets, density) {
+        derivedStateOf { imeInsets.getBottom(density) > 0 }
     }
 
     LaunchedEffect(isKeyboardVisible) {
