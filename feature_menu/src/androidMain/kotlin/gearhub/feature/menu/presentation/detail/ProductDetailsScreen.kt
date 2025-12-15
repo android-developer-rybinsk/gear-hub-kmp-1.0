@@ -40,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +53,7 @@ import gearhub.feature.menu.navigation.ProductDetailsArgs
 import gearhub.feature.menu.presentation.menu.ProductDetail
 import gearhub.feature.menu.presentation.menu.theme.MenuBrandPrimary
 import gearhub.feature.menu.presentation.menu.theme.MenuCardSurface
+import kotlinx.coroutines.launch
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -62,6 +64,8 @@ fun ProductDetailsScreen(
     var product by remember { mutableStateOf<ProductDetail?>(null) }
     var showFullScreen by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState(pageCount = { product?.photos?.size ?: 0 })
+    val fullscreenPagerState = rememberPagerState(pageCount = { product?.photos?.size ?: 0 })
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(args.productId) {
         product = MenuDataProvider.productDetails().firstOrNull { it.id == args.productId }
@@ -103,7 +107,12 @@ fun ProductDetailsScreen(
                     ProductGallery(
                         detail = detail,
                         pagerState = pagerState,
-                        onImageClick = { showFullScreen = true }
+                        onImageClick = {
+                            showFullScreen = true
+                            coroutineScope.launch {
+                                fullscreenPagerState.scrollToPage(pagerState.currentPage)
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(18.dp))
                     Text(text = detail.title, style = MaterialTheme.typography.headlineSmall, color = Color.White)
@@ -176,9 +185,14 @@ fun ProductDetailsScreen(
 
                 if (showFullScreen) {
                     FullscreenGallery(
-                        pagerState = pagerState,
+                        pagerState = fullscreenPagerState,
                         detail = detail,
-                        onClose = { showFullScreen = false }
+                        onClose = { page ->
+                            showFullScreen = false
+                            coroutineScope.launch {
+                                pagerState.scrollToPage(page)
+                            }
+                        }
                     )
                 }
             }
@@ -234,7 +248,7 @@ private fun ProductGallery(detail: ProductDetail, pagerState: androidx.compose.f
 private fun FullscreenGallery(
     pagerState: androidx.compose.foundation.pager.PagerState,
     detail: ProductDetail,
-    onClose: () -> Unit
+    onClose: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -250,7 +264,7 @@ private fun FullscreenGallery(
                     .padding(horizontal = 8.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onClose) {
+                IconButton(onClick = { onClose(pagerState.currentPage) }) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Закрыть", tint = Color.White)
                 }
             }
