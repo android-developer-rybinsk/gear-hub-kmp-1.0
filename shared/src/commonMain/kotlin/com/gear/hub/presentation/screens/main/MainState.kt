@@ -11,7 +11,7 @@ import gearhubkmp.shared.generated.resources.icon_test
 data class MainState(
     val tabs: List<TabItem> = listOf(
         TabItem(DestinationMenu.MenuScreen.route, Res.drawable.icon_test, "Главная"),
-        TabItem(DestinationProducts.MyAdsScreen.route, Res.drawable.icon_test, "Объявления"),
+        TabItem(DestinationProducts.MyProductsScreen.route, Res.drawable.icon_test, "Объявления"),
         TabItem(DestinationChats.ChatsScreen.route, Res.drawable.icon_test, "Сообщения"),
         TabItem(DestinationProfile.ProfileScreen.route, Res.drawable.icon_test, "Профиль")
     )

@@ -10,7 +10,8 @@ import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
 import gear.hub.core.navigation.Router
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
 import gearhub.feature.menu.presentation.menu.MenuViewModel
-import gearhub.feature.products.presentation.my.MyAdsViewModel
+import gearhub.feature.menu.presentation.search.SearchResultsViewModel
+import gearhub.feature.products.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.api.ProfileNavigationConfig
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import org.koin.core.module.dsl.viewModel
@@ -22,7 +23,8 @@ val androidModule = module {
     viewModel { (router: Router) -> SplashViewModel(router, get<CheckAuthorizationUseCase>()) }
     viewModel { (router: Router, config: AuthNavigationConfig) -> AuthViewModel(get(), router, config) }
     viewModel { (router: Router) -> MenuViewModel(router) }
-    viewModel { (router: Router) -> MyAdsViewModel(router) }
+    viewModel { (router: Router, query: String) -> SearchResultsViewModel(router, query) }
+    viewModel { (router: Router) -> MyProductsViewModel(router) }
     viewModel { (router: Router) -> ChatsViewModel(router) }
     viewModel { (router: Router) -> ProfileViewModel(router, get(), get<ProfileNavigationConfig>()) }
 }
