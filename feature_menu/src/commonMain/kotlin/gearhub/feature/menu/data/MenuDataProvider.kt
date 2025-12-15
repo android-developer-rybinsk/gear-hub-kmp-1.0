@@ -2,6 +2,9 @@ package gearhub.feature.menu.data
 
 import gearhub.feature.menu.presentation.menu.MenuCategory
 import gearhub.feature.menu.presentation.menu.MenuProduct
+import gearhub.feature.menu.presentation.menu.ProductDetail
+import gearhub.feature.menu.presentation.menu.ProductSpec
+import gearhub.feature.menu.presentation.menu.SellerInfo
 import kotlin.random.Random
 
 object MenuDataProvider {
@@ -35,6 +38,45 @@ object MenuDataProvider {
                 price = prices[index % prices.size] + Random.nextInt(0, 5000),
                 imageUrl = null,
                 categoryId = category.id
+            )
+        }
+    }
+
+    fun productDetails(): List<ProductDetail> {
+        val baseProducts = products()
+        val description = """
+            Легкое и надежное снаряжение для рыбалки. Полностью проверено, в отличном состоянии и готово к сезону.
+            Возможна доставка, все подробности уточняйте в сообщениях или по телефону.
+        """.trimIndent()
+        val specs = listOf(
+            ProductSpec("Состояние", "Отличное"),
+            ProductSpec("Производитель", "GearHub"),
+            ProductSpec("Цвет", "Темно-синий"),
+            ProductSpec("Материал", "Композиционный")
+        )
+        val seller = SellerInfo(
+            name = "Магазин Рыбака",
+            rating = 4.8,
+            adsCount = 124,
+            isCompany = true
+        )
+        val photos = listOf(
+            "photo-1",
+            "photo-2",
+            "photo-3",
+            "photo-4"
+        )
+
+        return baseProducts.map { product ->
+            ProductDetail(
+                id = product.id,
+                title = product.title,
+                price = product.price,
+                city = "Санкт-Петербург",
+                description = description,
+                photos = photos,
+                specs = specs,
+                seller = seller
             )
         }
     }

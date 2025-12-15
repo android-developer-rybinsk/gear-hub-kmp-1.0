@@ -40,6 +40,10 @@ class SearchResultsViewModel(
             is SearchResultsAction.ProductClicked -> router.navigate(
                 DestinationMenu.DetailsScreen(ProductDetailsArgs(productId = action.productId))
             )
+
+            SearchResultsAction.FilterClicked -> router.navigate(
+                DestinationMenu.FilterScreen()
+            )
         }
     }
 

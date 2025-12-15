@@ -8,11 +8,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.getBottom
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -34,6 +33,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,11 +55,10 @@ import gearhub.feature.menu.R
 import gearhub.feature.menu.presentation.menu.components.ErrorPlaceholder
 import gearhub.feature.menu.presentation.menu.components.Loading
 import gearhub.feature.menu.presentation.menu.components.ProductCard
+import gearhub.feature.menu.presentation.menu.theme.MenuBrandPrimary
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-
-private val BrandPrimary = Color(0xFF0A2841)
 
 @Composable
 fun MenuScreen(
@@ -70,11 +69,13 @@ fun MenuScreen(
     var wasKeyboardVisible by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    val imeInsets = WindowInsets.ime
     val density = LocalDensity.current
-    val imeBottom = WindowInsets.ime.getBottom(density)
+    val isKeyboardVisible by remember(imeInsets, density) {
+        derivedStateOf { imeInsets.getBottom(density) > 0 }
+    }
 
-    LaunchedEffect(imeBottom) {
-        val isKeyboardVisible = imeBottom > 0
+    LaunchedEffect(isKeyboardVisible) {
         if (!isKeyboardVisible && wasKeyboardVisible) {
             focusManager.clearFocus(force = true)
         }
@@ -86,12 +87,12 @@ fun MenuScreen(
     }
 
     Scaffold(
-        modifier = Modifier.background(BrandPrimary),
+        modifier = Modifier.background(MenuBrandPrimary),
         topBar = {
             Surface(
                 tonalElevation = 10.dp,
                 shadowElevation = 12.dp,
-                color = BrandPrimary
+                color = MenuBrandPrimary
             ) {
                 Row(
                     modifier = Modifier
@@ -126,7 +127,7 @@ fun MenuScreen(
                                     Icon(
                                         painter = painterResource(R.drawable.search),
                                         contentDescription = "Поиск",
-                                        tint = BrandPrimary
+                                        tint = MenuBrandPrimary
                                     )
                                 }
                             }
@@ -137,18 +138,18 @@ fun MenuScreen(
                             viewModel.onAction(MenuAction.SearchSubmitted)
                         }),
                         colors = TextFieldDefaults.colors(
-                            focusedTextColor = BrandPrimary,
-                            unfocusedTextColor = BrandPrimary,
+                            focusedTextColor = MenuBrandPrimary,
+                            unfocusedTextColor = MenuBrandPrimary,
                             focusedContainerColor = Color.White,
                             unfocusedContainerColor = Color.White.copy(alpha = 0.96f),
                             disabledContainerColor = Color.White.copy(alpha = 0.8f),
-                            focusedPlaceholderColor = BrandPrimary.copy(alpha = 0.6f),
-                            unfocusedPlaceholderColor = BrandPrimary.copy(alpha = 0.6f),
+                            focusedPlaceholderColor = MenuBrandPrimary.copy(alpha = 0.6f),
+                            unfocusedPlaceholderColor = MenuBrandPrimary.copy(alpha = 0.6f),
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
                             errorIndicatorColor = Color.Transparent,
-                            cursorColor = BrandPrimary
+                            cursorColor = MenuBrandPrimary
                         )
                     )
 
@@ -164,7 +165,7 @@ fun MenuScreen(
                 }
             }
         },
-        containerColor = BrandPrimary
+        containerColor = MenuBrandPrimary
     ) { paddingValues ->
         MenuContent(
             modifier = Modifier.padding(paddingValues),
@@ -189,7 +190,7 @@ private fun MenuContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(BrandPrimary)
+            .background(MenuBrandPrimary)
     ) {
         CategoryRow(
             categories = state.categories,
@@ -226,7 +227,7 @@ private fun CategoryRow(
     onCategoryClick: (String) -> Unit
 ) {
     val listState = rememberLazyListState()
-    Surface(color = BrandPrimary, tonalElevation = 0.dp) {
+    Surface(color = MenuBrandPrimary, tonalElevation = 0.dp) {
         androidx.compose.foundation.lazy.LazyRow(
             state = listState,
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
