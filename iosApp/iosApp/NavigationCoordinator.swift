@@ -2,7 +2,7 @@ import SwiftUI
 import Shared
 
 final class NavigationCoordinator: ObservableObject {
-    @Published var path: [DestinationAny] = []
+    @Published var path: [Destination] = []
 
     func bind(router: RouterIOS) {
         router.iosActions().watch { [weak self] action in

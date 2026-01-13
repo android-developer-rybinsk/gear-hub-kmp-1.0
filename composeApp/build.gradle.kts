@@ -12,7 +12,7 @@ kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 
@@ -30,10 +30,12 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":core"))
+            implementation(project(":data_service"))
             implementation(project(":feature_chats"))
             implementation(project(":feature_menu"))
             implementation(project(":feature_profile"))
             implementation(project(":feature_products"))
+            implementation(project(":feature_auth"))
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -73,8 +75,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 

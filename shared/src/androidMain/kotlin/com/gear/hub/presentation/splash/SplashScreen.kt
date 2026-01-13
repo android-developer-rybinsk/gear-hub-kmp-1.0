@@ -50,7 +50,6 @@ fun SplashScreen(
     }
 
     LaunchedEffect(Unit) {
-        println("OnStartTimeout")
         viewModel.onAction(SplashAction.OnStartTimeout)
     }
     LaunchedEffect(state.isTimeout) {

@@ -1,8 +1,8 @@
 import SwiftUI
 import Shared
 
-struct MyAdsScreenSwiftUI: View {
-    @ObservedObject var vm: MyAdsViewModelWrapper
+struct MyProductsScreenSwiftUI: View {
+    @ObservedObject var vm: MyProductsViewModelWrapper
     let router: RouterIOS
 
     var body: some View {
@@ -16,16 +16,16 @@ struct MyAdsScreenSwiftUI: View {
     }
 }
 
-class MyAdsViewModelWrapper: ObservableObject {
-    private let viewModel: MyAdsViewModel
-    @Published var state: MyAdsState
+class MyProductsViewModelWrapper: ObservableObject {
+    private let viewModel: MyProductsViewModel
+    @Published var state: MyProductsState
 
-    init(vm: MyAdsViewModel) {
+    init(vm: MyProductsViewModel) {
         self.viewModel = vm
         self.state = vm.iosState().currentValue()
     }
 
-    func dispatch(action: MyAdsAction) {
+    func dispatch(action: MyProductsAction) {
         viewModel.onAction(action: action)
     }
 }

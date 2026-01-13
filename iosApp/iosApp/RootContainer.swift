@@ -11,7 +11,7 @@ struct RootContainer: View {
                 vm: SplashViewModelWrapper(vm: KoinKt.resolveSplashVM()),
                 router: router
             )
-            .navigationDestination(for: DestinationAny.self) { dest in
+            .navigationDestination(for: Destination.self) { dest in
                 switch dest {
                 case is DestinationApp.MainScreen:
                     MainScreenSwiftUI(
@@ -28,14 +28,25 @@ struct RootContainer: View {
                         vm: MenuViewModelWrapper(vm: KoinKt.resolveMenuVM()),
                         router: router
                     )
-                case is DestinationProducts.MyAdsScreen:
-                    MyAdsScreenSwiftUI(
-                        vm: MyAdsViewModelWrapper(vm: KoinKt.resolveMyAdsVM()),
+                case is DestinationProducts.MyProductsScreen:
+                    MyProductsScreenSwiftUI(
+                        vm: MyProductsViewModelWrapper(vm: KoinKt.resolveMyProductsVM()),
                         router: router
                     )
                 case is DestinationProfile.ProfileScreen:
                     ProfileScreenSwiftUI(
                         vm: ProfileViewModelWrapper(vm: KoinKt.resolveProfileVM()),
+                        router: router
+                    )
+                case let dest as DestinationMenu.FilterScreen:
+                    FilterScreenSwiftUI(args: dest.args, router: router)
+                case let dest as DestinationMenu.DetailsScreen:
+                    ProductDetailsScreenSwiftUI(args: dest.args, router: router)
+                case let dest as DestinationMenu.SearchResultsScreen:
+                    SearchResultsScreenSwiftUI(args: dest.args, router: router)
+                case is DestinationApp.AuthScreen:
+                    AuthScreenSwiftUI(
+                        vm: AuthViewModelWrapper(vm: KoinKt.resolveAuthVM()),
                         router: router
                     )
                 case is DestinationApp.SplashScreen:
@@ -44,7 +55,7 @@ struct RootContainer: View {
                         router: router
                     )
                 default:
-                        EmptyView()
+                    EmptyView()
                 }
             }
         }

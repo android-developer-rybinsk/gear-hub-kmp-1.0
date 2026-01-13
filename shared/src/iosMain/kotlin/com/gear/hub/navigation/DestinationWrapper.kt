@@ -5,4 +5,4 @@ import kotlinx.cinterop.ExportObjCClass
 import platform.darwin.NSObject
 
 @ExportObjCClass
-open class DestinationAny(val destination: Destination) : NSObject()
+class DestinationAny(val destination: Destination) : NSObject()
