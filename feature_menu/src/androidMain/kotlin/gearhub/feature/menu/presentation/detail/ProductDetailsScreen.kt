@@ -3,6 +3,7 @@ package gearhub.feature.menu.presentation.detail
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,10 +15,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -37,6 +40,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +53,7 @@ import gearhub.feature.menu.navigation.ProductDetailsArgs
 import gearhub.feature.menu.presentation.menu.ProductDetail
 import gearhub.feature.menu.presentation.menu.theme.MenuBrandPrimary
 import gearhub.feature.menu.presentation.menu.theme.MenuCardSurface
-import gearhub.feature.menu.presentation.menu.theme.MenuOverlay
+import kotlinx.coroutines.launch
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -60,6 +64,8 @@ fun ProductDetailsScreen(
     var product by remember { mutableStateOf<ProductDetail?>(null) }
     var showFullScreen by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState(pageCount = { product?.photos?.size ?: 0 })
+    val fullscreenPagerState = rememberPagerState(pageCount = { product?.photos?.size ?: 0 })
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(args.productId) {
         product = MenuDataProvider.productDetails().firstOrNull { it.id == args.productId }
@@ -68,22 +74,24 @@ fun ProductDetailsScreen(
     Scaffold(
         containerColor = MenuBrandPrimary,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(text = product?.title ?: "Товар") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Назад",
-                            tint = Color.White
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MenuBrandPrimary,
-                    titleContentColor = Color.White
+            if (!showFullScreen) {
+                CenterAlignedTopAppBar(
+                    title = { Text(text = product?.title ?: "Товар") },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Назад",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MenuBrandPrimary,
+                        titleContentColor = Color.White
+                    )
                 )
-            )
+            }
         }
     ) { padding ->
         product?.let { detail ->
@@ -91,6 +99,7 @@ fun ProductDetailsScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                         .padding(padding)
                         .padding(bottom = if (showFullScreen) 0.dp else 76.dp)
                         .padding(horizontal = 16.dp)
@@ -98,7 +107,12 @@ fun ProductDetailsScreen(
                     ProductGallery(
                         detail = detail,
                         pagerState = pagerState,
-                        onImageClick = { showFullScreen = true }
+                        onImageClick = {
+                            showFullScreen = true
+                            coroutineScope.launch {
+                                fullscreenPagerState.scrollToPage(pagerState.currentPage)
+                            }
+                        }
                     )
                     Spacer(modifier = Modifier.height(18.dp))
                     Text(text = detail.title, style = MaterialTheme.typography.headlineSmall, color = Color.White)
@@ -171,9 +185,14 @@ fun ProductDetailsScreen(
 
                 if (showFullScreen) {
                     FullscreenGallery(
-                        pagerState = pagerState,
+                        pagerState = fullscreenPagerState,
                         detail = detail,
-                        onClose = { showFullScreen = false }
+                        onClose = { page ->
+                            showFullScreen = false
+                            coroutineScope.launch {
+                                pagerState.scrollToPage(page)
+                            }
+                        }
                     )
                 }
             }
@@ -190,7 +209,10 @@ private fun ProductGallery(detail: ProductDetail, pagerState: androidx.compose.f
                 .fillMaxWidth()
                 .height(220.dp)
                 .clip(RoundedCornerShape(18.dp))
-                .clickable { onImageClick() },
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { onImageClick() },
             color = MenuCardSurface
         ) {
             HorizontalPager(state = pagerState) { page ->
@@ -200,16 +222,22 @@ private fun ProductGallery(detail: ProductDetail, pagerState: androidx.compose.f
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
-        Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-            repeat(detail.photos.size) { index ->
-                val selected = pagerState.currentPage == index
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .size(if (selected) 10.dp else 8.dp)
-                        .clip(CircleShape)
-                        .background(if (selected) MenuBrandPrimary else Color.LightGray)
-                )
+        Box(
+            modifier = Modifier
+                .background(Color.White.copy(alpha = 0.7f), shape = RoundedCornerShape(percent = 50))
+                .padding(horizontal = 12.dp, vertical = 6.dp)
+        ) {
+            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                repeat(detail.photos.size) { index ->
+                    val selected = pagerState.currentPage == index
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(if (selected) 10.dp else 8.dp)
+                            .clip(CircleShape)
+                            .background(if (selected) Color.Black else Color.White)
+                    )
+                }
             }
         }
     }
@@ -220,34 +248,39 @@ private fun ProductGallery(detail: ProductDetail, pagerState: androidx.compose.f
 private fun FullscreenGallery(
     pagerState: androidx.compose.foundation.pager.PagerState,
     detail: ProductDetail,
-    onClose: () -> Unit
+    onClose: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MenuOverlay)
+            .background(Color.Black)
     ) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = "Фото ${page + 1}",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White
-                )
+        Column(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Black)
+                    .statusBarsPadding()
+                    .padding(horizontal = 8.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { onClose(pagerState.currentPage) }) {
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Закрыть", tint = Color.White)
+                }
             }
-        }
 
-        IconButton(
-            onClick = onClose,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .statusBarsPadding()
-                .padding(16.dp)
-        ) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Закрыть", tint = Color.White)
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "Фото ${page + 1}",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White
+                    )
+                }
+            }
         }
     }
 }

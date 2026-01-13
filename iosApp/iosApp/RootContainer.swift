@@ -38,6 +38,12 @@ struct RootContainer: View {
                         vm: ProfileViewModelWrapper(vm: KoinKt.resolveProfileVM()),
                         router: router
                     )
+                case let dest as DestinationMenu.FilterScreen:
+                    FilterScreenSwiftUI(args: dest.args, router: router)
+                case let dest as DestinationMenu.DetailsScreen:
+                    ProductDetailsScreenSwiftUI(args: dest.args, router: router)
+                case let dest as DestinationMenu.SearchResultsScreen:
+                    SearchResultsScreenSwiftUI(args: dest.args, router: router)
                 case is DestinationApp.AuthScreen:
                     AuthScreenSwiftUI(
                         vm: AuthViewModelWrapper(vm: KoinKt.resolveAuthVM()),
