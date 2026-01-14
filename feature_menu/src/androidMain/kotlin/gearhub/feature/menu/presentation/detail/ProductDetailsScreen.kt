@@ -133,11 +133,10 @@ fun ProductDetailsScreen(
                             color = MaterialTheme.colorScheme.primary
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = null,
-                                tint = MenuRating,
-                                modifier = Modifier.size(18.dp)
+                            Text(
+                                text = "★",
+                                color = MenuRating,
+                                style = MaterialTheme.typography.bodyMedium
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(

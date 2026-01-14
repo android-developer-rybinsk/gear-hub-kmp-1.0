@@ -86,11 +86,10 @@ fun ProductCard(
             ) {
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = androidx.compose.material.icons.Icons.Default.Star,
-                            contentDescription = null,
-                            tint = MenuRating,
-                            modifier = Modifier.size(16.dp)
+                        Text(
+                            text = "★",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MenuRating
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
