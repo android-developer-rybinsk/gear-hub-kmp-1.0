@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -364,19 +365,23 @@ private fun CategoryGrid(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(4),
-            userScrollEnabled = false,
-            contentPadding = PaddingValues(bottom = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            items(categories) { category ->
-                CategoryChip(
-                    title = category.title,
-                    onClick = { onCategoryClick(category.id) }
-                )
+            categories.chunked(4).forEach { rowItems ->
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    rowItems.forEach { category ->
+                        CategoryChip(
+                            title = category.title,
+                            onClick = { onCategoryClick(category.id) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    repeat(4 - rowItems.size) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
             }
         }
     }
@@ -385,11 +390,11 @@ private fun CategoryGrid(
 @Composable
 private fun CategoryChip(
     title: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(92.dp)
             .clickable(onClick = onClick),
         shape = MaterialTheme.shapes.large,
