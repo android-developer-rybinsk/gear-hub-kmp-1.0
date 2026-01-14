@@ -42,9 +42,11 @@ fun SplashScreen(
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = false
 
-    LaunchedEffect(Unit) {
+    val primaryColor = MaterialTheme.colorScheme.primary
+
+    LaunchedEffect(primaryColor) {
         systemUiController.setSystemBarsColor(
-            color = MaterialTheme.colorScheme.primary,
+            color = primaryColor,
             darkIcons = useDarkIcons
         )
     }
