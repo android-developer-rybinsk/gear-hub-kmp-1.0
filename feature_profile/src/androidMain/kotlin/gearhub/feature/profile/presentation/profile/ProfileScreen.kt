@@ -14,21 +14,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.HelpOutline
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.ReceiptLong
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -75,11 +65,10 @@ fun ProfileScreen(
                             .background(Color.White.copy(alpha = 0.2f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.FavoriteBorder,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(32.dp)
+                        Text(
+                            text = "G",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.White
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -111,40 +100,36 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileMetric(label = "Заказы", value = "3", icon = Icons.Default.ReceiptLong)
+                ProfileMetric(label = "Заказы", value = "3")
                 Divider(
                     modifier = Modifier.height(36.dp),
                     color = MaterialTheme.colorScheme.outline
                 )
-                ProfileMetric(label = "Потрачено", value = "₽4 299", icon = Icons.Default.AttachMoney)
+                ProfileMetric(label = "Потрачено", value = "₽4 299")
                 Divider(
                     modifier = Modifier.height(36.dp),
                     color = MaterialTheme.colorScheme.outline
                 )
-                ProfileMetric(label = "Избранное", value = "5", icon = Icons.Default.FavoriteBorder)
+                ProfileMetric(label = "Избранное", value = "5")
             }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             ProfileRow(
                 title = "Мои заказы",
-                subtitle = "3 активных",
-                icon = Icons.Default.ReceiptLong
+                subtitle = "3 активных"
             )
             ProfileRow(
                 title = "Сохраненные адреса",
-                subtitle = "2 адреса",
-                icon = Icons.Default.LocationOn
+                subtitle = "2 адреса"
             )
             ProfileRow(
                 title = "Уведомления",
-                subtitle = "Важные обновления",
-                icon = Icons.Default.Notifications
+                subtitle = "Важные обновления"
             )
             ProfileRow(
                 title = "Помощь и поддержка",
-                subtitle = "Чат и FAQ",
-                icon = Icons.Default.HelpOutline
+                subtitle = "Чат и FAQ"
             )
         }
 
@@ -157,24 +142,21 @@ fun ProfileScreen(
             shape = RoundedCornerShape(14.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(imageVector = Icons.Default.Logout, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Выйти")
         }
     }
 }
 
 @Composable
-private fun ProfileMetric(label: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+private fun ProfileMetric(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         Text(text = value, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
         Text(text = label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
 @Composable
-private fun ProfileRow(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+private fun ProfileRow(title: String, subtitle: String) {
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface,
@@ -188,27 +170,11 @@ private fun ProfileRow(title: String, subtitle: String, icon: androidx.compose.u
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                }
-                Column {
-                    Text(text = title, style = MaterialTheme.typography.bodyLarge)
-                    Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
+            Column {
+                Text(text = title, style = MaterialTheme.typography.bodyLarge)
+                Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Icon(
-                imageVector = Icons.Default.ArrowForwardIos,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(16.dp)
-            )
+            Text(text = ">", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
