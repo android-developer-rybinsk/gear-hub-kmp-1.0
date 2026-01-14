@@ -44,7 +44,7 @@ fun SplashScreen(
 
     LaunchedEffect(Unit) {
         systemUiController.setSystemBarsColor(
-            color = Color(0xFF0A2841),
+            color = MaterialTheme.colorScheme.primary,
             darkIcons = useDarkIcons
         )
     }
@@ -73,7 +73,7 @@ fun SplashScreen(
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0A2841)),
+            .background(MaterialTheme.colorScheme.primary),
     ) {
         Spacer(Modifier.weight(1f))
 

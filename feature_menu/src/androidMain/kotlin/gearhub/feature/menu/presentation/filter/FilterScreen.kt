@@ -42,7 +42,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import gearhub.feature.menu.navigation.FilterArgs
 import gearhub.feature.menu.presentation.menu.theme.MenuBrandPrimary
-import gearhub.feature.menu.presentation.menu.theme.MenuCardSurface
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,27 +68,27 @@ fun FilterScreen(
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MenuBrandPrimary,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surface,
+                    titleContentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = MenuBrandPrimary
+        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MenuBrandPrimary)
+                .background(androidx.compose.material3.MaterialTheme.colorScheme.background)
                 .padding(padding)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 20.dp, vertical = 16.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (args.categoryId != null) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = MenuCardSurface
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.surface
                 ) {
                     Row(
                         modifier = Modifier
@@ -111,7 +110,7 @@ fun FilterScreen(
 
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = MenuCardSurface
+                color = androidx.compose.material3.MaterialTheme.colorScheme.surface
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(text = "Цена", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
@@ -124,6 +123,7 @@ fun FilterScreen(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MenuBrandPrimary,
+                                unfocusedBorderColor = androidx.compose.material3.MaterialTheme.colorScheme.outline,
                                 cursorColor = MenuBrandPrimary
                             )
                         )
@@ -135,6 +135,7 @@ fun FilterScreen(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = MenuBrandPrimary,
+                                unfocusedBorderColor = androidx.compose.material3.MaterialTheme.colorScheme.outline,
                                 cursorColor = MenuBrandPrimary
                             )
                         )
@@ -144,7 +145,7 @@ fun FilterScreen(
 
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = MenuCardSurface
+                color = androidx.compose.material3.MaterialTheme.colorScheme.surface
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(text = "Город", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
@@ -155,6 +156,7 @@ fun FilterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MenuBrandPrimary,
+                            unfocusedBorderColor = androidx.compose.material3.MaterialTheme.colorScheme.outline,
                             cursorColor = MenuBrandPrimary
                         )
                     )
@@ -163,7 +165,7 @@ fun FilterScreen(
 
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = MenuCardSurface
+                color = androidx.compose.material3.MaterialTheme.colorScheme.surface
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(text = "Тип продавца", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
@@ -173,8 +175,9 @@ fun FilterScreen(
                             onClick = { isCompany = false },
                             label = { Text("Частное лицо") },
                             colors = FilterChipDefaults.elevatedFilterChipColors(
-                                containerColor = Color.White.copy(alpha = 0.16f),
-                                selectedContainerColor = MenuBrandPrimary.copy(alpha = 0.12f)
+                                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant,
+                                selectedContainerColor = MenuBrandPrimary.copy(alpha = 0.12f),
+                                labelColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
                             )
                         )
                         ElevatedFilterChip(
@@ -182,8 +185,9 @@ fun FilterScreen(
                             onClick = { isCompany = true },
                             label = { Text("Компания") },
                             colors = FilterChipDefaults.elevatedFilterChipColors(
-                                containerColor = Color.White.copy(alpha = 0.16f),
-                                selectedContainerColor = MenuBrandPrimary.copy(alpha = 0.12f)
+                                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant,
+                                selectedContainerColor = MenuBrandPrimary.copy(alpha = 0.12f),
+                                labelColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
                             )
                         )
                     }
@@ -192,7 +196,7 @@ fun FilterScreen(
 
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = MenuCardSurface
+                color = androidx.compose.material3.MaterialTheme.colorScheme.surface
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(text = "Сортировка", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)

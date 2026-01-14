@@ -7,24 +7,28 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ElevatedFilterChip
-import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,6 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -48,6 +54,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.ImeAction
 import gear.hub.core.di.koinViewModel
@@ -56,6 +63,8 @@ import gearhub.feature.menu.presentation.menu.components.ErrorPlaceholder
 import gearhub.feature.menu.presentation.menu.components.Loading
 import gearhub.feature.menu.presentation.menu.components.ProductCard
 import gearhub.feature.menu.presentation.menu.theme.MenuBrandPrimary
+import gearhub.feature.menu.presentation.menu.theme.MenuGradientEnd
+import gearhub.feature.menu.presentation.menu.theme.MenuGradientStart
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -87,85 +96,95 @@ fun MenuScreen(
     }
 
     Scaffold(
-        modifier = Modifier.background(MenuBrandPrimary),
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
         topBar = {
             Surface(
-                tonalElevation = 10.dp,
-                shadowElevation = 12.dp,
-                color = MenuBrandPrimary
+                tonalElevation = 4.dp,
+                shadowElevation = 2.dp,
+                color = MaterialTheme.colorScheme.background
             ) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(horizontal = 20.dp, vertical = 12.dp)
                 ) {
-                    TextField(
-                        value = state.searchQuery,
-                        onValueChange = { query -> viewModel.onAction(MenuAction.SearchChanged(query)) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 12.dp)
-                            .focusRequester(focusRequester)
-                            .onFocusChanged { isSearchFocused = it.isFocused },
-                        placeholder = { Text(text = "Поиск объявлений") },
-                        singleLine = true,
-                        leadingIcon = if (isSearchFocused) null else {
-                            {
+                    Text(
+                        text = "GearHub",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextField(
+                            value = state.searchQuery,
+                            onValueChange = { query -> viewModel.onAction(MenuAction.SearchChanged(query)) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(52.dp)
+                                .focusRequester(focusRequester)
+                                .onFocusChanged { isSearchFocused = it.isFocused },
+                            placeholder = { Text(text = "Поиск товаров") },
+                            singleLine = true,
+                            leadingIcon = {
                                 Icon(
                                     painter = painterResource(R.drawable.search),
-                                    contentDescription = "Поиск"
+                                    contentDescription = "Поиск",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            trailingIcon = {
+                                if (isSearchFocused) {
+                                    IconButton(onClick = {
+                                        focusManager.clearFocus()
+                                        viewModel.onAction(MenuAction.SearchSubmitted)
+                                    }) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.search),
+                                            contentDescription = "Поиск",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                            keyboardActions = KeyboardActions(onSearch = {
+                                focusManager.clearFocus()
+                                viewModel.onAction(MenuAction.SearchSubmitted)
+                            }),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                errorIndicatorColor = Color.Transparent,
+                                cursorColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
+
+                        if (!isSearchFocused) {
+                            IconButton(onClick = { viewModel.onAction(MenuAction.FilterClicked) }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.filter),
+                                    contentDescription = "Фильтры",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
-                        },
-                        trailingIcon = {
-                            if (isSearchFocused) {
-                                IconButton(onClick = {
-                                    focusManager.clearFocus()
-                                    viewModel.onAction(MenuAction.SearchSubmitted)
-                                }) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.search),
-                                        contentDescription = "Поиск",
-                                        tint = MenuBrandPrimary
-                                    )
-                                }
-                            }
-                        },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        keyboardActions = KeyboardActions(onSearch = {
-                            focusManager.clearFocus()
-                            viewModel.onAction(MenuAction.SearchSubmitted)
-                        }),
-                        colors = TextFieldDefaults.colors(
-                            focusedTextColor = MenuBrandPrimary,
-                            unfocusedTextColor = MenuBrandPrimary,
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White.copy(alpha = 0.96f),
-                            disabledContainerColor = Color.White.copy(alpha = 0.8f),
-                            focusedPlaceholderColor = MenuBrandPrimary.copy(alpha = 0.6f),
-                            unfocusedPlaceholderColor = MenuBrandPrimary.copy(alpha = 0.6f),
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            errorIndicatorColor = Color.Transparent,
-                            cursorColor = MenuBrandPrimary
-                        )
-                    )
-
-                    if (!isSearchFocused) {
-                        IconButton(onClick = { viewModel.onAction(MenuAction.FilterClicked) }) {
-                            Icon(
-                                painter = painterResource(R.drawable.filter),
-                                contentDescription = "Фильтры",
-                                tint = Color.White
-                            )
                         }
                     }
                 }
             }
         },
-        containerColor = MenuBrandPrimary
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         MenuContent(
             modifier = Modifier.padding(paddingValues),
@@ -190,13 +209,8 @@ private fun MenuContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MenuBrandPrimary)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        CategoryRow(
-            categories = state.categories,
-            onCategoryClick = onCategoryClick
-        )
-
         Box(modifier = Modifier.fillMaxSize()) {
             when {
                 state.isLoading && state.products.isEmpty() -> Loading(modifier = Modifier.align(Alignment.Center))
@@ -216,36 +230,6 @@ private fun MenuContent(
                         onRetry = onRetry
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CategoryRow(
-    categories: List<MenuCategory>,
-    onCategoryClick: (String) -> Unit
-) {
-    val listState = rememberLazyListState()
-    Surface(color = MenuBrandPrimary, tonalElevation = 0.dp) {
-        androidx.compose.foundation.lazy.LazyRow(
-            state = listState,
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            items(categories) { category ->
-                ElevatedFilterChip(
-                    selected = false,
-                    onClick = { onCategoryClick(category.id) },
-                    label = { Text(category.title) },
-                    colors = FilterChipDefaults.elevatedFilterChipColors(
-                        containerColor = Color.White.copy(alpha = 0.18f),
-                        labelColor = Color.White,
-                        iconColor = Color.White,
-                        selectedContainerColor = Color.White.copy(alpha = 0.24f),
-                        selectedLabelColor = Color.White
-                    )
-                )
             }
         }
     }
@@ -275,10 +259,25 @@ private fun ProductsGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         state = gridState,
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            PromoBanner()
+        }
+
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            CategoryGrid(
+                categories = state.categories,
+                onCategoryClick = onCategoryClick
+            )
+        }
+
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            SectionHeader(title = "Рекомендуем", action = "Смотреть все")
+        }
+
         items(state.products, key = { it.id }) { product ->
             ProductCard(product, onClick = { onProductClick(product.id) })
         }
@@ -304,5 +303,129 @@ private fun ProductsGrid(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PromoBanner() {
+    Card(
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.large)
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(MenuGradientStart, MenuGradientEnd)
+                    )
+                )
+                .padding(20.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = "Добро пожаловать в GearHub",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White
+                )
+                Text(
+                    text = "Подберите лучшее снаряжение для сезона",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+                Button(
+                    onClick = { },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = MenuBrandPrimary
+                    ),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp)
+                ) {
+                    Text(text = "Доставка от 999 ₽")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoryGrid(
+    categories: List<MenuCategory>,
+    onCategoryClick: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            text = "Категории",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            userScrollEnabled = false,
+            contentPadding = PaddingValues(bottom = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(categories) { category ->
+                CategoryChip(
+                    title = category.title,
+                    onClick = { onCategoryClick(category.id) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoryChip(
+    title: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(92.dp)
+            .clickable(onClick = onClick),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2
+            )
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String, action: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp, bottom = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Text(
+            text = action,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
     }
 }
