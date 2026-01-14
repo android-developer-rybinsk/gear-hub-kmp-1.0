@@ -225,6 +225,7 @@ private fun MenuContent(
                 else -> {
                     ProductsGrid(
                         state = state,
+                        onCategoryClick = onCategoryClick,
                         onProductClick = onProductClick,
                         onLoadMore = onLoadMore,
                         onRetry = onRetry
@@ -238,6 +239,7 @@ private fun MenuContent(
 @Composable
 private fun ProductsGrid(
     state: MenuState,
+    onCategoryClick: (String) -> Unit,
     onProductClick: (String) -> Unit,
     onLoadMore: () -> Unit,
     onRetry: () -> Unit
