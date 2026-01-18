@@ -186,21 +186,6 @@ fun FilterScreen(
                     }
                 }
 
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.surface
-                ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text(text = "Сортировка", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
-                        SortOption.values().forEach { option ->
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                RadioButton(selected = draftState.sortOption == option, onClick = { draftState = draftState.copy(sortOption = option) })
-                                Text(text = option.label)
-                            }
-                        }
-                    }
-                }
-
                 if (draftState.selectedCategoryId != null) {
                     when (draftState.selectedCategoryId) {
                         "autos" -> AutoFilters(
@@ -231,6 +216,21 @@ fun FilterScreen(
                 }
 
                 Spacer(modifier = Modifier.height(96.dp))
+
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.surface
+                ) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(text = "Сортировка", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                        SortOption.values().forEach { option ->
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                RadioButton(selected = draftState.sortOption == option, onClick = { draftState = draftState.copy(sortOption = option) })
+                                Text(text = option.label)
+                            }
+                        }
+                    }
+                }
             }
 
             BottomResultsBar(
