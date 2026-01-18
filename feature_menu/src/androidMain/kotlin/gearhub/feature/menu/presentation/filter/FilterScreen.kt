@@ -30,6 +30,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -203,82 +204,28 @@ fun FilterScreen(
                 if (draftState.selectedCategoryId != null) {
                     when (draftState.selectedCategoryId) {
                         "autos" -> AutoFilters(
-                            autoType = draftState.autoType,
-                            onAutoTypeChange = { draftState = draftState.copy(autoType = it) },
-                            steering = draftState.autoSteering,
-                            onSteeringChange = { draftState = draftState.copy(autoSteering = it) },
-                            owners = draftState.autoOwners,
-                            onOwnersChange = { draftState = draftState.copy(autoOwners = it) },
-                            condition = draftState.autoCondition,
-                            onConditionChange = { draftState = draftState.copy(autoCondition = it) },
-                            yearFrom = draftState.autoYearFrom,
-                            yearTo = draftState.autoYearTo,
-                            engineFrom = draftState.autoEngineFrom,
-                            engineTo = draftState.autoEngineTo,
-                            powerFrom = draftState.autoPowerFrom,
-                            powerTo = draftState.autoPowerTo,
-                            mileageFrom = draftState.autoMileageFrom,
-                            mileageTo = draftState.autoMileageTo,
-                            onYearFromChange = { draftState = draftState.copy(autoYearFrom = it) },
-                            onYearToChange = { draftState = draftState.copy(autoYearTo = it) },
-                            onEngineFromChange = { draftState = draftState.copy(autoEngineFrom = it) },
-                            onEngineToChange = { draftState = draftState.copy(autoEngineTo = it) },
-                            onPowerFromChange = { draftState = draftState.copy(autoPowerFrom = it) },
-                            onPowerToChange = { draftState = draftState.copy(autoPowerTo = it) },
-                            onMileageFromChange = { draftState = draftState.copy(autoMileageFrom = it) },
-                            onMileageToChange = { draftState = draftState.copy(autoMileageTo = it) }
+                            state = draftState,
+                            onStateChange = { draftState = it }
                         )
                         "moto" -> MotoFilters(
-                            motoType = draftState.motoType,
-                            onMotoTypeChange = { draftState = draftState.copy(motoType = it) },
-                            yearFrom = draftState.motoYearFrom,
-                            yearTo = draftState.motoYearTo,
-                            engineFrom = draftState.motoEngineFrom,
-                            engineTo = draftState.motoEngineTo,
-                            powerFrom = draftState.motoPowerFrom,
-                            powerTo = draftState.motoPowerTo,
-                            onYearFromChange = { draftState = draftState.copy(motoYearFrom = it) },
-                            onYearToChange = { draftState = draftState.copy(motoYearTo = it) },
-                            onEngineFromChange = { draftState = draftState.copy(motoEngineFrom = it) },
-                            onEngineToChange = { draftState = draftState.copy(motoEngineTo = it) },
-                            onPowerFromChange = { draftState = draftState.copy(motoPowerFrom = it) },
-                            onPowerToChange = { draftState = draftState.copy(motoPowerTo = it) }
+                            state = draftState,
+                            onStateChange = { draftState = it }
                         )
                         "snow" -> SnowFilters(
-                            snowType = draftState.snowType,
-                            onSnowTypeChange = { draftState = draftState.copy(snowType = it) },
-                            yearFrom = draftState.snowYearFrom,
-                            yearTo = draftState.snowYearTo,
-                            engineFrom = draftState.snowEngineFrom,
-                            engineTo = draftState.snowEngineTo,
-                            powerFrom = draftState.snowPowerFrom,
-                            powerTo = draftState.snowPowerTo,
-                            onYearFromChange = { draftState = draftState.copy(snowYearFrom = it) },
-                            onYearToChange = { draftState = draftState.copy(snowYearTo = it) },
-                            onEngineFromChange = { draftState = draftState.copy(snowEngineFrom = it) },
-                            onEngineToChange = { draftState = draftState.copy(snowEngineTo = it) },
-                            onPowerFromChange = { draftState = draftState.copy(snowPowerFrom = it) },
-                            onPowerToChange = { draftState = draftState.copy(snowPowerTo = it) }
+                            state = draftState,
+                            onStateChange = { draftState = it }
                         )
                         "water" -> WaterFilters(
-                            waterType = draftState.waterType,
-                            onWaterTypeChange = { draftState = draftState.copy(waterType = it) },
-                            condition = draftState.waterCondition,
-                            onConditionChange = { draftState = draftState.copy(waterCondition = it) }
+                            state = draftState,
+                            onStateChange = { draftState = it }
                         )
                         "spec" -> SpecFilters(
-                            specType = draftState.specType,
-                            onSpecTypeChange = { draftState = draftState.copy(specType = it) },
-                            powerFrom = draftState.specPowerFrom,
-                            powerTo = draftState.specPowerTo,
-                            condition = draftState.specCondition,
-                            onConditionChange = { draftState = draftState.copy(specCondition = it) },
-                            onPowerFromChange = { draftState = draftState.copy(specPowerFrom = it) },
-                            onPowerToChange = { draftState = draftState.copy(specPowerTo = it) }
+                            state = draftState,
+                            onStateChange = { draftState = it }
                         )
                         "parts" -> PartsFilters(
-                            group = draftState.partsGroup,
-                            onGroupChange = { draftState = draftState.copy(partsGroup = it) }
+                            state = draftState,
+                            onStateChange = { draftState = it }
                         )
                     }
                 }
@@ -363,30 +310,8 @@ private fun CategoryRow(selectedId: String?, onSelect: (String) -> Unit) {
 
 @Composable
 private fun AutoFilters(
-    autoType: AutoType,
-    onAutoTypeChange: (AutoType) -> Unit,
-    steering: Steering,
-    onSteeringChange: (Steering) -> Unit,
-    owners: OwnersCount,
-    onOwnersChange: (OwnersCount) -> Unit,
-    condition: AutoCondition,
-    onConditionChange: (AutoCondition) -> Unit,
-    yearFrom: String,
-    yearTo: String,
-    engineFrom: String,
-    engineTo: String,
-    powerFrom: String,
-    powerTo: String,
-    mileageFrom: String,
-    mileageTo: String,
-    onYearFromChange: (String) -> Unit,
-    onYearToChange: (String) -> Unit,
-    onEngineFromChange: (String) -> Unit,
-    onEngineToChange: (String) -> Unit,
-    onPowerFromChange: (String) -> Unit,
-    onPowerToChange: (String) -> Unit,
-    onMileageFromChange: (String) -> Unit,
-    onMileageToChange: (String) -> Unit
+    state: MenuFilterState,
+    onStateChange: (MenuFilterState) -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -396,42 +321,42 @@ private fun AutoFilters(
             Text(text = "Тип", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
             FilterChipsRow(
                 options = AutoType.values().toList(),
-                selected = autoType,
+                selected = state.autoType,
                 label = { it.label },
-                onSelect = onAutoTypeChange
+                onSelect = { onStateChange(state.copy(autoType = it)) }
             )
         }
     }
     LabeledRange(
         title = "Год выпуска",
-        from = yearFrom,
-        to = yearTo,
-        onFromChange = onYearFromChange,
-        onToChange = onYearToChange
+        from = state.autoYearFrom,
+        to = state.autoYearTo,
+        onFromChange = { onStateChange(state.copy(autoYearFrom = it)) },
+        onToChange = { onStateChange(state.copy(autoYearTo = it)) }
     )
     SimpleSelectBlock(title = "Марка", value = null, onSelect = {})
     SimpleSelectBlock(title = "Кузов", value = null, onSelect = {})
     SimpleSelectBlock(title = "Привод", value = null, onSelect = {})
     LabeledRange(
         title = "Объём двигателя",
-        from = engineFrom,
-        to = engineTo,
-        onFromChange = onEngineFromChange,
-        onToChange = onEngineToChange
+        from = state.autoEngineFrom,
+        to = state.autoEngineTo,
+        onFromChange = { onStateChange(state.copy(autoEngineFrom = it)) },
+        onToChange = { onStateChange(state.copy(autoEngineTo = it)) }
     )
     LabeledRange(
         title = "Мощность",
-        from = powerFrom,
-        to = powerTo,
-        onFromChange = onPowerFromChange,
-        onToChange = onPowerToChange
+        from = state.autoPowerFrom,
+        to = state.autoPowerTo,
+        onFromChange = { onStateChange(state.copy(autoPowerFrom = it)) },
+        onToChange = { onStateChange(state.copy(autoPowerTo = it)) }
     )
     LabeledRange(
         title = "Пробег",
-        from = mileageFrom,
-        to = mileageTo,
-        onFromChange = onMileageFromChange,
-        onToChange = onMileageToChange
+        from = state.autoMileageFrom,
+        to = state.autoMileageTo,
+        onFromChange = { onStateChange(state.copy(autoMileageFrom = it)) },
+        onToChange = { onStateChange(state.copy(autoMileageTo = it)) }
     )
     SimpleSelectBlock(title = "Коробка передач", value = null, onSelect = {})
     SimpleSelectBlock(title = "Двигатель", value = null, onSelect = {})
@@ -442,7 +367,7 @@ private fun AutoFilters(
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(text = "Руль", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
-            SelectRow(selected = steering.label, hint = "Выбор", onClick = { onSteeringChange(steering) })
+            SelectRow(selected = state.autoSteering.label, hint = "Выбор", onClick = { })
         }
     }
     Surface(
@@ -453,9 +378,9 @@ private fun AutoFilters(
             Text(text = "Владельцев по ПТС", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
             FilterChipsRow(
                 options = OwnersCount.values().toList(),
-                selected = owners,
+                selected = state.autoOwners,
                 label = { it.label },
-                onSelect = onOwnersChange
+                onSelect = { onStateChange(state.copy(autoOwners = it)) }
             )
         }
     }
@@ -467,9 +392,9 @@ private fun AutoFilters(
             Text(text = "Состояние", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
             FilterChipsRow(
                 options = AutoCondition.values().toList(),
-                selected = condition,
+                selected = state.autoCondition,
                 label = { it.label },
-                onSelect = onConditionChange
+                onSelect = { onStateChange(state.copy(autoCondition = it)) }
             )
         }
     }
@@ -477,65 +402,75 @@ private fun AutoFilters(
 
 @Composable
 private fun MotoFilters(
-    motoType: String?,
-    onMotoTypeChange: (String?) -> Unit,
-    yearFrom: String,
-    yearTo: String,
-    engineFrom: String,
-    engineTo: String,
-    powerFrom: String,
-    powerTo: String,
-    onYearFromChange: (String) -> Unit,
-    onYearToChange: (String) -> Unit,
-    onEngineFromChange: (String) -> Unit,
-    onEngineToChange: (String) -> Unit,
-    onPowerFromChange: (String) -> Unit,
-    onPowerToChange: (String) -> Unit
+    state: MenuFilterState,
+    onStateChange: (MenuFilterState) -> Unit
 ) {
-    SimpleSelectBlock(title = "Тип", value = motoType, onSelect = onMotoTypeChange)
+    SimpleSelectBlock(title = "Тип", value = state.motoType, onSelect = { onStateChange(state.copy(motoType = it)) })
     SimpleSelectBlock(title = "Марка", value = null, onSelect = {})
     SimpleSelectBlock(title = "Тип двигателя", value = null, onSelect = {})
     SimpleSelectBlock(title = "Число тактов", value = null, onSelect = {})
     SimpleSelectBlock(title = "Коробка передач", value = null, onSelect = {})
-    LabeledRange(title = "Год выпуска", from = yearFrom, to = yearTo, onFromChange = onYearFromChange, onToChange = onYearToChange)
-    LabeledRange(title = "Объём двигателя", from = engineFrom, to = engineTo, onFromChange = onEngineFromChange, onToChange = onEngineToChange)
-    LabeledRange(title = "Мощность (л.с.)", from = powerFrom, to = powerTo, onFromChange = onPowerFromChange, onToChange = onPowerToChange)
+    LabeledRange(
+        title = "Год выпуска",
+        from = state.motoYearFrom,
+        to = state.motoYearTo,
+        onFromChange = { onStateChange(state.copy(motoYearFrom = it)) },
+        onToChange = { onStateChange(state.copy(motoYearTo = it)) }
+    )
+    LabeledRange(
+        title = "Объём двигателя",
+        from = state.motoEngineFrom,
+        to = state.motoEngineTo,
+        onFromChange = { onStateChange(state.copy(motoEngineFrom = it)) },
+        onToChange = { onStateChange(state.copy(motoEngineTo = it)) }
+    )
+    LabeledRange(
+        title = "Мощность (л.с.)",
+        from = state.motoPowerFrom,
+        to = state.motoPowerTo,
+        onFromChange = { onStateChange(state.copy(motoPowerFrom = it)) },
+        onToChange = { onStateChange(state.copy(motoPowerTo = it)) }
+    )
 }
 
 @Composable
 private fun SnowFilters(
-    snowType: String?,
-    onSnowTypeChange: (String?) -> Unit,
-    yearFrom: String,
-    yearTo: String,
-    engineFrom: String,
-    engineTo: String,
-    powerFrom: String,
-    powerTo: String,
-    onYearFromChange: (String) -> Unit,
-    onYearToChange: (String) -> Unit,
-    onEngineFromChange: (String) -> Unit,
-    onEngineToChange: (String) -> Unit,
-    onPowerFromChange: (String) -> Unit,
-    onPowerToChange: (String) -> Unit
+    state: MenuFilterState,
+    onStateChange: (MenuFilterState) -> Unit
 ) {
-    SimpleSelectBlock(title = "Тип", value = snowType, onSelect = onSnowTypeChange)
+    SimpleSelectBlock(title = "Тип", value = state.snowType, onSelect = { onStateChange(state.copy(snowType = it)) })
     SimpleSelectBlock(title = "Марка", value = null, onSelect = {})
     SimpleSelectBlock(title = "Тип двигателя", value = null, onSelect = {})
     SimpleSelectBlock(title = "Коробка передач", value = null, onSelect = {})
-    LabeledRange(title = "Год выпуска", from = yearFrom, to = yearTo, onFromChange = onYearFromChange, onToChange = onYearToChange)
-    LabeledRange(title = "Объём двигателя", from = engineFrom, to = engineTo, onFromChange = onEngineFromChange, onToChange = onEngineToChange)
-    LabeledRange(title = "Мощность (л.с.)", from = powerFrom, to = powerTo, onFromChange = onPowerFromChange, onToChange = onPowerToChange)
+    LabeledRange(
+        title = "Год выпуска",
+        from = state.snowYearFrom,
+        to = state.snowYearTo,
+        onFromChange = { onStateChange(state.copy(snowYearFrom = it)) },
+        onToChange = { onStateChange(state.copy(snowYearTo = it)) }
+    )
+    LabeledRange(
+        title = "Объём двигателя",
+        from = state.snowEngineFrom,
+        to = state.snowEngineTo,
+        onFromChange = { onStateChange(state.copy(snowEngineFrom = it)) },
+        onToChange = { onStateChange(state.copy(snowEngineTo = it)) }
+    )
+    LabeledRange(
+        title = "Мощность (л.с.)",
+        from = state.snowPowerFrom,
+        to = state.snowPowerTo,
+        onFromChange = { onStateChange(state.copy(snowPowerFrom = it)) },
+        onToChange = { onStateChange(state.copy(snowPowerTo = it)) }
+    )
 }
 
 @Composable
 private fun WaterFilters(
-    waterType: String?,
-    onWaterTypeChange: (String?) -> Unit,
-    condition: VehicleCondition,
-    onConditionChange: (VehicleCondition) -> Unit
+    state: MenuFilterState,
+    onStateChange: (MenuFilterState) -> Unit
 ) {
-    SimpleSelectBlock(title = "Тип", value = waterType, onSelect = onWaterTypeChange)
+    SimpleSelectBlock(title = "Тип", value = state.waterType, onSelect = { onStateChange(state.copy(waterType = it)) })
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = androidx.compose.material3.MaterialTheme.colorScheme.surface
@@ -544,9 +479,9 @@ private fun WaterFilters(
             Text(text = "Состояние", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
             FilterChipsRow(
                 options = VehicleCondition.values().toList(),
-                selected = condition,
+                selected = state.waterCondition,
                 label = { it.label },
-                onSelect = onConditionChange
+                onSelect = { onStateChange(state.copy(waterCondition = it)) }
             )
         }
     }
@@ -554,27 +489,27 @@ private fun WaterFilters(
 
 @Composable
 private fun SpecFilters(
-    specType: String?,
-    onSpecTypeChange: (String?) -> Unit,
-    powerFrom: String,
-    powerTo: String,
-    condition: String?,
-    onConditionChange: (String?) -> Unit,
-    onPowerFromChange: (String) -> Unit,
-    onPowerToChange: (String) -> Unit
+    state: MenuFilterState,
+    onStateChange: (MenuFilterState) -> Unit
 ) {
-    SimpleSelectBlock(title = "Тип", value = specType, onSelect = onSpecTypeChange)
-    LabeledRange(title = "Мощность двигателя, л.с.", from = powerFrom, to = powerTo, onFromChange = onPowerFromChange, onToChange = onPowerToChange)
-    SimpleSelectBlock(title = "Состояние", value = condition, onSelect = onConditionChange)
+    SimpleSelectBlock(title = "Тип", value = state.specType, onSelect = { onStateChange(state.copy(specType = it)) })
+    LabeledRange(
+        title = "Мощность двигателя, л.с.",
+        from = state.specPowerFrom,
+        to = state.specPowerTo,
+        onFromChange = { onStateChange(state.copy(specPowerFrom = it)) },
+        onToChange = { onStateChange(state.copy(specPowerTo = it)) }
+    )
+    SimpleSelectBlock(title = "Состояние", value = state.specCondition, onSelect = { onStateChange(state.copy(specCondition = it)) })
 }
 
 @Composable
 private fun PartsFilters(
-    group: String?,
-    onGroupChange: (String?) -> Unit
+    state: MenuFilterState,
+    onStateChange: (MenuFilterState) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        SimpleSelectBlock(title = "Группа запчастей", value = group, onSelect = onGroupChange)
+        SimpleSelectBlock(title = "Группа запчастей", value = state.partsGroup, onSelect = { onStateChange(state.copy(partsGroup = it)) })
         SimpleSelectBlock(title = "Подкатегория", value = null, onSelect = {})
     }
 }
