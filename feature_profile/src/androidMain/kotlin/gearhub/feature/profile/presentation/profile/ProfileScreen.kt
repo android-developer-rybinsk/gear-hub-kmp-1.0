@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,7 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -96,21 +94,25 @@ fun ProfileScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                    .padding(vertical = 16.dp, horizontal = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileMetric(label = "Заказы", value = "3")
-                Divider(
-                    modifier = Modifier.height(36.dp),
-                    color = MaterialTheme.colorScheme.outline
+                ProfileMetric(
+                    label = "Заказы",
+                    value = "3",
+                    modifier = Modifier.weight(1f)
                 )
-                ProfileMetric(label = "Потрачено", value = "₽4 299")
-                Divider(
-                    modifier = Modifier.height(36.dp),
-                    color = MaterialTheme.colorScheme.outline
+                ProfileMetric(
+                    label = "Потрачено",
+                    value = "₽4 299",
+                    modifier = Modifier.weight(1f)
                 )
-                ProfileMetric(label = "Избранное", value = "5")
+                ProfileMetric(
+                    label = "Избранное",
+                    value = "5",
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
 
@@ -148,8 +150,12 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileMetric(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+private fun ProfileMetric(label: String, value: String, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         Text(text = value, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
         Text(text = label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }

@@ -20,12 +20,14 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,6 +64,7 @@ fun FilterScreen(
 ) {
     val storeState by MenuFilterStore.state().collectAsState()
     var draftState by remember(storeState) { mutableStateOf(storeState) }
+    var selectDialog by remember { mutableStateOf<SelectDialogState?>(null) }
 
     LaunchedEffect(args.categoryId) {
         if (draftState.selectedCategoryId == null && !args.categoryId.isNullOrBlank()) {
@@ -95,6 +98,29 @@ fun FilterScreen(
                 .fillMaxSize()
                 .background(androidx.compose.material3.MaterialTheme.colorScheme.background)
         ) {
+            selectDialog?.let { dialog ->
+                AlertDialog(
+                    onDismissRequest = { selectDialog = null },
+                    title = { Text(text = dialog.title) },
+                    text = {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            dialog.options.forEach { option ->
+                                TextButton(onClick = {
+                                    dialog.onSelect(option)
+                                    selectDialog = null
+                                }) {
+                                    Text(option)
+                                }
+                            }
+                        }
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { selectDialog = null }) {
+                            Text("Закрыть")
+                        }
+                    }
+                )
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -190,27 +216,45 @@ fun FilterScreen(
                     when (draftState.selectedCategoryId) {
                         "autos" -> AutoFilters(
                             state = draftState,
-                            onStateChange = { draftState = it }
+                            onStateChange = { draftState = it },
+                            onSelect = { title, options, onSelect ->
+                                selectDialog = SelectDialogState(title, options, onSelect)
+                            }
                         )
                         "moto" -> MotoFilters(
                             state = draftState,
-                            onStateChange = { draftState = it }
+                            onStateChange = { draftState = it },
+                            onSelect = { title, options, onSelect ->
+                                selectDialog = SelectDialogState(title, options, onSelect)
+                            }
                         )
                         "snow" -> SnowFilters(
                             state = draftState,
-                            onStateChange = { draftState = it }
+                            onStateChange = { draftState = it },
+                            onSelect = { title, options, onSelect ->
+                                selectDialog = SelectDialogState(title, options, onSelect)
+                            }
                         )
                         "water" -> WaterFilters(
                             state = draftState,
-                            onStateChange = { draftState = it }
+                            onStateChange = { draftState = it },
+                            onSelect = { title, options, onSelect ->
+                                selectDialog = SelectDialogState(title, options, onSelect)
+                            }
                         )
                         "spec" -> SpecFilters(
                             state = draftState,
-                            onStateChange = { draftState = it }
+                            onStateChange = { draftState = it },
+                            onSelect = { title, options, onSelect ->
+                                selectDialog = SelectDialogState(title, options, onSelect)
+                            }
                         )
                         "parts" -> PartsFilters(
                             state = draftState,
-                            onStateChange = { draftState = it }
+                            onStateChange = { draftState = it },
+                            onSelect = { title, options, onSelect ->
+                                selectDialog = SelectDialogState(title, options, onSelect)
+                            }
                         )
                     }
                 }
@@ -250,6 +294,12 @@ fun FilterScreen(
 private fun SectionTitle(text: String) {
     Text(text = text, style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
 }
+
+private data class SelectDialogState(
+    val title: String,
+    val options: List<String>,
+    val onSelect: (String) -> Unit
+)
 
 @Composable
 private fun <T> FilterChipsRow(
@@ -311,7 +361,8 @@ private fun CategoryRow(selectedId: String?, onSelect: (String) -> Unit) {
 @Composable
 private fun AutoFilters(
     state: MenuFilterState,
-    onStateChange: (MenuFilterState) -> Unit
+    onStateChange: (MenuFilterState) -> Unit,
+    onSelect: (String, List<String>, (String) -> Unit) -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -334,9 +385,27 @@ private fun AutoFilters(
         onFromChange = { onStateChange(state.copy(autoYearFrom = it)) },
         onToChange = { onStateChange(state.copy(autoYearTo = it)) }
     )
-    SimpleSelectBlock(title = "Марка", value = null, onSelect = {})
-    SimpleSelectBlock(title = "Кузов", value = null, onSelect = {})
-    SimpleSelectBlock(title = "Привод", value = null, onSelect = {})
+    SimpleSelectBlock(
+        title = "Марка",
+        value = state.autoBrand,
+        options = listOf("Любая"),
+        onSelect = { onStateChange(state.copy(autoBrand = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Кузов",
+        value = state.autoBody,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(autoBody = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Привод",
+        value = state.autoDrive,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(autoDrive = it)) },
+        onOpenDialog = onSelect
+    )
     LabeledRange(
         title = "Объём двигателя",
         from = state.autoEngineFrom,
@@ -358,16 +427,46 @@ private fun AutoFilters(
         onFromChange = { onStateChange(state.copy(autoMileageFrom = it)) },
         onToChange = { onStateChange(state.copy(autoMileageTo = it)) }
     )
-    SimpleSelectBlock(title = "Коробка передач", value = null, onSelect = {})
-    SimpleSelectBlock(title = "Двигатель", value = null, onSelect = {})
-    SimpleSelectBlock(title = "Цвет", value = null, onSelect = {})
+    SimpleSelectBlock(
+        title = "Коробка передач",
+        value = state.autoGearbox,
+        options = listOf("Любая"),
+        onSelect = { onStateChange(state.copy(autoGearbox = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Двигатель",
+        value = state.autoEngineType,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(autoEngineType = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Цвет",
+        value = state.autoColor,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(autoColor = it)) },
+        onOpenDialog = onSelect
+    )
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = androidx.compose.material3.MaterialTheme.colorScheme.surface
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(text = "Руль", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
-            SelectRow(selected = state.autoSteering.label, hint = "Выбор", onClick = { })
+            SelectRow(
+                selected = state.autoSteering.label,
+                hint = "Выбор",
+                onClick = {
+                    onSelect(
+                        "Руль",
+                        Steering.values().map { it.label }
+                    ) { label ->
+                        val value = Steering.values().firstOrNull { it.label == label } ?: Steering.ANY
+                        onStateChange(state.copy(autoSteering = value))
+                    }
+                }
+            )
         }
     }
     Surface(
@@ -403,13 +502,44 @@ private fun AutoFilters(
 @Composable
 private fun MotoFilters(
     state: MenuFilterState,
-    onStateChange: (MenuFilterState) -> Unit
+    onStateChange: (MenuFilterState) -> Unit,
+    onSelect: (String, List<String>, (String) -> Unit) -> Unit
 ) {
-    SimpleSelectBlock(title = "Тип", value = state.motoType, onSelect = { onStateChange(state.copy(motoType = it)) })
-    SimpleSelectBlock(title = "Марка", value = null, onSelect = {})
-    SimpleSelectBlock(title = "Тип двигателя", value = null, onSelect = {})
-    SimpleSelectBlock(title = "Число тактов", value = null, onSelect = {})
-    SimpleSelectBlock(title = "Коробка передач", value = null, onSelect = {})
+    SimpleSelectBlock(
+        title = "Тип",
+        value = state.motoType,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(motoType = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Марка",
+        value = state.motoBrand,
+        options = listOf("Любая"),
+        onSelect = { onStateChange(state.copy(motoBrand = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Тип двигателя",
+        value = state.motoEngineType,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(motoEngineType = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Число тактов",
+        value = state.motoStrokes,
+        options = listOf("Любое"),
+        onSelect = { onStateChange(state.copy(motoStrokes = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Коробка передач",
+        value = state.motoGearbox,
+        options = listOf("Любая"),
+        onSelect = { onStateChange(state.copy(motoGearbox = it)) },
+        onOpenDialog = onSelect
+    )
     LabeledRange(
         title = "Год выпуска",
         from = state.motoYearFrom,
@@ -436,12 +566,37 @@ private fun MotoFilters(
 @Composable
 private fun SnowFilters(
     state: MenuFilterState,
-    onStateChange: (MenuFilterState) -> Unit
+    onStateChange: (MenuFilterState) -> Unit,
+    onSelect: (String, List<String>, (String) -> Unit) -> Unit
 ) {
-    SimpleSelectBlock(title = "Тип", value = state.snowType, onSelect = { onStateChange(state.copy(snowType = it)) })
-    SimpleSelectBlock(title = "Марка", value = null, onSelect = {})
-    SimpleSelectBlock(title = "Тип двигателя", value = null, onSelect = {})
-    SimpleSelectBlock(title = "Коробка передач", value = null, onSelect = {})
+    SimpleSelectBlock(
+        title = "Тип",
+        value = state.snowType,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(snowType = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Марка",
+        value = state.snowBrand,
+        options = listOf("Любая"),
+        onSelect = { onStateChange(state.copy(snowBrand = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Тип двигателя",
+        value = state.snowEngineType,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(snowEngineType = it)) },
+        onOpenDialog = onSelect
+    )
+    SimpleSelectBlock(
+        title = "Коробка передач",
+        value = state.snowGearbox,
+        options = listOf("Любая"),
+        onSelect = { onStateChange(state.copy(snowGearbox = it)) },
+        onOpenDialog = onSelect
+    )
     LabeledRange(
         title = "Год выпуска",
         from = state.snowYearFrom,
@@ -468,9 +623,16 @@ private fun SnowFilters(
 @Composable
 private fun WaterFilters(
     state: MenuFilterState,
-    onStateChange: (MenuFilterState) -> Unit
+    onStateChange: (MenuFilterState) -> Unit,
+    onSelect: (String, List<String>, (String) -> Unit) -> Unit
 ) {
-    SimpleSelectBlock(title = "Тип", value = state.waterType, onSelect = { onStateChange(state.copy(waterType = it)) })
+    SimpleSelectBlock(
+        title = "Тип",
+        value = state.waterType,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(waterType = it)) },
+        onOpenDialog = onSelect
+    )
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = androidx.compose.material3.MaterialTheme.colorScheme.surface
@@ -490,9 +652,16 @@ private fun WaterFilters(
 @Composable
 private fun SpecFilters(
     state: MenuFilterState,
-    onStateChange: (MenuFilterState) -> Unit
+    onStateChange: (MenuFilterState) -> Unit,
+    onSelect: (String, List<String>, (String) -> Unit) -> Unit
 ) {
-    SimpleSelectBlock(title = "Тип", value = state.specType, onSelect = { onStateChange(state.copy(specType = it)) })
+    SimpleSelectBlock(
+        title = "Тип",
+        value = state.specType,
+        options = listOf("Любой"),
+        onSelect = { onStateChange(state.copy(specType = it)) },
+        onOpenDialog = onSelect
+    )
     LabeledRange(
         title = "Мощность двигателя, л.с.",
         from = state.specPowerFrom,
@@ -500,17 +669,36 @@ private fun SpecFilters(
         onFromChange = { onStateChange(state.copy(specPowerFrom = it)) },
         onToChange = { onStateChange(state.copy(specPowerTo = it)) }
     )
-    SimpleSelectBlock(title = "Состояние", value = state.specCondition, onSelect = { onStateChange(state.copy(specCondition = it)) })
+    SimpleSelectBlock(
+        title = "Состояние",
+        value = state.specCondition,
+        options = listOf("Любое"),
+        onSelect = { onStateChange(state.copy(specCondition = it)) },
+        onOpenDialog = onSelect
+    )
 }
 
 @Composable
 private fun PartsFilters(
     state: MenuFilterState,
-    onStateChange: (MenuFilterState) -> Unit
+    onStateChange: (MenuFilterState) -> Unit,
+    onSelect: (String, List<String>, (String) -> Unit) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        SimpleSelectBlock(title = "Группа запчастей", value = state.partsGroup, onSelect = { onStateChange(state.copy(partsGroup = it)) })
-        SimpleSelectBlock(title = "Подкатегория", value = null, onSelect = {})
+        SimpleSelectBlock(
+            title = "Группа запчастей",
+            value = state.partsGroup,
+            options = listOf("Любая"),
+            onSelect = { onStateChange(state.copy(partsGroup = it)) },
+            onOpenDialog = onSelect
+        )
+        SimpleSelectBlock(
+            title = "Подкатегория",
+            value = state.partsSubgroup,
+            options = listOf("Любая"),
+            onSelect = { onStateChange(state.copy(partsSubgroup = it)) },
+            onOpenDialog = onSelect
+        )
     }
 }
 
@@ -562,7 +750,9 @@ private fun LabeledRange(
 private fun SimpleSelectBlock(
     title: String,
     value: String?,
-    onSelect: (String?) -> Unit
+    options: List<String>,
+    onSelect: (String?) -> Unit,
+    onOpenDialog: (String, List<String>, (String) -> Unit) -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -570,7 +760,17 @@ private fun SimpleSelectBlock(
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(text = title, style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
-            SelectRow(selected = value ?: "Любой", hint = "Выбор", onClick = { onSelect(value) })
+            SelectRow(
+                selected = value ?: "Любой",
+                hint = "Выбор",
+                onClick = {
+                    if (options.isNotEmpty()) {
+                        onOpenDialog(title, options) { selected ->
+                            onSelect(selected)
+                        }
+                    }
+                }
+            )
         }
     }
 }

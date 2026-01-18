@@ -103,7 +103,7 @@ fun ProductDetailsScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(padding)
                         .padding(bottom = if (showFullScreen) 0.dp else 76.dp)
-                        .padding(horizontal = 20.dp)
+                        .padding(horizontal = 16.dp)
                 ) {
                     ProductGallery(
                         detail = detail,
@@ -150,7 +150,11 @@ fun ProductDetailsScreen(
                     Text(text = detail.city, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Surface(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -175,7 +179,11 @@ fun ProductDetailsScreen(
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    Surface(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Text(text = "Характеристики", style = MaterialTheme.typography.titleMedium)
                             detail.specs.forEach { spec ->
@@ -191,7 +199,11 @@ fun ProductDetailsScreen(
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Surface(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Text(text = "Описание", style = MaterialTheme.typography.titleMedium)
                             Text(text = detail.description, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -199,7 +211,11 @@ fun ProductDetailsScreen(
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Surface(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(text = "Продавец", style = MaterialTheme.typography.titleMedium)
                             Text(text = detail.seller.name, fontWeight = FontWeight.SemiBold)
