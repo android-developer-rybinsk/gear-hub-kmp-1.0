@@ -83,6 +83,9 @@ class MenuViewModel(
             is MenuAction.CategorySelected -> router.navigate(
                 DestinationMenu.FilterScreen(FilterArgs(categoryId = action.categoryId))
             )
+            MenuAction.FilterApplied -> router.navigate(
+                DestinationMenu.SearchResultsScreen(SearchArgs(currentState.searchQuery.trim()))
+            )
             is MenuAction.ProductClicked -> router.navigate(
                 DestinationMenu.DetailsScreen(ProductDetailsArgs(productId = action.productId))
             )

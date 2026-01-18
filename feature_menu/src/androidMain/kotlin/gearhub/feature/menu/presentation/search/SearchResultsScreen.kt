@@ -54,7 +54,7 @@ fun SearchResultsScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 12.dp),
+                        .padding(horizontal = 20.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { viewModel.onAction(SearchResultsAction.Back) }) {
@@ -109,7 +109,7 @@ fun SearchResultsScreen(
         )
     }
 
-    LaunchedEffect(args.query) {
+    LaunchedEffect(Unit) {
         viewModel.onAction(SearchResultsAction.QueryChanged(args.query))
     }
 }
