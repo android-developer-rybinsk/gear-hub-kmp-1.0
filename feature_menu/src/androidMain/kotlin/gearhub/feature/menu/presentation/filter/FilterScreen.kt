@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,49 +59,12 @@ fun FilterScreen(
     onClose: () -> Unit,
     onApplyResults: () -> Unit
 ) {
-    var minPrice by remember { mutableStateOf(MenuFilterStore.state().value.priceFrom) }
-    var maxPrice by remember { mutableStateOf(MenuFilterStore.state().value.priceTo) }
-    var city by remember { mutableStateOf(MenuFilterStore.state().value.location) }
-    var sellerType by remember { mutableStateOf(MenuFilterStore.state().value.sellerType) }
-    var sort by remember { mutableStateOf(MenuFilterStore.state().value.sortOption) }
-    var category by remember { mutableStateOf(MenuFilterStore.state().value.selectedCategoryId ?: args.categoryId) }
-    var autoType by remember { mutableStateOf(MenuFilterStore.state().value.autoType) }
-    var steering by remember { mutableStateOf(MenuFilterStore.state().value.autoSteering) }
-    var owners by remember { mutableStateOf(MenuFilterStore.state().value.autoOwners) }
-    var autoCondition by remember { mutableStateOf(MenuFilterStore.state().value.autoCondition) }
-    var autoYearFrom by remember { mutableStateOf(MenuFilterStore.state().value.autoYearFrom) }
-    var autoYearTo by remember { mutableStateOf(MenuFilterStore.state().value.autoYearTo) }
-    var engineFrom by remember { mutableStateOf(MenuFilterStore.state().value.autoEngineFrom) }
-    var engineTo by remember { mutableStateOf(MenuFilterStore.state().value.autoEngineTo) }
-    var powerFrom by remember { mutableStateOf(MenuFilterStore.state().value.autoPowerFrom) }
-    var powerTo by remember { mutableStateOf(MenuFilterStore.state().value.autoPowerTo) }
-    var mileageFrom by remember { mutableStateOf(MenuFilterStore.state().value.autoMileageFrom) }
-    var mileageTo by remember { mutableStateOf(MenuFilterStore.state().value.autoMileageTo) }
-    var motoType by remember { mutableStateOf(MenuFilterStore.state().value.motoType) }
-    var motoYearFrom by remember { mutableStateOf(MenuFilterStore.state().value.motoYearFrom) }
-    var motoYearTo by remember { mutableStateOf(MenuFilterStore.state().value.motoYearTo) }
-    var motoEngineFrom by remember { mutableStateOf(MenuFilterStore.state().value.motoEngineFrom) }
-    var motoEngineTo by remember { mutableStateOf(MenuFilterStore.state().value.motoEngineTo) }
-    var motoPowerFrom by remember { mutableStateOf(MenuFilterStore.state().value.motoPowerFrom) }
-    var motoPowerTo by remember { mutableStateOf(MenuFilterStore.state().value.motoPowerTo) }
-    var snowType by remember { mutableStateOf(MenuFilterStore.state().value.snowType) }
-    var snowYearFrom by remember { mutableStateOf(MenuFilterStore.state().value.snowYearFrom) }
-    var snowYearTo by remember { mutableStateOf(MenuFilterStore.state().value.snowYearTo) }
-    var snowEngineFrom by remember { mutableStateOf(MenuFilterStore.state().value.snowEngineFrom) }
-    var snowEngineTo by remember { mutableStateOf(MenuFilterStore.state().value.snowEngineTo) }
-    var snowPowerFrom by remember { mutableStateOf(MenuFilterStore.state().value.snowPowerFrom) }
-    var snowPowerTo by remember { mutableStateOf(MenuFilterStore.state().value.snowPowerTo) }
-    var waterType by remember { mutableStateOf(MenuFilterStore.state().value.waterType) }
-    var waterCondition by remember { mutableStateOf(MenuFilterStore.state().value.waterCondition) }
-    var specType by remember { mutableStateOf(MenuFilterStore.state().value.specType) }
-    var specPowerFrom by remember { mutableStateOf(MenuFilterStore.state().value.specPowerFrom) }
-    var specPowerTo by remember { mutableStateOf(MenuFilterStore.state().value.specPowerTo) }
-    var specCondition by remember { mutableStateOf(MenuFilterStore.state().value.specCondition) }
-    var partsGroup by remember { mutableStateOf(MenuFilterStore.state().value.partsGroup) }
+    val storeState by MenuFilterStore.state().collectAsState()
+    var draftState by remember(storeState) { mutableStateOf(storeState) }
 
     LaunchedEffect(args.categoryId) {
-        if (category == null && !args.categoryId.isNullOrBlank()) {
-            category = args.categoryId
+        if (draftState.selectedCategoryId == null && !args.categoryId.isNullOrBlank()) {
+            draftState = draftState.copy(selectedCategoryId = args.categoryId)
         }
     }
 
@@ -140,12 +104,12 @@ fun FilterScreen(
             ) {
                 SectionTitle(text = "Категория")
                 CategoryRow(
-                    selectedId = category,
+                    selectedId = draftState.selectedCategoryId,
                     onSelect = { selected ->
-                        if (category == selected) {
-                            category = null
+                        if (draftState.selectedCategoryId == selected) {
+                            draftState = draftState.copy(selectedCategoryId = null)
                         } else {
-                            category = selected
+                            draftState = draftState.copy(selectedCategoryId = selected)
                         }
                     }
                 )
@@ -157,8 +121,8 @@ fun FilterScreen(
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(text = "Где искать", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
                         OutlinedTextField(
-                            value = city,
-                            onValueChange = { city = it },
+                            value = draftState.location,
+                            onValueChange = { draftState = draftState.copy(location = it) },
                             placeholder = { Text("Город, район, радиус") },
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -179,8 +143,8 @@ fun FilterScreen(
                         Text(text = "Цена", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                             OutlinedTextField(
-                                value = minPrice,
-                                onValueChange = { minPrice = it.filter(Char::isDigit) },
+                                value = draftState.priceFrom,
+                                onValueChange = { draftState = draftState.copy(priceFrom = it.filter(Char::isDigit)) },
                                 label = { Text("От") },
                                 modifier = Modifier.weight(1f),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -191,8 +155,8 @@ fun FilterScreen(
                                 )
                             )
                             OutlinedTextField(
-                                value = maxPrice,
-                                onValueChange = { maxPrice = it.filter(Char::isDigit) },
+                                value = draftState.priceTo,
+                                onValueChange = { draftState = draftState.copy(priceTo = it.filter(Char::isDigit)) },
                                 label = { Text("До") },
                                 modifier = Modifier.weight(1f),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -214,9 +178,9 @@ fun FilterScreen(
                         Text(text = "Продавцы", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
                         FilterChipsRow(
                             options = SellerType.values().toList(),
-                            selected = sellerType,
+                            selected = draftState.sellerType,
                             label = { it.label },
-                            onSelect = { sellerType = it }
+                            onSelect = { draftState = draftState.copy(sellerType = it) }
                         )
                     }
                 }
@@ -229,92 +193,92 @@ fun FilterScreen(
                         Text(text = "Сортировка", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
                         SortOption.values().forEach { option ->
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                RadioButton(selected = sort == option, onClick = { sort = option })
+                                RadioButton(selected = draftState.sortOption == option, onClick = { draftState = draftState.copy(sortOption = option) })
                                 Text(text = option.label)
                             }
                         }
                     }
                 }
 
-                if (category != null) {
-                    when (category) {
+                if (draftState.selectedCategoryId != null) {
+                    when (draftState.selectedCategoryId) {
                         "autos" -> AutoFilters(
-                            autoType = autoType,
-                            onAutoTypeChange = { autoType = it },
-                            steering = steering,
-                            onSteeringChange = { steering = it },
-                            owners = owners,
-                            onOwnersChange = { owners = it },
-                            condition = autoCondition,
-                            onConditionChange = { autoCondition = it },
-                            yearFrom = autoYearFrom,
-                            yearTo = autoYearTo,
-                            engineFrom = engineFrom,
-                            engineTo = engineTo,
-                            powerFrom = powerFrom,
-                            powerTo = powerTo,
-                            mileageFrom = mileageFrom,
-                            mileageTo = mileageTo,
-                            onYearFromChange = { autoYearFrom = it },
-                            onYearToChange = { autoYearTo = it },
-                            onEngineFromChange = { engineFrom = it },
-                            onEngineToChange = { engineTo = it },
-                            onPowerFromChange = { powerFrom = it },
-                            onPowerToChange = { powerTo = it },
-                            onMileageFromChange = { mileageFrom = it },
-                            onMileageToChange = { mileageTo = it }
+                            autoType = draftState.autoType,
+                            onAutoTypeChange = { draftState = draftState.copy(autoType = it) },
+                            steering = draftState.autoSteering,
+                            onSteeringChange = { draftState = draftState.copy(autoSteering = it) },
+                            owners = draftState.autoOwners,
+                            onOwnersChange = { draftState = draftState.copy(autoOwners = it) },
+                            condition = draftState.autoCondition,
+                            onConditionChange = { draftState = draftState.copy(autoCondition = it) },
+                            yearFrom = draftState.autoYearFrom,
+                            yearTo = draftState.autoYearTo,
+                            engineFrom = draftState.autoEngineFrom,
+                            engineTo = draftState.autoEngineTo,
+                            powerFrom = draftState.autoPowerFrom,
+                            powerTo = draftState.autoPowerTo,
+                            mileageFrom = draftState.autoMileageFrom,
+                            mileageTo = draftState.autoMileageTo,
+                            onYearFromChange = { draftState = draftState.copy(autoYearFrom = it) },
+                            onYearToChange = { draftState = draftState.copy(autoYearTo = it) },
+                            onEngineFromChange = { draftState = draftState.copy(autoEngineFrom = it) },
+                            onEngineToChange = { draftState = draftState.copy(autoEngineTo = it) },
+                            onPowerFromChange = { draftState = draftState.copy(autoPowerFrom = it) },
+                            onPowerToChange = { draftState = draftState.copy(autoPowerTo = it) },
+                            onMileageFromChange = { draftState = draftState.copy(autoMileageFrom = it) },
+                            onMileageToChange = { draftState = draftState.copy(autoMileageTo = it) }
                         )
                         "moto" -> MotoFilters(
-                            motoType = motoType,
-                            onMotoTypeChange = { motoType = it },
-                            yearFrom = motoYearFrom,
-                            yearTo = motoYearTo,
-                            engineFrom = motoEngineFrom,
-                            engineTo = motoEngineTo,
-                            powerFrom = motoPowerFrom,
-                            powerTo = motoPowerTo,
-                            onYearFromChange = { motoYearFrom = it },
-                            onYearToChange = { motoYearTo = it },
-                            onEngineFromChange = { motoEngineFrom = it },
-                            onEngineToChange = { motoEngineTo = it },
-                            onPowerFromChange = { motoPowerFrom = it },
-                            onPowerToChange = { motoPowerTo = it }
+                            motoType = draftState.motoType,
+                            onMotoTypeChange = { draftState = draftState.copy(motoType = it) },
+                            yearFrom = draftState.motoYearFrom,
+                            yearTo = draftState.motoYearTo,
+                            engineFrom = draftState.motoEngineFrom,
+                            engineTo = draftState.motoEngineTo,
+                            powerFrom = draftState.motoPowerFrom,
+                            powerTo = draftState.motoPowerTo,
+                            onYearFromChange = { draftState = draftState.copy(motoYearFrom = it) },
+                            onYearToChange = { draftState = draftState.copy(motoYearTo = it) },
+                            onEngineFromChange = { draftState = draftState.copy(motoEngineFrom = it) },
+                            onEngineToChange = { draftState = draftState.copy(motoEngineTo = it) },
+                            onPowerFromChange = { draftState = draftState.copy(motoPowerFrom = it) },
+                            onPowerToChange = { draftState = draftState.copy(motoPowerTo = it) }
                         )
                         "snow" -> SnowFilters(
-                            snowType = snowType,
-                            onSnowTypeChange = { snowType = it },
-                            yearFrom = snowYearFrom,
-                            yearTo = snowYearTo,
-                            engineFrom = snowEngineFrom,
-                            engineTo = snowEngineTo,
-                            powerFrom = snowPowerFrom,
-                            powerTo = snowPowerTo,
-                            onYearFromChange = { snowYearFrom = it },
-                            onYearToChange = { snowYearTo = it },
-                            onEngineFromChange = { snowEngineFrom = it },
-                            onEngineToChange = { snowEngineTo = it },
-                            onPowerFromChange = { snowPowerFrom = it },
-                            onPowerToChange = { snowPowerTo = it }
+                            snowType = draftState.snowType,
+                            onSnowTypeChange = { draftState = draftState.copy(snowType = it) },
+                            yearFrom = draftState.snowYearFrom,
+                            yearTo = draftState.snowYearTo,
+                            engineFrom = draftState.snowEngineFrom,
+                            engineTo = draftState.snowEngineTo,
+                            powerFrom = draftState.snowPowerFrom,
+                            powerTo = draftState.snowPowerTo,
+                            onYearFromChange = { draftState = draftState.copy(snowYearFrom = it) },
+                            onYearToChange = { draftState = draftState.copy(snowYearTo = it) },
+                            onEngineFromChange = { draftState = draftState.copy(snowEngineFrom = it) },
+                            onEngineToChange = { draftState = draftState.copy(snowEngineTo = it) },
+                            onPowerFromChange = { draftState = draftState.copy(snowPowerFrom = it) },
+                            onPowerToChange = { draftState = draftState.copy(snowPowerTo = it) }
                         )
                         "water" -> WaterFilters(
-                            waterType = waterType,
-                            onWaterTypeChange = { waterType = it },
-                            condition = waterCondition,
-                            onConditionChange = { waterCondition = it }
+                            waterType = draftState.waterType,
+                            onWaterTypeChange = { draftState = draftState.copy(waterType = it) },
+                            condition = draftState.waterCondition,
+                            onConditionChange = { draftState = draftState.copy(waterCondition = it) }
                         )
                         "spec" -> SpecFilters(
-                            specType = specType,
-                            onSpecTypeChange = { specType = it },
-                            powerFrom = specPowerFrom,
-                            powerTo = specPowerTo,
-                            condition = specCondition,
-                            onConditionChange = { specCondition = it },
-                            onPowerFromChange = { specPowerFrom = it },
-                            onPowerToChange = { specPowerTo = it }
+                            specType = draftState.specType,
+                            onSpecTypeChange = { draftState = draftState.copy(specType = it) },
+                            powerFrom = draftState.specPowerFrom,
+                            powerTo = draftState.specPowerTo,
+                            condition = draftState.specCondition,
+                            onConditionChange = { draftState = draftState.copy(specCondition = it) },
+                            onPowerFromChange = { draftState = draftState.copy(specPowerFrom = it) },
+                            onPowerToChange = { draftState = draftState.copy(specPowerTo = it) }
                         )
                         "parts" -> PartsFilters(
-                            group = partsGroup,
-                            onGroupChange = { partsGroup = it }
+                            group = draftState.partsGroup,
+                            onGroupChange = { draftState = draftState.copy(partsGroup = it) }
                         )
                     }
                 }
@@ -327,49 +291,7 @@ fun FilterScreen(
                     .align(Alignment.BottomCenter)
                     .background(androidx.compose.material3.MaterialTheme.colorScheme.background),
                 onApply = {
-                    MenuFilterStore.update {
-                        it.copy(
-                            selectedCategoryId = category,
-                            location = city,
-                            priceFrom = minPrice,
-                            priceTo = maxPrice,
-                            sellerType = sellerType,
-                            sortOption = sort,
-                            autoType = autoType,
-                            autoSteering = steering,
-                            autoOwners = owners,
-                            autoCondition = autoCondition,
-                            autoYearFrom = autoYearFrom,
-                            autoYearTo = autoYearTo,
-                            autoEngineFrom = engineFrom,
-                            autoEngineTo = engineTo,
-                            autoPowerFrom = powerFrom,
-                            autoPowerTo = powerTo,
-                            autoMileageFrom = mileageFrom,
-                            autoMileageTo = mileageTo,
-                            motoType = motoType,
-                            motoYearFrom = motoYearFrom,
-                            motoYearTo = motoYearTo,
-                            motoEngineFrom = motoEngineFrom,
-                            motoEngineTo = motoEngineTo,
-                            motoPowerFrom = motoPowerFrom,
-                            motoPowerTo = motoPowerTo,
-                            snowType = snowType,
-                            snowYearFrom = snowYearFrom,
-                            snowYearTo = snowYearTo,
-                            snowEngineFrom = snowEngineFrom,
-                            snowEngineTo = snowEngineTo,
-                            snowPowerFrom = snowPowerFrom,
-                            snowPowerTo = snowPowerTo,
-                            waterType = waterType,
-                            waterCondition = waterCondition,
-                            specType = specType,
-                            specPowerFrom = specPowerFrom,
-                            specPowerTo = specPowerTo,
-                            specCondition = specCondition,
-                            partsGroup = partsGroup
-                        )
-                    }
+                    MenuFilterStore.update { draftState }
                     onApplyResults()
                 }
             )
