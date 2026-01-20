@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,7 +34,6 @@ import gearhub.feature.menu.navigation.SearchArgs
 import gearhub.feature.menu.presentation.menu.components.ErrorPlaceholder
 import gearhub.feature.menu.presentation.menu.components.Loading
 import gearhub.feature.menu.presentation.menu.components.ProductCard
-import gearhub.feature.menu.presentation.menu.theme.MenuBrandPrimary
 
 @Composable
 fun SearchResultsScreen(
@@ -44,24 +44,24 @@ fun SearchResultsScreen(
     val state by viewModel.state.collectAsState()
 
     Scaffold(
-        modifier = modifier.background(MenuBrandPrimary),
+        modifier = modifier.background(MaterialTheme.colorScheme.background),
         topBar = {
             Surface(
-                tonalElevation = 6.dp,
-                shadowElevation = 8.dp,
-                color = MenuBrandPrimary
+                tonalElevation = 4.dp,
+                shadowElevation = 2.dp,
+                color = MaterialTheme.colorScheme.background
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                        .padding(horizontal = 20.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { viewModel.onAction(SearchResultsAction.Back) }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_back),
                             contentDescription = "Назад",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                     TextField(
@@ -70,23 +70,23 @@ fun SearchResultsScreen(
                         modifier = Modifier
                             .weight(1f)
                             .padding(start = 8.dp),
-                        placeholder = { Text(text = "Поиск товаров", color = MenuBrandPrimary.copy(alpha = 0.6f)) },
+                        placeholder = { Text(text = "Поиск товаров", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                         singleLine = true,
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.search),
                                 contentDescription = "Поиск",
-                                tint = MenuBrandPrimary
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         },
                         colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White.copy(alpha = 0.96f),
-                            disabledContainerColor = Color.White.copy(alpha = 0.9f),
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
-                            cursorColor = MenuBrandPrimary
+                            cursorColor = MaterialTheme.colorScheme.primary
                         )
                     )
 
@@ -94,13 +94,13 @@ fun SearchResultsScreen(
                         Icon(
                             painter = painterResource(R.drawable.filter),
                             contentDescription = "Фильтр",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
             }
         },
-        containerColor = MenuBrandPrimary
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         SearchContent(
             modifier = Modifier.padding(paddingValues),
@@ -109,7 +109,7 @@ fun SearchResultsScreen(
         )
     }
 
-    LaunchedEffect(args.query) {
+    LaunchedEffect(Unit) {
         viewModel.onAction(SearchResultsAction.QueryChanged(args.query))
     }
 }
@@ -123,7 +123,7 @@ private fun SearchContent(
     val gridState = rememberLazyGridState()
 
     Column(
-        modifier = modifier.fillMaxSize().background(MenuBrandPrimary)
+        modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
     ) {
         when {
             state.isLoading -> Loading(modifier = Modifier.fillMaxSize())

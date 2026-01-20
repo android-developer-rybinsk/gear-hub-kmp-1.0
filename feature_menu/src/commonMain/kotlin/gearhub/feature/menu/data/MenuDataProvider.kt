@@ -9,11 +9,12 @@ import kotlin.random.Random
 
 object MenuDataProvider {
     fun categories(): List<MenuCategory> = listOf(
-        MenuCategory("boats", "Лодки"),
-        MenuCategory("service", "Сервис"),
-        MenuCategory("tackle", "Снасти"),
-        MenuCategory("outfit", "Экипировка"),
-        MenuCategory("accessories", "Аксессуары")
+        MenuCategory("autos", "Автомобили"),
+        MenuCategory("moto", "Мото техника"),
+        MenuCategory("snow", "Снегоходы"),
+        MenuCategory("water", "Лодочная техника"),
+        MenuCategory("spec", "Спец техника"),
+        MenuCategory("parts", "Запчасти")
     )
 
     fun products(): List<MenuProduct> {
