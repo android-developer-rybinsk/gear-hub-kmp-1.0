@@ -2,7 +2,6 @@ package gearhub.feature.profile.presentation.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -37,7 +38,8 @@ fun ProfileScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Card(
@@ -45,7 +47,7 @@ fun ProfileScreen(
             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
@@ -53,15 +55,17 @@ fun ProfileScreen(
                             colors = listOf(Color(0xFF1F6BFF), Color(0xFF174FC4))
                         )
                     )
-                    .padding(20.dp)
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
+                    Column(
                         modifier = Modifier
                             .size(64.dp)
                             .clip(CircleShape)
                             .background(Color.White.copy(alpha = 0.2f)),
-                        contentAlignment = Alignment.Center
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = "G",
@@ -70,18 +74,35 @@ fun ProfileScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
-                    Column {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
-                            text = "Гость",
+                            text = "Алексей",
                             color = Color.White,
                             style = MaterialTheme.typography.titleLarge
                         )
                         Text(
-                            text = "guest@gearhub.com",
+                            text = "Личный аккаунт",
                             color = Color.White.copy(alpha = 0.8f),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = "Рейтинг 4,7 • 12 отзывов",
+                        color = Color.White.copy(alpha = 0.9f),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = "ID профиля 6925645",
+                        color = Color.White.copy(alpha = 0.75f),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = "Посмотреть отзывы",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
@@ -91,47 +112,78 @@ fun ProfileScreen(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp, horizontal = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(vertical = 16.dp, horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                ProfileMetric(
-                    label = "Заказы",
-                    value = "3",
-                    modifier = Modifier.weight(1f)
-                )
-                ProfileMetric(
-                    label = "Потрачено",
-                    value = "₽4 299",
-                    modifier = Modifier.weight(1f)
-                )
-                ProfileMetric(
-                    label = "Избранное",
-                    value = "5",
-                    modifier = Modifier.weight(1f)
-                )
+                Text(text = "Кошелёк", style = MaterialTheme.typography.titleMedium)
+                Text(text = "Баланс: 0 ₽", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
+        SectionTitle(text = "Моя активность")
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             ProfileRow(
-                title = "Мои заказы",
-                subtitle = "3 активных"
+                title = "Мои отзывы",
+                subtitle = "12 отзывов"
+            )
+        }
+
+        SectionTitle(text = "Управление профилем")
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ProfileRow(
+                title = "Настройки профиля",
+                subtitle = "Почта, имя, телефон, пароль, удалить аккаунт"
             )
             ProfileRow(
-                title = "Сохраненные адреса",
-                subtitle = "2 адреса"
+                title = "Адреса",
+                subtitle = "Доставка и пункты выдачи"
+            )
+        }
+
+        SectionTitle(text = "Помощь и поддержка")
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ProfileRow(
+                title = "Чат поддержки",
+                subtitle = "Свяжитесь со службой поддержки"
             )
             ProfileRow(
-                title = "Уведомления",
-                subtitle = "Важные обновления"
+                title = "FAQ",
+                subtitle = "Часто задаваемые вопросы"
+            )
+        }
+
+        SectionTitle(text = "Приложение и правовая информация")
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ProfileRow(
+                title = "Настройки приложения",
+                subtitle = "Тема и язык"
             )
             ProfileRow(
-                title = "Помощь и поддержка",
-                subtitle = "Чат и FAQ"
+                title = "Оценить приложение",
+                subtitle = "Поделитесь впечатлением"
+            )
+            ProfileRow(
+                title = "Условия использования",
+                subtitle = "Правила сервиса"
+            )
+            ProfileRow(
+                title = "Политика конфиденциальности",
+                subtitle = "Как мы храним данные"
+            )
+            ProfileRow(
+                title = "Лицензии и рекомендации",
+                subtitle = "Открытые компоненты"
+            )
+        }
+
+        SectionTitle(text = "Информация о версии")
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ProfileRow(
+                title = "Версия приложения",
+                subtitle = "1.0.0"
             )
         }
 
@@ -150,15 +202,8 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileMetric(label: String, value: String, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(text = value, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-        Text(text = label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
+private fun SectionTitle(text: String) {
+    Text(text = text, style = MaterialTheme.typography.titleMedium)
 }
 
 @Composable
