@@ -73,7 +73,6 @@ kotlin {
             }
         }
     }
-
 }
 
 android {
