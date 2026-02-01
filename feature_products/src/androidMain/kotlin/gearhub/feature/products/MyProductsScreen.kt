@@ -11,11 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import gear.hub.core.di.koinViewModel
 import gearhub.feature.products.presentation.my.MyProductsViewModel
@@ -156,7 +152,7 @@ fun MyProductsScreen(
                 ) {
                     Text(text = "Действие с объявлением", style = MaterialTheme.typography.titleMedium)
                     IconButton(onClick = { deletedSheetItem = null }) {
-                        Icon(imageVector = Icons.Default.Close, contentDescription = "Закрыть")
+                        Icon(painter = painterResource(R.drawable.search), contentDescription = "Закрыть")
                     }
                 }
                 TextButton(onClick = { /* restore */ }) {
@@ -202,7 +198,7 @@ private fun ListingsHeader(title: String, showFilter: Boolean, onFilterClick: ()
         Text(text = title, style = MaterialTheme.typography.titleMedium)
         if (showFilter) {
             IconButton(onClick = onFilterClick) {
-                Icon(imageVector = Icons.Default.FilterList, contentDescription = "Фильтр")
+                Icon(painter = painterResource(R.drawable.search), contentDescription = "Фильтр")
             }
         }
     }
@@ -257,7 +253,7 @@ private fun ListingCard(
                         onFavoriteToggle?.invoke(item)
                     }) {
                         Icon(
-                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            painter = painterResource( if (isFavorite) R.drawable.search else R.drawable.search),
                             contentDescription = "Избранное",
                             tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
