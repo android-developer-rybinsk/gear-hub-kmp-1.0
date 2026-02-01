@@ -55,13 +55,13 @@ fun CustomNavigationBar(
     onTabSelected: (TabItem) -> Unit
 ) {
     NavigationBar(
-        modifier = Modifier.height(76.dp),
+        modifier = Modifier.height(64.dp),
         containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 8.dp
+        tonalElevation = 6.dp
     ) {
         tabs.forEach { tab ->
             val isSelected = currentRoute == tab.route
-            val iconSize = if (isSelected) 26.dp else 24.dp
+            val iconSize = if (isSelected) 24.dp else 22.dp
             NavigationBarItem(
                 selected = isSelected,
                 onClick = { onTabSelected(tab) },
@@ -78,12 +78,12 @@ fun CustomNavigationBar(
                 label = {
                     Text(
                         text = tab.label,
-                        fontSize = if (isSelected) 13.sp else 12.sp,
+                        fontSize = if (isSelected) 12.sp else 11.sp,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                     selectedTextColor = MaterialTheme.colorScheme.primary,
                     selectedIconColor = MaterialTheme.colorScheme.primary,
                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,

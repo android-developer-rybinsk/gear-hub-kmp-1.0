@@ -22,6 +22,7 @@ import gearhub.feature.menu.navigation.FilterArgs
 import gearhub.feature.menu.navigation.ProductDetailsArgs
 import gearhub.feature.menu.navigation.SearchArgs
 import gearhub.feature.menu.presentation.detail.ProductDetailsScreen
+import gearhub.feature.menu.presentation.filter.MenuFilterStore
 import gearhub.feature.menu.presentation.filter.FilterScreen
 import gearhub.feature.menu.presentation.menu.MenuScreen
 import gearhub.feature.menu.presentation.menu.MenuViewModel
@@ -66,7 +67,18 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
                 ?.getString(DestinationMenu.FilterScreen.CATEGORY_ARG)
                 ?.takeIf { it.isNotBlank() }
             val args = FilterArgs(categoryId = categoryId)
-            FilterScreen(args = args) { rootNavController.popBackStack() }
+            FilterScreen(
+                args = args,
+                onClose = { rootNavController.popBackStack() },
+                onApplyResults = {
+                    rootNavController.popBackStack()
+                    val query = MenuFilterStore.state().value.query
+                    rootNavController.navigate(DestinationMenu.SearchResultsScreen(SearchArgs(query)).route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
         composable(
             route = DestinationMenu.DetailsScreen.ROUTE_PATTERN,

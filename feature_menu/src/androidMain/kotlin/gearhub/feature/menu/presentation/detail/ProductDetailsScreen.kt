@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -52,7 +53,7 @@ import gearhub.feature.menu.data.MenuDataProvider
 import gearhub.feature.menu.navigation.ProductDetailsArgs
 import gearhub.feature.menu.presentation.menu.ProductDetail
 import gearhub.feature.menu.presentation.menu.theme.MenuBrandPrimary
-import gearhub.feature.menu.presentation.menu.theme.MenuCardSurface
+import gearhub.feature.menu.presentation.menu.theme.MenuRating
 import kotlinx.coroutines.launch
 
 @Composable
@@ -72,7 +73,7 @@ fun ProductDetailsScreen(
     }
 
     Scaffold(
-        containerColor = MenuBrandPrimary,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (!showFullScreen) {
                 CenterAlignedTopAppBar(
@@ -82,20 +83,20 @@ fun ProductDetailsScreen(
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "Назад",
-                                tint = Color.White
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MenuBrandPrimary,
-                        titleContentColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        titleContentColor = MaterialTheme.colorScheme.onSurface
                     )
                 )
             }
         }
     ) { padding ->
         product?.let { detail ->
-            Box(modifier = Modifier.fillMaxSize().background(MenuBrandPrimary)) {
+            Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -115,18 +116,74 @@ fun ProductDetailsScreen(
                         }
                     )
                     Spacer(modifier = Modifier.height(18.dp))
-                    Text(text = detail.title, style = MaterialTheme.typography.headlineSmall, color = Color.White)
-                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "${formatPrice(detail.price)} ₽",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White
+                        text = detail.title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = detail.city, color = Color.White.copy(alpha = 0.8f))
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "${formatPrice(detail.price)} ₽",
+                            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "★",
+                                color = MenuRating,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "4.7 (56)",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(text = detail.city, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Surface(color = MenuCardSurface, shape = RoundedCornerShape(16.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = "Наличие", style = MaterialTheme.typography.titleMedium)
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(Color(0xFFFFF4E5))
+                                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "5 доступно",
+                                        color = Color(0xFFF97316),
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Text(text = "Характеристики", style = MaterialTheme.typography.titleMedium)
                             detail.specs.forEach { spec ->
@@ -134,7 +191,7 @@ fun ProductDetailsScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text(text = spec.label, color = Color.DarkGray)
+                                    Text(text = spec.label, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     Text(text = spec.value, fontWeight = FontWeight.Medium)
                                 }
                             }
@@ -142,25 +199,33 @@ fun ProductDetailsScreen(
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Surface(color = MenuCardSurface, shape = RoundedCornerShape(16.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                             Text(text = "Описание", style = MaterialTheme.typography.titleMedium)
-                            Text(text = detail.description, color = Color.DarkGray)
+                            Text(text = detail.description, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    Surface(color = MenuCardSurface, shape = RoundedCornerShape(16.dp)) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
                         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(text = "Продавец", style = MaterialTheme.typography.titleMedium)
                             Text(text = detail.seller.name, fontWeight = FontWeight.SemiBold)
                             Text(
                                 text = "Рейтинг ${detail.seller.rating} · ${detail.seller.adsCount} объявлений",
-                                color = Color.DarkGray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
                                 text = if (detail.seller.isCompany) "Компания" else "Частное лицо",
-                                color = Color.DarkGray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             TextButton(onClick = { /* open profile */ }) {
                                 Text(text = "Перейти в профиль")
@@ -175,9 +240,12 @@ fun ProductDetailsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter)
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                            .padding(horizontal = 20.dp, vertical = 12.dp),
                         shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1CB26F), contentColor = Color.White)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MenuBrandPrimary,
+                            contentColor = Color.White
+                        )
                     ) {
                         Text(text = "Позвонить")
                     }
@@ -207,24 +275,27 @@ private fun ProductGallery(detail: ProductDetail, pagerState: androidx.compose.f
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp)
+                .height(240.dp)
                 .clip(RoundedCornerShape(18.dp))
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
                 ) { onImageClick() },
-            color = MenuCardSurface
+            color = MaterialTheme.colorScheme.surfaceVariant
         ) {
             HorizontalPager(state = pagerState) { page ->
-                Box(modifier = Modifier.fillMaxSize().background(Color.DarkGray.copy(alpha = 0.2f)), contentAlignment = Alignment.Center) {
-                    Text(text = "Фото ${page + 1}", color = Color.White)
+                Box(
+                    modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "Фото ${page + 1}", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
         Box(
             modifier = Modifier
-                .background(Color.White.copy(alpha = 0.7f), shape = RoundedCornerShape(percent = 50))
+                .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(percent = 50))
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
@@ -235,7 +306,7 @@ private fun ProductGallery(detail: ProductDetail, pagerState: androidx.compose.f
                             .padding(horizontal = 4.dp)
                             .size(if (selected) 10.dp else 8.dp)
                             .clip(CircleShape)
-                            .background(if (selected) Color.Black else Color.White)
+                            .background(if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.surface)
                     )
                 }
             }

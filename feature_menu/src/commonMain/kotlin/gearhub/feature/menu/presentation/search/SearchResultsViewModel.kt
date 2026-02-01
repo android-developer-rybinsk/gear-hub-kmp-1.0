@@ -5,6 +5,7 @@ import gear.hub.core.navigation.Router
 import gearhub.feature.menu.data.MenuDataProvider
 import gearhub.feature.menu.navigation.DestinationMenu
 import gearhub.feature.menu.navigation.ProductDetailsArgs
+import gearhub.feature.menu.presentation.filter.MenuFilterStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,6 +22,7 @@ class SearchResultsViewModel(
     private val products = MenuDataProvider.products()
 
     init {
+        MenuFilterStore.update { it.copy(query = initialQuery) }
         loadResults(initialQuery)
     }
 
@@ -31,9 +33,13 @@ class SearchResultsViewModel(
 
     override fun onAction(action: SearchResultsAction) {
         when (action) {
-            SearchResultsAction.Back -> router.back()
+            SearchResultsAction.Back -> {
+                MenuFilterStore.reset()
+                router.back()
+            }
             is SearchResultsAction.QueryChanged -> {
                 setState { it.copy(query = action.value) }
+                MenuFilterStore.update { it.copy(query = action.value) }
                 loadResults(action.value)
             }
 
@@ -52,8 +58,14 @@ class SearchResultsViewModel(
             setState { it.copy(isLoading = true, errorMessage = null) }
             try {
                 delay(150)
+                val filterState = MenuFilterStore.state().value
+                val minPrice = filterState.priceFrom.toDoubleOrNull()
+                val maxPrice = filterState.priceTo.toDoubleOrNull()
                 val filtered = products.filter { product ->
-                    query.isBlank() || product.title.contains(query, ignoreCase = true)
+                    val matchesQuery = query.isBlank() || product.title.contains(query, ignoreCase = true)
+                    val matchesCategory = filterState.selectedCategoryId == null || product.categoryId == filterState.selectedCategoryId
+                    val matchesPrice = (minPrice == null || product.price >= minPrice) && (maxPrice == null || product.price <= maxPrice)
+                    matchesQuery && matchesCategory && matchesPrice
                 }
                 setState {
                     it.copy(
