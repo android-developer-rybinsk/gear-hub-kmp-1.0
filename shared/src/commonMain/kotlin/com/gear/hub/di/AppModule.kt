@@ -1,6 +1,7 @@
 package com.gear.hub.di
 
 import com.gear.hub.auth_feature.api.AuthFeatureApi
+import gearhub.feature.menu_feature.api.MenuFeatureApi
 import com.gear.hub.auth_feature.api.AuthNavigationConfig
 import com.gear.hub.navigation.DestinationApp
 import com.gear.hub.network.config.Environment
@@ -15,10 +16,11 @@ val appModule = module {
     includes(
         networkModule(
             defaultEnv = Environment.DEV,
-            devHost = "http://84.54.56.129:8000",
+            devHost = "http://193.42.126.218:8000",
             prodHost = "https://prod.example.com",
         ),
         AuthFeatureApi.module,
+        MenuFeatureApi.module,
     )
 
     single { AuthNavigationConfig(successDestination = DestinationApp.MainScreen) }

@@ -11,6 +11,7 @@ import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorage
 import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorageImpl
 import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
 import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
+import gearhub.feature.menu_feature.api.db.createMenuCategoryDbDriver
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
 import gearhub.feature.menu.presentation.menu.MenuViewModel
 import gearhub.feature.products.presentation.my.MyProductsViewModel
@@ -34,9 +35,14 @@ class KoinIOSBridge {
                 dataModule(
                     config = DatabaseConfig(name = "gearhub_auth.db", passphrase = "gearhub_auth_cipher"),
                     platformContext = PlatformContext(null),
-                    registryConfig = { registerModule("auth_session") { factory ->
-                        initScope.launch { createAuthSessionDbDriver(factory).ensureInitialized() }
-                    } },
+                    registryConfig = {
+                        registerModule("auth_session") { factory ->
+                            initScope.launch { createAuthSessionDbDriver(factory).ensureInitialized() }
+                        }
+                        registerModule("menu_categories") { factory ->
+                            initScope.launch { createMenuCategoryDbDriver(factory).ensureInitialized() }
+                        }
+                    },
                 ),
             )
         },
@@ -46,7 +52,7 @@ class KoinIOSBridge {
             single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
             factory { MainViewModel(get()) }
             factory { SplashViewModel(get(), get()) }
-            factory { MenuViewModel(get()) }
+            factory { MenuViewModel(get(), get()) }
             factory { MyProductsViewModel(get()) }
             factory { ChatsViewModel(get()) }
             factory { ProfileViewModel(get(), get(), get()) }

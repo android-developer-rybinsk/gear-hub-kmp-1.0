@@ -2,7 +2,9 @@ package gearhub.feature.menu.presentation.menu
 
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
+import com.gear.hub.network.model.ApiResponse
 import gearhub.feature.menu.data.MenuDataProvider
+import gearhub.feature.menu_feature.internal.data.MenuCategoryRepository
 import gearhub.feature.menu.navigation.DestinationMenu
 import gearhub.feature.menu.navigation.FilterArgs
 import gearhub.feature.menu.navigation.ProductDetailsArgs
@@ -18,12 +20,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class MenuViewModel(
-    private val router: Router
+    private val router: Router,
+    private val categoryRepository: MenuCategoryRepository,
 ) : BaseViewModel<MenuState, MenuAction>(MenuState()) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private val categoriesSource = MutableStateFlow(MenuDataProvider.categories())
+    private val categoriesSource = categoryRepository.categories
     private val productsSource = MutableStateFlow(MenuDataProvider.products())
 
     private var currentPage = 0
@@ -31,6 +34,17 @@ class MenuViewModel(
     private var lastSearchNavigationQuery: String? = null
 
     init {
+        scope.launch {
+            categoryRepository.loadFromDb()
+            when (val response = categoryRepository.refreshCategories()) {
+                is ApiResponse.HttpError -> setCategoryError(response.message)
+                ApiResponse.NetworkError -> setCategoryError("Нет соединения с сервером")
+                is ApiResponse.UnknownError -> setCategoryError("Не удалось загрузить категории")
+                is ApiResponse.Success -> Unit
+            }
+            categoryRepository.loadFromDb()
+        }
+
         scope.launch {
             combine(
                 categoriesSource,
@@ -166,5 +180,11 @@ class MenuViewModel(
 
     private fun filterProducts(): List<MenuProduct> {
         return productsSource.value
+    }
+
+    private fun setCategoryError(message: String?) {
+        if (!message.isNullOrBlank()) {
+            setState { it.copy(errorMessage = message) }
+        }
     }
 }

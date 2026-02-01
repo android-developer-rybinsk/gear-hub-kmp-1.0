@@ -22,7 +22,7 @@ val androidModule = module {
     viewModel { (router: Router) -> MainViewModel(router) }
     viewModel { (router: Router) -> SplashViewModel(router, get<CheckAuthorizationUseCase>()) }
     viewModel { (router: Router, config: AuthNavigationConfig) -> AuthViewModel(get(), router, config) }
-    viewModel { (router: Router) -> MenuViewModel(router) }
+    viewModel { (router: Router) -> MenuViewModel(router, get()) }
     viewModel { (router: Router, query: String) -> SearchResultsViewModel(router, query) }
     viewModel { (router: Router) -> MyProductsViewModel(router) }
     viewModel { (router: Router) -> ChatsViewModel(router) }

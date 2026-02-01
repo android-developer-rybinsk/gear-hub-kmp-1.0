@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.ImeAction
 import gearhub.feature.menu.navigation.FilterArgs
+import gearhub.feature.menu.presentation.menu.MenuCategory
 import gearhub.feature.menu.presentation.menu.theme.MenuBrandPrimary
 import gearhub.feature.menu.presentation.filter.MenuFilterStore
 import gearhub.feature.menu.presentation.filter.SellerType
@@ -54,6 +55,8 @@ import gearhub.feature.menu.presentation.filter.AutoType
 import gearhub.feature.menu.presentation.filter.Steering
 import gearhub.feature.menu.presentation.filter.OwnersCount
 import gearhub.feature.menu.presentation.filter.AutoCondition
+import gearhub.feature.menu_feature.internal.data.MenuCategoryRepository
+import org.koin.compose.koinInject
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,6 +68,12 @@ fun FilterScreen(
     val storeState by MenuFilterStore.state().collectAsState()
     var draftState by remember(storeState) { mutableStateOf(storeState) }
     var selectDialog by remember { mutableStateOf<SelectDialogState?>(null) }
+    val categoryRepository: MenuCategoryRepository = koinInject()
+    val categories by categoryRepository.categories.collectAsState()
+
+    LaunchedEffect(Unit) {
+        categoryRepository.loadFromDb()
+    }
 
     LaunchedEffect(args.categoryId) {
         if (draftState.selectedCategoryId == null && !args.categoryId.isNullOrBlank()) {
@@ -131,6 +140,7 @@ fun FilterScreen(
             ) {
                 SectionTitle(text = "Категория")
                 CategoryRow(
+                    categories = categories,
                     selectedId = draftState.selectedCategoryId,
                     onSelect = { selected ->
                         if (draftState.selectedCategoryId == selected) {
@@ -325,23 +335,23 @@ private fun <T> FilterChipsRow(
 }
 
 @Composable
-private fun CategoryRow(selectedId: String?, onSelect: (String) -> Unit) {
-    val categories = listOf(
-        "autos" to "Автомобили",
-        "moto" to "Мото техника",
-        "snow" to "Снегоходы",
-        "water" to "Лодочная техника",
-        "spec" to "Спец техника",
-        "parts" to "Запчасти"
-    )
+private fun CategoryRow(categories: List<MenuCategory>, selectedId: String?, onSelect: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        if (categories.isEmpty()) {
+            Text(
+                text = "Категории пока недоступны",
+                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            return@Column
+        }
+
         categories.chunked(2).forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                row.forEach { (id, title) ->
-                    val selected = id == selectedId
+                row.forEach { category ->
+                    val selected = category.id == selectedId
                     androidx.compose.material3.AssistChip(
-                        onClick = { onSelect(id) },
-                        label = { Text(title) },
+                        onClick = { onSelect(category.id) },
+                        label = { Text(category.title) },
                         colors = androidx.compose.material3.AssistChipDefaults.assistChipColors(
                             containerColor = if (selected) MenuBrandPrimary.copy(alpha = 0.16f) else androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant,
                             labelColor = androidx.compose.material3.MaterialTheme.colorScheme.onSurface
