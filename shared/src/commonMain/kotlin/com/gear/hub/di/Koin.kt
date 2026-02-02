@@ -4,7 +4,7 @@ import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
 import com.gear.hub.presentation.screens.main.MainViewModel
 import com.gear.hub.presentation.screens.splash.SplashViewModel
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
-import gearhub.feature.menu.presentation.menu.MenuViewModel
+import gearhub.feature.menu_feature.api.MenuViewModelApi
 import gearhub.feature.products.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +30,7 @@ fun mainScope(): CoroutineScope = kotlinx.coroutines.MainScope()
 
 fun resolveSplashVM(): SplashViewModel = getKoin().get()
 fun resolveMainVM(): MainViewModel = getKoin().get()
-fun resolveMenuVM(): MenuViewModel = getKoin().get()
+fun resolveMenuVM(): MenuViewModelApi = getKoin().get()
 fun resolveMyProductsVM(): MyProductsViewModel = getKoin().get()
 fun resolveChatsVM(): ChatsViewModel = getKoin().get()
 fun resolveProfileVM(): ProfileViewModel = getKoin().get()

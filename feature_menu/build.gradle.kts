@@ -92,7 +92,7 @@ dependencies {
 }
 
 android {
-    namespace = "gearhub.feature.menu"
+    namespace = "gearhub.feature.menu_feature"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()

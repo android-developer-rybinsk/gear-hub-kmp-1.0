@@ -1,10 +1,11 @@
 package gearhub.feature.menu_feature.internal.data
 
 import com.gear.hub.network.model.ApiResponse
+import com.gear.hub.network.model.map
 import gearhub.feature.menu_feature.api.db.MenuCategoryDbDriver
 import gearhub.feature.menu_feature.api.model.MenuCategoryRecord
 import gearhub.feature.menu_feature.internal.data.model.MenuCategoryDto
-import gearhub.feature.menu.presentation.menu.MenuCategory
+import gearhub.feature.menu_feature.internal.presentation.menu.MenuCategory
 import gearhub.feature.menu_service.api.MenuApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -13,15 +14,23 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 
-internal class MenuCategoryRepository(
+internal interface MenuCategoryRepository {
+    val categories: StateFlow<List<MenuCategory>>
+
+    suspend fun loadFromDb()
+
+    suspend fun refreshCategories(): ApiResponse<Unit>
+}
+
+internal class MenuCategoryRepositoryImpl(
     private val api: MenuApi,
     private val dbDriver: MenuCategoryDbDriver,
-) {
+) : MenuCategoryRepository {
     private val categoriesState = MutableStateFlow<List<MenuCategory>>(emptyList())
 
-    val categories: StateFlow<List<MenuCategory>> = categoriesState.asStateFlow()
+    override val categories: StateFlow<List<MenuCategory>> = categoriesState.asStateFlow()
 
-    suspend fun loadFromDb() {
+    override suspend fun loadFromDb() {
         val records = withContext(Dispatchers.IO) { dbDriver.getCategories() }
         categoriesState.value = records
             .filter { it.parentId == null }
@@ -29,7 +38,7 @@ internal class MenuCategoryRepository(
             .map { MenuCategory(id = it.id, title = it.name) }
     }
 
-    suspend fun refreshCategories(): ApiResponse<Unit> {
+    override suspend fun refreshCategories(): ApiResponse<Unit> {
         val response = api.getCategories()
         if (response is ApiResponse.Success) {
             val records = response.data.toRecords()

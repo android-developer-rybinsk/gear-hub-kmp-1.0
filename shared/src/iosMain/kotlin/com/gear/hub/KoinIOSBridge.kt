@@ -12,8 +12,8 @@ import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorageImpl
 import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
 import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
 import gearhub.feature.menu_feature.api.db.createMenuCategoryDbDriver
+import gearhub.feature.menu_feature.api.menuFeatureIosModule
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
-import gearhub.feature.menu.presentation.menu.MenuViewModel
 import gearhub.feature.products.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import com.gear.hub.data.config.DatabaseConfig
@@ -44,6 +44,7 @@ class KoinIOSBridge {
                         }
                     },
                 ),
+                menuFeatureIosModule,
             )
         },
         iosModule = module {
@@ -52,7 +53,6 @@ class KoinIOSBridge {
             single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
             factory { MainViewModel(get()) }
             factory { SplashViewModel(get(), get()) }
-            factory { MenuViewModel(get(), get()) }
             factory { MyProductsViewModel(get()) }
             factory { ChatsViewModel(get()) }
             factory { ProfileViewModel(get(), get(), get()) }

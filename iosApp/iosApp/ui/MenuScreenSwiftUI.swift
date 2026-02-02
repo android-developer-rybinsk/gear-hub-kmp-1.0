@@ -197,10 +197,10 @@ private struct ProductCard: View {
 }
 
 class MenuViewModelWrapper: ObservableObject {
-    private let viewModel: MenuViewModel
+    private let viewModel: MenuViewModelApi
     @Published var state: MenuState
 
-    init(vm: MenuViewModel) {
+    init(vm: MenuViewModelApi) {
         self.viewModel = vm
         self.state = vm.iosState().currentValue()
 

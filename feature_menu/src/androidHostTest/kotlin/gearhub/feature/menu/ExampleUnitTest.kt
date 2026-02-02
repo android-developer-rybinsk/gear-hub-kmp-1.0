@@ -1,4 +1,4 @@
-package gearhub.feature.menu
+package gearhub.feature.menu_feature
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

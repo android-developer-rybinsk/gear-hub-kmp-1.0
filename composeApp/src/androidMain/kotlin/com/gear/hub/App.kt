@@ -7,6 +7,7 @@ import com.gear.hub.data.config.DatabaseConfig
 import com.gear.hub.data.config.PlatformContext
 import com.gear.hub.data.di.dataModule
 import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
+import gearhub.feature.menu_feature.api.menuFeatureAndroidModule
 import gearhub.feature.menu_feature.api.db.createMenuCategoryDbDriver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,8 @@ class App : Application() {
                     },
                 ),
                 appModule,      // общий модуль из shared
-                androidModule   // Android-специфичный модуль
+                androidModule,   // Android-специфичный модуль
+                menuFeatureAndroidModule
             )
         }
     }

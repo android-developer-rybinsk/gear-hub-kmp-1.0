@@ -4,6 +4,7 @@ import com.gear.hub.data.config.DatabaseFactory
 import gearhub.feature.menu_feature.api.db.MenuCategoryDbDriver
 import gearhub.feature.menu_feature.api.db.createMenuCategoryDbDriver
 import gearhub.feature.menu_feature.internal.data.MenuCategoryRepository
+import gearhub.feature.menu_feature.internal.data.MenuCategoryRepositoryImpl
 import gearhub.feature.menu_service.di.menuServiceModule
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -15,5 +16,5 @@ val menuFeatureModule: Module = module {
     includes(menuServiceModule)
 
     single<MenuCategoryDbDriver> { createMenuCategoryDbDriver(get<DatabaseFactory>()) }
-    single { MenuCategoryRepository(get(), get()) }
+    single<MenuCategoryRepository> { MenuCategoryRepositoryImpl(get(), get()) }
 }
