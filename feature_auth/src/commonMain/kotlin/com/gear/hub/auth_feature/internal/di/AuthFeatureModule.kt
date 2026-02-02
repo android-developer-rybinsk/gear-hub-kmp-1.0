@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -26,7 +27,7 @@ val authFeatureModule: Module = module {
     includes(authServiceModule)
 
     single<AuthRepository> { AuthRepositoryImpl(get()) }
-    single<AuthSessionDbDriver> { createAuthSessionDbDriver(get<DatabaseFactory>()) }
+    single<AuthSessionDbDriver> { createAuthSessionDbDriver(get<DatabaseFactory>(named("auth_db"))) }
     single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
     single<AuthSessionRepository> { AuthSessionRepositoryImpl(get()) }
     factory { RegisterUserUseCase(get(), get()) }

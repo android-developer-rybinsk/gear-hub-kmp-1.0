@@ -23,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 // Простая обёртка, которую Swift увидит как класс KoinIOSBridge
@@ -39,17 +40,25 @@ class KoinIOSBridge {
                         registerModule("auth_session") { factory ->
                             initScope.launch { createAuthSessionDbDriver(factory).ensureInitialized() }
                         }
+                    },
+                    qualifier = "auth_db",
+                ),
+                dataModule(
+                    config = DatabaseConfig(name = "gearhub_menu.db", passphrase = "gearhub_menu_cipher"),
+                    platformContext = PlatformContext(null),
+                    registryConfig = {
                         registerModule("menu_categories") { factory ->
                             initScope.launch { createMenuCategoryDbDriver(factory).ensureInitialized() }
                         }
                     },
+                    qualifier = "menu_db",
                 ),
                 menuFeatureIosModule,
             )
         },
         iosModule = module {
             single<Router> { router }
-            single<AuthSessionDbDriver> { createAuthSessionDbDriver(get()) }
+            single<AuthSessionDbDriver> { createAuthSessionDbDriver(get(named("auth_db"))) }
             single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
             factory { MainViewModel(get()) }
             factory { SplashViewModel(get(), get()) }

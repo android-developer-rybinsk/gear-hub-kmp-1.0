@@ -32,10 +32,18 @@ class App : Application() {
                         registerModule("auth_session") { factory ->
                             appScope.launch { createAuthSessionDbDriver(factory).ensureInitialized() }
                         }
+                    },
+                    qualifier = "auth_db",
+                ),
+                dataModule(
+                    config = DatabaseConfig(name = "gearhub_menu.db", passphrase = "gearhub_menu_cipher"),
+                    platformContext = PlatformContext(this@App),
+                    registryConfig = {
                         registerModule("menu_categories") { factory ->
                             appScope.launch { createMenuCategoryDbDriver(factory).ensureInitialized() }
                         }
                     },
+                    qualifier = "menu_db",
                 ),
                 appModule,      // общий модуль из shared
                 androidModule,   // Android-специфичный модуль
