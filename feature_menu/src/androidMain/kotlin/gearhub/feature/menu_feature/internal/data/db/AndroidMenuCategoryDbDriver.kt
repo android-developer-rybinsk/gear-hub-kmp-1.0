@@ -12,6 +12,7 @@ internal class AndroidMenuCategoryDbDriver(
 
     private val database: MenuCategoryDatabase by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
         factory.roomDatabaseBuilder(MenuCategoryDatabase::class.java)
+            .fallbackToDestructiveMigration()
             .build()
     }
 
