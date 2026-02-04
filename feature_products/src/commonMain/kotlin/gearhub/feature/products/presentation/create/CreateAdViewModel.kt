@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.gear.hub.network.model.ApiResponse
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
-import gearhub.feature.menu_feature.api.db.MenuCategoryDbDriver
+import gearhub.feature.menu_feature.api.MenuCategoryProvider
 import gearhub.feature.products.internal.data.AdsRepository
 import gearhub.feature.products.internal.domain.model.CreateAdPayload
 import gearhub.feature.products.internal.domain.model.UpdateAdPayload
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 class CreateAdViewModel(
     private val router: Router,
     private val repository: AdsRepository,
-    private val categoryDbDriver: MenuCategoryDbDriver,
+    private val categoryProvider: MenuCategoryProvider,
 ) : BaseViewModel<CreateAdState, CreateAdAction>(CreateAdState()) {
 
     override fun onAction(action: CreateAdAction) {
@@ -38,19 +38,15 @@ class CreateAdViewModel(
 
     private fun loadCategories() {
         viewModelScope.launch {
-            val categories = withContext(Dispatchers.IO) {
-                categoryDbDriver.getCategories()
+            val mapped = withContext(Dispatchers.IO) {
+                categoryProvider.getCategories()
+            }.map {
+                AdCategory(
+                    id = it.id,
+                    title = it.title,
+                    slug = it.slug,
+                )
             }
-            val mapped = categories
-                .filter { it.parentId == null }
-                .sortedBy { it.position }
-                .map {
-                    AdCategory(
-                        id = it.id,
-                        title = it.name,
-                        slug = it.slug.orEmpty(),
-                    )
-                }
             setState { it.copy(categories = mapped) }
         }
     }
