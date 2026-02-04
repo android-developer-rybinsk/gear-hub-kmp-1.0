@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -32,6 +34,8 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":core"))
+                implementation(project(":data_service"))
+                implementation(project(":network_service"))
 
                 implementation(libs.kotlin.stdlib)
                 // Add KMP dependencies here
@@ -41,6 +45,8 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.components.resources)
                 implementation(compose.materialIconsExtended)
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.serialization.json)
 
                 // DI
                 implementation(libs.koin.core)
@@ -64,6 +70,12 @@ kotlin {
                 implementation(libs.koin.android)
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.accompanist)
+                implementation(libs.retrofit.core)
+                implementation(libs.retrofit.kotlinx.serialization.converter)
+                implementation(libs.okhttp.logging)
+                implementation(libs.sqlcipher)
+                implementation(libs.room.runtime)
+                implementation(libs.room.ktx)
             }
         }
 
@@ -75,8 +87,12 @@ kotlin {
     }
 }
 
+dependencies {
+    add("kspAndroid", libs.room.compiler)
+}
+
 android {
-    namespace = "gearhub.feature.menu"
+    namespace = "gearhub.feature.menu_feature"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()

@@ -11,8 +11,9 @@ import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorage
 import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorageImpl
 import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
 import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
+import gearhub.feature.menu_feature.api.db.createMenuCategoryDbDriver
+import gearhub.feature.menu_feature.api.menuFeatureIosModule
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
-import gearhub.feature.menu.presentation.menu.MenuViewModel
 import gearhub.feature.products.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import com.gear.hub.data.config.DatabaseConfig
@@ -22,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 // Простая обёртка, которую Swift увидит как класс KoinIOSBridge
@@ -34,19 +36,32 @@ class KoinIOSBridge {
                 dataModule(
                     config = DatabaseConfig(name = "gearhub_auth.db", passphrase = "gearhub_auth_cipher"),
                     platformContext = PlatformContext(null),
-                    registryConfig = { registerModule("auth_session") { factory ->
-                        initScope.launch { createAuthSessionDbDriver(factory).ensureInitialized() }
-                    } },
+                    registryConfig = {
+                        registerModule("auth_session") { factory ->
+                            initScope.launch { createAuthSessionDbDriver(factory).ensureInitialized() }
+                        }
+                    },
+                    qualifier = "auth_db",
                 ),
+                dataModule(
+                    config = DatabaseConfig(name = "gearhub_menu.db", passphrase = "gearhub_menu_cipher"),
+                    platformContext = PlatformContext(null),
+                    registryConfig = {
+                        registerModule("menu_categories") { factory ->
+                            initScope.launch { createMenuCategoryDbDriver(factory).ensureInitialized() }
+                        }
+                    },
+                    qualifier = "menu_db",
+                ),
+                menuFeatureIosModule,
             )
         },
         iosModule = module {
             single<Router> { router }
-            single<AuthSessionDbDriver> { createAuthSessionDbDriver(get()) }
+            single<AuthSessionDbDriver> { createAuthSessionDbDriver(get(named("auth_db"))) }
             single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
             factory { MainViewModel(get()) }
             factory { SplashViewModel(get(), get()) }
-            factory { MenuViewModel(get()) }
             factory { MyProductsViewModel(get()) }
             factory { ChatsViewModel(get()) }
             factory { ProfileViewModel(get(), get(), get()) }

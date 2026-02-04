@@ -1,4 +1,4 @@
-package gearhub.feature.menu
+package gearhub.feature.menu_feature
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("gearhub.feature.menu.test", appContext.packageName)
+        assertEquals("gearhub.feature.menu_feature.test", appContext.packageName)
     }
 }

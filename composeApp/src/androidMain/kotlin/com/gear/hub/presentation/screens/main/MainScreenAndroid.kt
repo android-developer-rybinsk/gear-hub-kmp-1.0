@@ -17,17 +17,16 @@ import gear.hub.core.navigation.Router
 import gearhub.feature.chats.navigation.DestinationChats
 import gearhub.feature.chats.presentation.chats.ChatsScreen
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
-import gearhub.feature.menu.navigation.DestinationMenu
-import gearhub.feature.menu.navigation.FilterArgs
-import gearhub.feature.menu.navigation.ProductDetailsArgs
-import gearhub.feature.menu.navigation.SearchArgs
-import gearhub.feature.menu.presentation.detail.ProductDetailsScreen
-import gearhub.feature.menu.presentation.filter.MenuFilterStore
-import gearhub.feature.menu.presentation.filter.FilterScreen
-import gearhub.feature.menu.presentation.menu.MenuScreen
-import gearhub.feature.menu.presentation.menu.MenuViewModel
-import gearhub.feature.menu.presentation.search.SearchResultsScreen
-import gearhub.feature.menu.presentation.search.SearchResultsViewModel
+import gearhub.feature.menu_feature.navigation.DestinationMenu
+import gearhub.feature.menu_feature.navigation.FilterArgs
+import gearhub.feature.menu_feature.navigation.ProductDetailsArgs
+import gearhub.feature.menu_feature.navigation.SearchArgs
+import gearhub.feature.menu_feature.internal.presentation.detail.ProductDetailsScreen
+import gearhub.feature.menu_feature.internal.presentation.filter.MenuFilterStore
+import gearhub.feature.menu_feature.internal.presentation.filter.FilterScreen
+import gearhub.feature.menu_feature.api.MenuScreenEntry
+import gearhub.feature.menu_feature.internal.presentation.search.SearchResultsScreen
+import gearhub.feature.menu_feature.internal.presentation.search.SearchResultsViewModel
 import gearhub.feature.products.MyProductsScreen
 import gearhub.feature.products.navigation.DestinationProducts
 import gearhub.feature.products.presentation.my.MyProductsViewModel
@@ -137,8 +136,7 @@ private fun TabsHost(
             modifier = innerModifier
         ) {
             composable(DestinationMenu.MenuScreen.route) {
-                val vm: MenuViewModel = koinViewModel(parameters = { parametersOf(router) })
-                MenuScreen(vm)
+                MenuScreenEntry(router)
             }
             composable(DestinationProducts.MyProductsScreen.route) {
                 val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })
