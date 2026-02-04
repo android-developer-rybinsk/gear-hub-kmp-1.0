@@ -16,7 +16,7 @@ val appModule = module {
     includes(
         networkModule(
             defaultEnv = Environment.DEV,
-            devHost = "http://193.42.126.218:8000",
+            devHost = "http://193.42.126.218:8443",
             prodHost = "https://prod.example.com",
         ),
         AuthFeatureApi.module,
