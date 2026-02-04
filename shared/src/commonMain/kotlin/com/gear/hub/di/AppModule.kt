@@ -2,6 +2,7 @@ package com.gear.hub.di
 
 import com.gear.hub.auth_feature.api.AuthFeatureApi
 import gearhub.feature.menu_feature.api.MenuFeatureApi
+import gearhub.feature.products.internal.di.adsFeatureModule
 import com.gear.hub.auth_feature.api.AuthNavigationConfig
 import com.gear.hub.navigation.DestinationApp
 import com.gear.hub.network.config.Environment
@@ -21,6 +22,7 @@ val appModule = module {
         ),
         AuthFeatureApi.module,
         MenuFeatureApi.module,
+        adsFeatureModule,
     )
 
     single { AuthNavigationConfig(successDestination = DestinationApp.MainScreen) }

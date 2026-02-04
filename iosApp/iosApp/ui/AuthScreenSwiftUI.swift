@@ -9,9 +9,11 @@ struct AuthScreenSwiftUI: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 switch vm.state.step {
-                case let step as AuthStep.Step1:
+                case let step as AuthStep.Login:
+                    LoginView(step: step, state: vm.state, onAction: vm.onAction)
+                case let step as AuthStep.RegisterStep1:
                     StepOneView(step: step, state: vm.state, onAction: vm.onAction)
-                case let step as AuthStep.Step2:
+                case let step as AuthStep.RegisterStep2:
                     StepTwoView(step: step, state: vm.state, onAction: vm.onAction)
                 default:
                     EmptyView()
@@ -42,7 +44,7 @@ struct AuthScreenSwiftUI: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                if vm.state.step is AuthStep.Step2 {
+                if vm.state.step is AuthStep.RegisterStep2 {
                     Button(action: { vm.onAction(action: AuthAction.BackToStepOne()) }) {
                         HStack(spacing: 6) {
                             Image(systemName: "chevron.left")
@@ -57,7 +59,7 @@ struct AuthScreenSwiftUI: View {
 }
 
 private struct StepOneView: View {
-    let step: AuthStep.Step1
+    let step: AuthStep.RegisterStep1
     let state: AuthState
     let onAction: (AuthAction) -> Void
 
@@ -99,7 +101,7 @@ private struct StepOneView: View {
 }
 
 private struct StepTwoView: View {
-    let step: AuthStep.Step2
+    let step: AuthStep.RegisterStep2
     let state: AuthState
     let onAction: (AuthAction) -> Void
 
@@ -113,7 +115,7 @@ private struct StepTwoView: View {
                 showError: state.highlightError && step.password.isEmpty,
                 submitLabel: .next
             ) {
-                onAction(AuthAction.Submit())
+                onAction(AuthAction.SubmitRegistration())
             }
 
             InputField(
@@ -124,11 +126,59 @@ private struct StepTwoView: View {
                 showError: state.highlightError && step.confirmPassword.isEmpty,
                 submitLabel: .done
             ) {
-                onAction(AuthAction.Submit())
+                onAction(AuthAction.SubmitRegistration())
             }
 
-            Button(action: { onAction(AuthAction.Submit()) }) {
-                Text("Отправить")
+            Button(action: { onAction(AuthAction.SubmitRegistration()) }) {
+                Text("Продолжить")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .foregroundColor(.black)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Color(red: 235/255, green: 169/255, blue: 55/255))
+            .disabled(state.isLoading)
+        }
+    }
+}
+
+private struct LoginView: View {
+    let step: AuthStep.Login
+    let state: AuthState
+    let onAction: (AuthAction) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            InputField(
+                title: "Почта",
+                text: step.login,
+                onChange: { onAction(AuthAction.UpdateLogin(value: $0)) },
+                isSecure: false,
+                showError: state.highlightError && step.login.isEmpty,
+                submitLabel: .next
+            ) {
+                onAction(AuthAction.SubmitLogin())
+            }
+
+            InputField(
+                title: "Пароль",
+                text: step.password,
+                onChange: { onAction(AuthAction.UpdatePassword(value: $0)) },
+                isSecure: true,
+                showError: state.highlightError && step.password.isEmpty,
+                submitLabel: .done
+            ) {
+                onAction(AuthAction.SubmitLogin())
+            }
+
+            Button(action: { onAction(AuthAction.StartRegistration()) }) {
+                Text("Регистрация")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foregroundColor(.blue)
+            }
+
+            Button(action: { onAction(AuthAction.SubmitLogin()) }) {
+                Text("Войти")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
                     .foregroundColor(.black)

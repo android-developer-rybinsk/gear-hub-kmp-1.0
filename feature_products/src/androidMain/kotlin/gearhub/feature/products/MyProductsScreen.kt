@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import gear.hub.core.di.koinViewModel
+import gearhub.feature.products.presentation.my.MyProductsAction
 import gearhub.feature.products.presentation.my.MyProductsViewModel
 
 @Composable
@@ -120,6 +122,12 @@ fun MyProductsScreen(
             }
             ListingTab.MyAds -> {
                 ListingsHeader(title = "Мои объявления", showFilter = true, onFilterClick = { /* open sort */ })
+                Button(
+                    onClick = { viewModel.onAction(MyProductsAction.CreateAd) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Добавить")
+                }
                 ListingsGrid(
                     items = myAdsItems,
                     showFavoriteToggle = false,

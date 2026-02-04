@@ -1,5 +1,6 @@
 package com.gear.hub.auth_service.internal
 
+import com.gear.hub.auth_feature.internal.data.model.AuthLoginRequestDto
 import com.gear.hub.auth_feature.internal.data.model.AuthRegisterRequestDto
 import com.gear.hub.auth_feature.internal.data.model.AuthRegisterResponseDto
 import com.gear.hub.auth_service.api.AuthApi
@@ -29,6 +30,18 @@ internal class RetrofitAuthApi(
             ApiResponse.UnknownError(throwable)
         }
 
+    override suspend fun login(request: AuthLoginRequestDto): ApiResponse<AuthRegisterResponseDto> =
+        try {
+            val response = service.login(request)
+            ApiResponse.Success(response)
+        } catch (http: retrofit2.HttpException) {
+            val message = http.response()?.errorBody()?.string()
+            ApiResponse.HttpError(http.code(), message)
+        } catch (_: java.io.IOException) {
+            ApiResponse.NetworkError
+        } catch (throwable: Throwable) {
+            ApiResponse.UnknownError(throwable)
+        }
 }
 
 /**
@@ -37,4 +50,7 @@ internal class RetrofitAuthApi(
 internal interface AuthRetrofitService {
     @POST("api/v1/auth/register")
     suspend fun register(@Body body: AuthRegisterRequestDto): AuthRegisterResponseDto
+
+    @POST("api/v1/auth/login")
+    suspend fun login(@Body body: AuthLoginRequestDto): AuthRegisterResponseDto
 }

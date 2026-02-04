@@ -27,7 +27,9 @@ import gearhub.feature.menu_feature.internal.presentation.filter.FilterScreen
 import gearhub.feature.menu_feature.api.MenuScreenEntry
 import gearhub.feature.menu_feature.internal.presentation.search.SearchResultsScreen
 import gearhub.feature.menu_feature.internal.presentation.search.SearchResultsViewModel
+import gearhub.feature.products.CreateAdScreen
 import gearhub.feature.products.MyProductsScreen
+import gearhub.feature.products.presentation.create.CreateAdViewModel
 import gearhub.feature.products.navigation.DestinationProducts
 import gearhub.feature.products.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.navigation.DestinationProfile
@@ -141,6 +143,10 @@ private fun TabsHost(
             composable(DestinationProducts.MyProductsScreen.route) {
                 val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })
                 MyProductsScreen(vm)
+            }
+            composable(DestinationProducts.CreateAdScreen.route) {
+                val vm: CreateAdViewModel = koinViewModel(parameters = { parametersOf(router) })
+                CreateAdScreen(vm)
             }
             composable(DestinationChats.ChatsScreen.route) {
                 val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(router) })

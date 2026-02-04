@@ -15,6 +15,7 @@ import gearhub.feature.menu_feature.api.db.createMenuCategoryDbDriver
 import gearhub.feature.menu_feature.api.menuFeatureIosModule
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
 import gearhub.feature.products.presentation.my.MyProductsViewModel
+import gearhub.feature.products.presentation.create.CreateAdViewModel
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import com.gear.hub.data.config.DatabaseConfig
 import com.gear.hub.data.config.PlatformContext
@@ -63,9 +64,10 @@ class KoinIOSBridge {
             factory { MainViewModel(get()) }
             factory { SplashViewModel(get(), get()) }
             factory { MyProductsViewModel(get()) }
+            factory { CreateAdViewModel(get(), get(), get()) }
             factory { ChatsViewModel(get()) }
             factory { ProfileViewModel(get(), get(), get()) }
-            factory { AuthViewModel(get(), get(), get<AuthNavigationConfig>()) }
+            factory { AuthViewModel(get(), get(), get(), get<AuthNavigationConfig>()) }
         }
     )
 }

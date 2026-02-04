@@ -1,20 +1,21 @@
-package com.gear.hub.auth_service.internal
+package gearhub.feature.products.service.internal
 
-import com.gear.hub.auth_feature.internal.data.model.AuthLoginRequestDto
-import com.gear.hub.auth_feature.internal.data.model.AuthRegisterRequestDto
-import com.gear.hub.auth_feature.internal.data.model.AuthRegisterResponseDto
-import com.gear.hub.auth_service.api.AuthApi
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.model.ApiResponse
 import com.gear.hub.network.util.ensureTrailingSlash
+import gearhub.feature.products.internal.data.model.CreateAdRequestDto
+import gearhub.feature.products.internal.data.model.CreateAdResponseDto
+import gearhub.feature.products.internal.data.model.UpdateAdRequestDto
+import gearhub.feature.products.service.api.AdsApi
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.patch
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
@@ -24,21 +25,21 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 /**
- * Реализация AuthApi для iOS на Ktor HttpClient.
+ * Реализация AdsApi для iOS на Ktor HttpClient.
  */
-class KtorAuthApi(
+class KtorAdsApi(
     private val httpClient: HttpClient,
     private val hostProvider: HostProvider,
-) : AuthApi {
+) : AdsApi {
 
-    override suspend fun register(request: AuthRegisterRequestDto): ApiResponse<AuthRegisterResponseDto> = withContext(Dispatchers.IO) {
+    override suspend fun createAd(request: CreateAdRequestDto): ApiResponse<CreateAdResponseDto> = withContext(Dispatchers.IO) {
         try {
-            val response = httpClient.post(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/auth/register") {
+            val response = httpClient.post(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
             return if (response.status.isSuccess()) {
-                val body: AuthRegisterResponseDto = response.body()
+                val body: CreateAdResponseDto = response.body()
                 ApiResponse.Success(body)
             } else {
                 ApiResponse.HttpError(
@@ -59,14 +60,14 @@ class KtorAuthApi(
         }
     }
 
-    override suspend fun login(request: AuthLoginRequestDto): ApiResponse<AuthRegisterResponseDto> = withContext(Dispatchers.IO) {
+    override suspend fun updateAd(id: String, request: UpdateAdRequestDto): ApiResponse<CreateAdResponseDto> = withContext(Dispatchers.IO) {
         try {
-            val response = httpClient.post(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/auth/login") {
+            val response = httpClient.patch(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads/$id") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
             return if (response.status.isSuccess()) {
-                val body: AuthRegisterResponseDto = response.body()
+                val body: CreateAdResponseDto = response.body()
                 ApiResponse.Success(body)
             } else {
                 ApiResponse.HttpError(
