@@ -14,7 +14,7 @@ import org.koin.dsl.module
 val productFeatureModule: Module = module {
     includes(adsServiceModule)
 
-    single<AdsRepository> { AdsRepositoryImpl(get()) }
+    single<AdsRepository> { AdsRepositoryImpl(get(), get()) }
     factory { CreateAdDraftUseCase(get()) }
     factory { UpdateAdDraftUseCase(get()) }
 }

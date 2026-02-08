@@ -9,7 +9,14 @@ import gearhub.feature.products.product_feature.internal.data.models.UpdateAdReq
  * Контракт сетевых вызовов для объявлений.
  */
 interface AdsApi {
-    suspend fun createAd(request: CreateAdRequestDTO): ApiResponse<CreateAdResponseDTO>
+    suspend fun createAd(
+        request: CreateAdRequestDTO,
+        authHeader: String? = null,
+    ): ApiResponse<CreateAdResponseDTO>
 
-    suspend fun updateAd(id: String, request: UpdateAdRequestDTO): ApiResponse<CreateAdResponseDTO>
+    suspend fun updateAd(
+        id: String,
+        request: UpdateAdRequestDTO,
+        authHeader: String? = null,
+    ): ApiResponse<CreateAdResponseDTO>
 }

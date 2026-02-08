@@ -17,11 +17,11 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 /**
@@ -32,10 +32,14 @@ class KtorAdsApi(
     private val hostProvider: HostProvider,
 ) : AdsApi {
 
-    override suspend fun createAd(request: CreateAdRequestDTO): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
+    override suspend fun createAd(
+        request: CreateAdRequestDTO,
+        authHeader: String?,
+    ): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
         try {
             val response = httpClient.post(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads") {
                 contentType(ContentType.Application.Json)
+                authHeader?.let { header(HttpHeaders.Authorization, it) }
                 setBody(request)
             }
             return if (response.status.isSuccess()) {
@@ -60,10 +64,15 @@ class KtorAdsApi(
         }
     }
 
-    override suspend fun updateAd(id: String, request: UpdateAdRequestDTO): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
+    override suspend fun updateAd(
+        id: String,
+        request: UpdateAdRequestDTO,
+        authHeader: String?,
+    ): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
         try {
             val response = httpClient.patch(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads/$id") {
                 contentType(ContentType.Application.Json)
+                authHeader?.let { header(HttpHeaders.Authorization, it) }
                 setBody(request)
             }
             return if (response.status.isSuccess()) {
