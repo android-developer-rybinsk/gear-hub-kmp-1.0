@@ -5,7 +5,7 @@ import com.gear.hub.presentation.screens.main.MainViewModel
 import com.gear.hub.presentation.screens.splash.SplashViewModel
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
 import gearhub.feature.menu_feature.api.MenuViewModelApi
-import gearhub.feature.products.presentation.my.MyProductsViewModel
+import gearhub.feature.products.product_feature.internal.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import kotlinx.coroutines.CoroutineScope
 import org.koin.core.Koin

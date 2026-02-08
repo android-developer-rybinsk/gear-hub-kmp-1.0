@@ -8,6 +8,7 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -53,15 +55,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import gear.hub.core.di.koinViewModel
-import gearhub.feature.products.presentation.create.AdCategory
-import gearhub.feature.products.presentation.create.CreateAdAction
-import gearhub.feature.products.presentation.create.CreateAdState
-import gearhub.feature.products.presentation.create.CreateAdStep
-import gearhub.feature.products.presentation.create.CreateAdViewModel
+import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdAction
+import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdViewModel
+import gearhub.feature.products.product_feature.internal.presentation.models.AdCategory
+import gearhub.feature.products.product_feature.internal.presentation.models.CreateAdState
+import gearhub.feature.products.product_feature.internal.presentation.models.CreateAdStep
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -186,7 +187,7 @@ fun CreateAdScreen(
                 TextButton(onClick = {
                     showSheet = false
                     galleryLauncher.launch(
-                        ActivityResultContracts.PickVisualMedia.Request.Builder()
+                        PickVisualMediaRequest.Builder()
                             .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly)
                             .build()
                     )

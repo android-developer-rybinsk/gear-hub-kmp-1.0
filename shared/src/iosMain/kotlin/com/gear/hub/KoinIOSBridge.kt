@@ -14,8 +14,8 @@ import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
 import gearhub.feature.menu_feature.api.db.createMenuCategoryDbDriver
 import gearhub.feature.menu_feature.api.menuFeatureIosModule
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
-import gearhub.feature.products.presentation.my.MyProductsViewModel
-import gearhub.feature.products.presentation.create.CreateAdViewModel
+import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdViewModel
+import gearhub.feature.products.product_feature.internal.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import com.gear.hub.data.config.DatabaseConfig
 import com.gear.hub.data.config.PlatformContext

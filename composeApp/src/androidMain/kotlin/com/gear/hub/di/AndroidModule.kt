@@ -10,8 +10,8 @@ import com.gear.hub.auth_feature.internal.presentation.AuthViewModel
 import gear.hub.core.navigation.Router
 import gearhub.feature.chats.presentation.chats.ChatsViewModel
 import gearhub.feature.menu_feature.internal.presentation.search.SearchResultsViewModel
-import gearhub.feature.products.presentation.my.MyProductsViewModel
-import gearhub.feature.products.presentation.create.CreateAdViewModel
+import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdViewModel
+import gearhub.feature.products.product_feature.internal.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.api.ProfileNavigationConfig
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import org.koin.core.module.dsl.viewModel

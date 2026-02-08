@@ -29,9 +29,9 @@ import gearhub.feature.menu_feature.internal.presentation.search.SearchResultsSc
 import gearhub.feature.menu_feature.internal.presentation.search.SearchResultsViewModel
 import gearhub.feature.products.CreateAdScreen
 import gearhub.feature.products.MyProductsScreen
-import gearhub.feature.products.presentation.create.CreateAdViewModel
-import gearhub.feature.products.navigation.DestinationProducts
-import gearhub.feature.products.presentation.my.MyProductsViewModel
+import gearhub.feature.products.product_feature.api.navigation.DestinationProducts
+import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdViewModel
+import gearhub.feature.products.product_feature.internal.presentation.my.MyProductsViewModel
 import gearhub.feature.profile.navigation.DestinationProfile
 import gearhub.feature.profile.presentation.profile.ProfileScreen
 import gearhub.feature.profile.presentation.profile.ProfileViewModel
