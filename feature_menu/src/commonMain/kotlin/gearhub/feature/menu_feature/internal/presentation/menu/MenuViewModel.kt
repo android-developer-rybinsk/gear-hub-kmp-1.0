@@ -6,7 +6,7 @@ import com.gear.hub.network.model.ApiResponse
 import gearhub.feature.menu_feature.api.MenuViewModelApi
 import gearhub.feature.menu_feature.api.presentation.MenuAction
 import gearhub.feature.menu_feature.api.presentation.MenuStateUI
-import gearhub.feature.menu_feature.internal.data.MenuCategoryRepository
+import gearhub.feature.menu_feature.internal.domain.MenuCategoriesUseCase
 import gearhub.feature.menu_feature.internal.presentation.menu.MenuDataProvider
 import gearhub.feature.menu_feature.api.presentation.models.MenuProductUI
 import gearhub.feature.menu_feature.api.presentation.models.toUI
@@ -26,12 +26,12 @@ import kotlinx.coroutines.launch
 
 internal class MenuViewModel(
     private val router: Router,
-    private val categoryRepository: MenuCategoryRepository,
+    private val categoriesUseCase: MenuCategoriesUseCase,
 ) : BaseViewModel<MenuStateUI, MenuAction>(MenuStateUI()), MenuViewModelApi {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private val categoriesSource = categoryRepository.categories
+    private val categoriesSource = categoriesUseCase.categories
     private val productsSource = MutableStateFlow<List<MenuProductUI>>(MenuDataProvider.products())
 
     private var currentPage = 0
@@ -50,14 +50,14 @@ internal class MenuViewModel(
 
     private fun syncCategories() {
         scope.launch {
-            categoryRepository.loadFromDb()
-            when (val response = categoryRepository.refreshCategories()) {
+            categoriesUseCase.loadFromDb()
+            when (val response = categoriesUseCase.refreshCategories()) {
                 is ApiResponse.HttpError -> setCategoryError(response.message)
                 ApiResponse.NetworkError -> setCategoryError("Нет соединения с сервером")
                 is ApiResponse.UnknownError -> setCategoryError("Не удалось загрузить категории")
                 is ApiResponse.Success -> Unit
             }
-            categoryRepository.loadFromDb()
+            categoriesUseCase.loadFromDb()
         }
     }
 

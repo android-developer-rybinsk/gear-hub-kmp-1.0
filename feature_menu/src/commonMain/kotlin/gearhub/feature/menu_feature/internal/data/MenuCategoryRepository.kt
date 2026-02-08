@@ -6,6 +6,7 @@ import gearhub.feature.menu_feature.api.db.MenuCategoryDbDriver
 import gearhub.feature.menu_feature.api.models.MenuCategoryModel
 import gearhub.feature.menu_feature.internal.data.models.MenuCategoryDTO
 import gearhub.feature.menu_feature.internal.data.mappers.toDomain
+import gearhub.feature.menu_feature.internal.domain.MenuCategoryRepository
 import gearhub.feature.menu_feature.internal.domain.models.MenuCategoryDomain
 import gearhub.feature.menu_service.api.MenuApi
 import kotlinx.coroutines.Dispatchers
@@ -14,14 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
-
-internal interface MenuCategoryRepository {
-    val categories: StateFlow<List<MenuCategoryDomain>>
-
-    suspend fun loadFromDb()
-
-    suspend fun refreshCategories(): ApiResponse<Unit>
-}
 
 internal class MenuCategoryRepositoryImpl(
     private val api: MenuApi,

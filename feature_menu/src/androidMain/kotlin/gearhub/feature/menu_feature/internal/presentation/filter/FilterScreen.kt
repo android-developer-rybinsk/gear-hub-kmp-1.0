@@ -56,7 +56,7 @@ import gearhub.feature.menu_feature.internal.presentation.filter.AutoType
 import gearhub.feature.menu_feature.internal.presentation.filter.Steering
 import gearhub.feature.menu_feature.internal.presentation.filter.OwnersCount
 import gearhub.feature.menu_feature.internal.presentation.filter.AutoCondition
-import gearhub.feature.menu_feature.internal.data.MenuCategoryRepository
+import gearhub.feature.menu_feature.internal.domain.MenuCategoriesUseCase
 import org.koin.compose.koinInject
 
 @Composable
@@ -69,12 +69,12 @@ fun FilterScreen(
     val storeState by MenuFilterStore.state().collectAsState()
     var draftState by remember(storeState) { mutableStateOf(storeState) }
     var selectDialog by remember { mutableStateOf<SelectDialogState?>(null) }
-    val categoryRepository: MenuCategoryRepository = koinInject()
-    val categories by categoryRepository.categories.collectAsState()
+    val categoriesUseCase: MenuCategoriesUseCase = koinInject()
+    val categories by categoriesUseCase.categories.collectAsState()
     val categoriesUi = categories.map { it.toUI() }
 
     LaunchedEffect(Unit) {
-        categoryRepository.loadFromDb()
+        categoriesUseCase.loadFromDb()
     }
 
     LaunchedEffect(args.categoryId) {
