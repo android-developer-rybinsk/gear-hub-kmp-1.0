@@ -1,8 +1,8 @@
 package com.gear.hub.navigation
 
 import gearhub.feature.menu_feature.navigation.DestinationMenu
-import gearhub.feature.menu_feature.internal.presentation.menu.MenuAction
-import gearhub.feature.menu_feature.internal.presentation.menu.MenuStateUI
+import gearhub.feature.menu_feature.api.presentation.MenuAction
+import gearhub.feature.menu_feature.api.presentation.MenuStateUI
 import kotlinx.cinterop.ExportObjCClass
 import platform.darwin.NSObject
 

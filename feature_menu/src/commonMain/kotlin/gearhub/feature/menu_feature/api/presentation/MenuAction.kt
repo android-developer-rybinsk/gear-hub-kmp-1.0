@@ -1,4 +1,4 @@
-package gearhub.feature.menu_feature.internal.presentation.menu
+package gearhub.feature.menu_feature.api.presentation
 
 sealed class MenuAction {
     data object Back : MenuAction()

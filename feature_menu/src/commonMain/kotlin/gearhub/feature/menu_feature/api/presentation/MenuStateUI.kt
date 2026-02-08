@@ -1,4 +1,4 @@
-package gearhub.feature.menu_feature.internal.presentation.menu
+package gearhub.feature.menu_feature.api.presentation
 
 import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuCategoryUI
 import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuProductUI
