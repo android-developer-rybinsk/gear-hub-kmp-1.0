@@ -3,7 +3,7 @@ package gearhub.feature.products.product_feature.internal.presentation.create
 import gearhub.feature.products.product_feature.internal.presentation.create.models.AdCategoryUI
 import gearhub.feature.products.product_feature.internal.presentation.create.models.CreateAdStepUI
 
-data class CreateAdStateUI(
+data class CreateAdState(
     val step: CreateAdStepUI = CreateAdStepUI.Category,
     val categories: List<AdCategoryUI> = emptyList(),
     val selectedCategory: AdCategoryUI? = null,

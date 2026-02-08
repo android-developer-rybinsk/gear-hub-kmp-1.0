@@ -16,11 +16,11 @@ import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.errors.IOException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
 /**
@@ -59,10 +59,14 @@ class KtorAuthApi(
         }
     }
 
-    override suspend fun login(request: AuthLoginRequestDto): ApiResponse<AuthRegisterResponseDto> = withContext(Dispatchers.IO) {
+    override suspend fun login(
+        request: AuthLoginRequestDto,
+        authHeader: String?,
+    ): ApiResponse<AuthRegisterResponseDto> = withContext(Dispatchers.IO) {
         try {
             val response = httpClient.post(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/auth/login") {
                 contentType(ContentType.Application.Json)
+                authHeader?.let { header(HttpHeaders.Authorization, it) }
                 setBody(request)
             }
             return if (response.status.isSuccess()) {

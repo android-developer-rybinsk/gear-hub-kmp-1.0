@@ -11,7 +11,6 @@ import gearhub.feature.products.product_feature.internal.presentation.create.mod
 import gearhub.feature.products.product_feature.internal.presentation.create.models.CreateAdStepUI
 import gearhub.feature.products.product_feature.internal.presentation.create.models.toUI
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,7 +22,7 @@ class CreateAdViewModel(
     private val createAdDraftUseCase: CreateAdDraftUseCase,
     private val updateAdDraftUseCase: UpdateAdDraftUseCase,
     private val categoryProvider: MenuCategoryProvider,
-) : BaseViewModel<CreateAdStateUI, CreateAdAction>(CreateAdStateUI()) {
+) : BaseViewModel<CreateAdState, CreateAdAction>(CreateAdState()) {
 
     override fun onAction(action: CreateAdAction) {
         when (action) {
@@ -44,7 +43,7 @@ class CreateAdViewModel(
 
     private fun loadCategories() {
         viewModelScope.launch {
-            val mapped = withContext(IO) {
+            val mapped = withContext(Dispatchers.IO) {
                 categoryProvider.getCategories()
             }.map { it.toUI() }
             setState { it.copy(categories = mapped) }

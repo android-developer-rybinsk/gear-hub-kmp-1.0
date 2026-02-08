@@ -51,8 +51,7 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
         composable(MAIN_TABS_ROUTE) {
             TabsHost(
                 tabs = state.tabs,
-                router = router,
-                rootRouter = rootRouter
+                rootRouter = rootRouter,
             )
         }
         composable(
@@ -110,10 +109,10 @@ private const val MAIN_TABS_ROUTE = "main_tabs"
 @Composable
 private fun TabsHost(
     tabs: List<TabItem>,
-    router: Router,
     rootRouter: Router
 ) {
     val tabNavController = rememberNavController()
+    val tabRouter: Router = getKoin().get { parametersOf(tabNavController) }
     val tabBackStackEntry = tabNavController.currentBackStackEntryAsState()
     val currentRoute = tabBackStackEntry.value?.destination?.route
 
@@ -138,22 +137,22 @@ private fun TabsHost(
             modifier = innerModifier
         ) {
             composable(DestinationMenu.MenuScreen.route) {
-                MenuScreenEntry(router)
+                MenuScreenEntry(rootRouter)
             }
             composable(DestinationProducts.MyProductsScreen.route) {
-                val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(router) })
+                val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(tabRouter) })
                 MyProductsScreen(vm)
             }
             composable(DestinationProducts.CreateAdScreen.route) {
-                val vm: CreateAdViewModel = koinViewModel(parameters = { parametersOf(router) })
+                val vm: CreateAdViewModel = koinViewModel(parameters = { parametersOf(tabRouter) })
                 CreateAdScreen(vm)
             }
             composable(DestinationChats.ChatsScreen.route) {
-                val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(router) })
+                val vm: ChatsViewModel = koinViewModel(parameters = { parametersOf(tabRouter) })
                 ChatsScreen(vm)
             }
             composable(DestinationProfile.ProfileScreen.route) {
-                val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(rootRouter) })
+                val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(tabRouter) })
                 ProfileScreen(vm)
             }
         }

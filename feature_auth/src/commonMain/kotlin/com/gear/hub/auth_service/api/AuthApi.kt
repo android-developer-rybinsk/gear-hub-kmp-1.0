@@ -17,5 +17,8 @@ interface AuthApi {
     /**
      * Логин пользователя.
      */
-    suspend fun login(request: AuthLoginRequestDto): ApiResponse<AuthRegisterResponseDto>
+    suspend fun login(
+        request: AuthLoginRequestDto,
+        authHeader: String? = null,
+    ): ApiResponse<AuthRegisterResponseDto>
 }

@@ -60,7 +60,7 @@ import androidx.compose.ui.unit.dp
 import gear.hub.core.di.koinViewModel
 import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdAction
 import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdViewModel
-import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdStateUI
+import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdState
 import gearhub.feature.products.product_feature.internal.presentation.create.models.AdCategoryUI
 import gearhub.feature.products.product_feature.internal.presentation.create.models.CreateAdStepUI
 import kotlinx.coroutines.Dispatchers
@@ -207,7 +207,7 @@ fun CreateAdScreen(
 
 @Composable
 private fun StepContent(
-    state: CreateAdStateUI,
+    state: CreateAdState,
     images: List<ImageBitmap>,
     onAction: (CreateAdAction) -> Unit,
     onAttachPhotoClick: () -> Unit,
@@ -224,7 +224,7 @@ private fun StepContent(
 }
 
 @Composable
-private fun CategoryStep(state: CreateAdStateUI, onAction: (CreateAdAction) -> Unit) {
+private fun CategoryStep(state: CreateAdState, onAction: (CreateAdAction) -> Unit) {
     Text(text = "Категория объявления")
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         state.categories.forEach { category ->
@@ -254,7 +254,7 @@ private fun CategoryCard(category: AdCategoryUI, selected: Boolean, onClick: () 
 }
 
 @Composable
-private fun TitleStep(state: CreateAdStateUI, onAction: (CreateAdAction) -> Unit) {
+private fun TitleStep(state: CreateAdState, onAction: (CreateAdAction) -> Unit) {
     Text(text = "Заголовок объявления")
     if (isVehicleCategory(state.selectedCategory)) {
         OutlinedTextField(
@@ -280,7 +280,7 @@ private fun TitleStep(state: CreateAdStateUI, onAction: (CreateAdAction) -> Unit
 }
 
 @Composable
-private fun VinStep(state: CreateAdStateUI, onAction: (CreateAdAction) -> Unit) {
+private fun VinStep(state: CreateAdState, onAction: (CreateAdAction) -> Unit) {
     Text(text = "VIN номер")
     OutlinedTextField(
         value = state.vin,
@@ -291,7 +291,7 @@ private fun VinStep(state: CreateAdStateUI, onAction: (CreateAdAction) -> Unit) 
 }
 
 @Composable
-private fun DetailsStep(state: CreateAdStateUI, onAction: (CreateAdAction) -> Unit) {
+private fun DetailsStep(state: CreateAdState, onAction: (CreateAdAction) -> Unit) {
     Text(text = "Данные объявления")
     OutlinedTextField(
         value = state.location,
@@ -308,7 +308,7 @@ private fun DetailsStep(state: CreateAdStateUI, onAction: (CreateAdAction) -> Un
 }
 
 @Composable
-private fun DescriptionStep(state: CreateAdStateUI, onAction: (CreateAdAction) -> Unit) {
+private fun DescriptionStep(state: CreateAdState, onAction: (CreateAdAction) -> Unit) {
     Text(text = "Описание")
     OutlinedTextField(
         value = state.description,
@@ -349,7 +349,7 @@ private fun PhotosStep(images: List<ImageBitmap>, onAttachPhotoClick: () -> Unit
 }
 
 @Composable
-private fun PriceStep(state: CreateAdStateUI, onAction: (CreateAdAction) -> Unit) {
+private fun PriceStep(state: CreateAdState, onAction: (CreateAdAction) -> Unit) {
     Text(text = "Цена")
     OutlinedTextField(
         value = state.price,

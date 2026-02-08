@@ -27,7 +27,7 @@ import org.koin.dsl.module
 val authFeatureModule: Module = module {
     includes(authServiceModule)
 
-    single<AuthRepository> { AuthRepositoryImpl(get()) }
+    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
     single<AuthSessionDbDriver> { createAuthSessionDbDriver(get<DatabaseFactory>(named("auth_db"))) }
     single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
     single<AuthSessionRepository> { AuthSessionRepositoryImpl(get()) }
