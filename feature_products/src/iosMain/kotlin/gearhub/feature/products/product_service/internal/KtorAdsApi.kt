@@ -3,6 +3,8 @@ package gearhub.feature.products.product_service.internal
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.model.ApiResponse
 import com.gear.hub.network.util.ensureTrailingSlash
+import com.gear.hub.network.auth.AUTH_REQUIRED_HEADER
+import com.gear.hub.network.auth.AUTH_REQUIRED_VALUE
 import gearhub.feature.products.product_feature.internal.data.models.CreateAdRequestDTO
 import gearhub.feature.products.product_feature.internal.data.models.CreateAdResponseDTO
 import gearhub.feature.products.product_feature.internal.data.models.UpdateAdRequestDTO
@@ -17,7 +19,6 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.errors.IOException
@@ -32,14 +33,11 @@ class KtorAdsApi(
     private val hostProvider: HostProvider,
 ) : AdsApi {
 
-    override suspend fun createAd(
-        request: CreateAdRequestDTO,
-        authHeader: String?,
-    ): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
+    override suspend fun createAd(request: CreateAdRequestDTO): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
         try {
             val response = httpClient.post(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads") {
                 contentType(ContentType.Application.Json)
-                authHeader?.let { header(HttpHeaders.Authorization, it) }
+                header(AUTH_REQUIRED_HEADER, AUTH_REQUIRED_VALUE)
                 setBody(request)
             }
             return if (response.status.isSuccess()) {
@@ -64,15 +62,11 @@ class KtorAdsApi(
         }
     }
 
-    override suspend fun updateAd(
-        id: String,
-        request: UpdateAdRequestDTO,
-        authHeader: String?,
-    ): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
+    override suspend fun updateAd(id: String, request: UpdateAdRequestDTO): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
         try {
             val response = httpClient.patch(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads/$id") {
                 contentType(ContentType.Application.Json)
-                authHeader?.let { header(HttpHeaders.Authorization, it) }
+                header(AUTH_REQUIRED_HEADER, AUTH_REQUIRED_VALUE)
                 setBody(request)
             }
             return if (response.status.isSuccess()) {

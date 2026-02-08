@@ -34,7 +34,6 @@ kotlin {
             dependencies {
                 implementation(project(":core"))
                 implementation(project(":network_service"))
-                implementation(project(":feature_auth"))
                 implementation(project(":feature_menu"))
 
                 implementation(libs.kotlin.stdlib)

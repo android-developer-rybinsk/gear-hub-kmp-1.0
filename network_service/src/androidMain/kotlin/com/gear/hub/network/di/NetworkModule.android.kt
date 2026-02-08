@@ -1,5 +1,7 @@
 package com.gear.hub.network.di
 
+import com.gear.hub.network.auth.AUTH_REQUIRED_HEADER
+import com.gear.hub.network.auth.AuthTokenProvider
 import com.gear.hub.network.client.NetworkClient
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.util.ensureTrailingSlash
@@ -20,15 +22,16 @@ private const val CONTENT_TYPE_JSON = "application/json"
  * Платформенный модуль сети для Android: единый OkHttp + Retrofit c общими заголовками.
  */
 actual fun platformNetworkModule(): Module = module {
-    single { provideOkHttpClient() }
+    single { provideOkHttpClient(get()) }
     single<NetworkClient> { provideRetrofit(get(), get(), get()) }
 }
 
 /**
  * Создаёт общий OkHttpClient с логированием и установкой Content-Type по умолчанию.
  */
-private fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+private fun provideOkHttpClient(tokenProvider: AuthTokenProvider): OkHttpClient = OkHttpClient.Builder()
     .addInterceptor(defaultHeadersInterceptor())
+    .addInterceptor(authTokenInterceptor(tokenProvider))
     .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
     .build()
 
@@ -42,6 +45,27 @@ private fun defaultHeadersInterceptor(): Interceptor = Interceptor { chain ->
     } else {
         request
     }
+    chain.proceed(updatedRequest)
+}
+
+/**
+ * Добавляет Authorization заголовок, когда запрос помечен как требующий авторизацию.
+ */
+private fun authTokenInterceptor(tokenProvider: AuthTokenProvider): Interceptor = Interceptor { chain ->
+    val request = chain.request()
+    val requiresAuth = request.header(AUTH_REQUIRED_HEADER) != null
+    if (!requiresAuth) {
+        return@Interceptor chain.proceed(request)
+    }
+    val token = tokenProvider.accessToken()?.takeIf { it.isNotBlank() }
+    val updatedRequest = request.newBuilder()
+        .removeHeader(AUTH_REQUIRED_HEADER)
+        .apply {
+            if (token != null) {
+                addHeader("Authorization", "Bearer $token")
+            }
+        }
+        .build()
     chain.proceed(updatedRequest)
 }
 
@@ -60,4 +84,3 @@ private fun provideRetrofit(
         .addConverterFactory(json.asConverterFactory(contentType))
         .build()
 }
-
