@@ -152,7 +152,7 @@ private fun TabsHost(
                 ChatsScreen(vm)
             }
             composable(DestinationProfile.ProfileScreen.route) {
-                val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(tabRouter) })
+                val vm: ProfileViewModel = koinViewModel(parameters = { parametersOf(rootRouter) })
                 ProfileScreen(vm)
             }
         }
