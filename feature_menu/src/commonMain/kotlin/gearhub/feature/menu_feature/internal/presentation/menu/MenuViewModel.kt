@@ -8,8 +8,8 @@ import gearhub.feature.menu_feature.api.presentation.MenuAction
 import gearhub.feature.menu_feature.api.presentation.MenuStateUI
 import gearhub.feature.menu_feature.internal.data.MenuCategoryRepository
 import gearhub.feature.menu_feature.internal.presentation.menu.MenuDataProvider
-import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuProductUI
-import gearhub.feature.menu_feature.internal.presentation.menu.models.toUI
+import gearhub.feature.menu_feature.api.presentation.models.MenuProductUI
+import gearhub.feature.menu_feature.api.presentation.models.toUI
 import gearhub.feature.menu_feature.navigation.DestinationMenu
 import gearhub.feature.menu_feature.navigation.FilterArgs
 import gearhub.feature.menu_feature.navigation.ProductDetailsArgs

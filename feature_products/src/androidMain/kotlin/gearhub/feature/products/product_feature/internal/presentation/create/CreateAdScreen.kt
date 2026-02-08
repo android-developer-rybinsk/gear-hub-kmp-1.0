@@ -1,4 +1,4 @@
-package gearhub.feature.products
+package gearhub.feature.products.product_feature.internal.presentation.create
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -58,9 +58,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import gear.hub.core.di.koinViewModel
-import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdAction
-import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdViewModel
-import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdState
 import gearhub.feature.products.product_feature.internal.presentation.create.models.AdCategoryUI
 import gearhub.feature.products.product_feature.internal.presentation.create.models.CreateAdStepUI
 import kotlinx.coroutines.Dispatchers

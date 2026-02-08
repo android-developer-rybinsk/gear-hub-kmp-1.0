@@ -27,8 +27,8 @@ import gearhub.feature.menu_feature.internal.presentation.filter.FilterScreen
 import gearhub.feature.menu_feature.api.MenuScreenEntry
 import gearhub.feature.menu_feature.internal.presentation.search.SearchResultsScreen
 import gearhub.feature.menu_feature.internal.presentation.search.SearchResultsViewModel
-import gearhub.feature.products.CreateAdScreen
-import gearhub.feature.products.MyProductsScreen
+import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdScreen
+import gearhub.feature.products.product_feature.internal.presentation.my.MyProductsScreen
 import gearhub.feature.products.product_feature.api.navigation.DestinationProducts
 import gearhub.feature.products.product_feature.internal.presentation.create.CreateAdViewModel
 import gearhub.feature.products.product_feature.internal.presentation.my.MyProductsViewModel

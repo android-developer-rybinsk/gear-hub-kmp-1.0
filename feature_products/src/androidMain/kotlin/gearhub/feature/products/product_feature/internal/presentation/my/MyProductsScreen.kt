@@ -1,4 +1,4 @@
-package gearhub.feature.products
+package gearhub.feature.products.product_feature.internal.presentation.my
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,8 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import gear.hub.core.di.koinViewModel
-import gearhub.feature.products.product_feature.internal.presentation.my.MyProductsAction
-import gearhub.feature.products.product_feature.internal.presentation.my.MyProductsViewModel
+import gearhub.feature.products.R
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)

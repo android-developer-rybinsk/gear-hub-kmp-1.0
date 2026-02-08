@@ -45,8 +45,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.ImeAction
 import gearhub.feature.menu_feature.navigation.FilterArgs
-import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuCategoryUI
-import gearhub.feature.menu_feature.internal.presentation.menu.models.toUI
+import gearhub.feature.menu_feature.api.presentation.models.MenuCategoryUI
+import gearhub.feature.menu_feature.api.presentation.models.toUI
 import gearhub.feature.menu_feature.internal.presentation.menu.theme.MenuBrandPrimary
 import gearhub.feature.menu_feature.internal.presentation.filter.MenuFilterStore
 import gearhub.feature.menu_feature.internal.presentation.filter.SellerType

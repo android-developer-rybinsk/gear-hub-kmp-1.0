@@ -1,7 +1,7 @@
 package gearhub.feature.menu_feature.internal.presentation.menu
 
-import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuCategoryUI
-import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuProductUI
+import gearhub.feature.menu_feature.api.presentation.models.MenuCategoryUI
+import gearhub.feature.menu_feature.api.presentation.models.MenuProductUI
 import gearhub.feature.menu_feature.internal.presentation.menu.models.ProductDetailUI
 import gearhub.feature.menu_feature.internal.presentation.menu.models.ProductSpecUI
 import gearhub.feature.menu_feature.internal.presentation.menu.models.SellerInfoUI

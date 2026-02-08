@@ -59,7 +59,7 @@ import gearhub.feature.menu_feature.api.presentation.MenuStateUI
 import gearhub.feature.menu_feature.internal.presentation.menu.components.ErrorPlaceholder
 import gearhub.feature.menu_feature.internal.presentation.menu.components.Loading
 import gearhub.feature.menu_feature.internal.presentation.menu.components.ProductCard
-import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuCategoryUI
+import gearhub.feature.menu_feature.api.presentation.models.MenuCategoryUI
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map

@@ -1,7 +1,7 @@
 package gearhub.feature.menu_feature.api.presentation
 
-import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuCategoryUI
-import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuProductUI
+import gearhub.feature.menu_feature.api.presentation.models.MenuCategoryUI
+import gearhub.feature.menu_feature.api.presentation.models.MenuProductUI
 
 data class MenuStateUI(
     val searchQuery: String = "",

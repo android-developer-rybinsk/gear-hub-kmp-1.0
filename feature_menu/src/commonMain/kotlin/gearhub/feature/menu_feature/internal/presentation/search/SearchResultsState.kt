@@ -1,6 +1,6 @@
 package gearhub.feature.menu_feature.internal.presentation.search
 
-import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuProductUI
+import gearhub.feature.menu_feature.api.presentation.models.MenuProductUI
 
 data class SearchResultsState(
     val query: String = "",
