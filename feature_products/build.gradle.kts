@@ -68,6 +68,7 @@ kotlin {
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.accompanist)
                 implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.activity.ktx)
                 implementation(libs.retrofit.core)
                 implementation(libs.retrofit.kotlinx.serialization.converter)
                 implementation(libs.okhttp.logging)
