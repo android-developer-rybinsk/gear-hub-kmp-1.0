@@ -2,9 +2,9 @@ package gearhub.feature.products.product_service.internal
 
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.model.ApiResponse
-import gearhub.feature.products.product_feature.internal.data.models.CreateAdRequestDto
-import gearhub.feature.products.product_feature.internal.data.models.CreateAdResponseDto
-import gearhub.feature.products.product_feature.internal.data.models.UpdateAdRequestDto
+import gearhub.feature.products.product_feature.internal.data.models.CreateAdRequestDTO
+import gearhub.feature.products.product_feature.internal.data.models.CreateAdResponseDTO
+import gearhub.feature.products.product_feature.internal.data.models.UpdateAdRequestDTO
 import gearhub.feature.products.product_service.api.AdsApi
 import retrofit2.http.Body
 import retrofit2.http.PATCH
@@ -19,7 +19,7 @@ internal class RetrofitAdsApi(
     @Suppress("UNUSED_PARAMETER") private val hostProvider: HostProvider,
 ) : AdsApi {
 
-    override suspend fun createAd(request: CreateAdRequestDto): ApiResponse<CreateAdResponseDto> =
+    override suspend fun createAd(request: CreateAdRequestDTO): ApiResponse<CreateAdResponseDTO> =
         try {
             val response = service.createAd(request)
             ApiResponse.Success(response)
@@ -32,7 +32,7 @@ internal class RetrofitAdsApi(
             ApiResponse.UnknownError(throwable)
         }
 
-    override suspend fun updateAd(id: String, request: UpdateAdRequestDto): ApiResponse<CreateAdResponseDto> =
+    override suspend fun updateAd(id: String, request: UpdateAdRequestDTO): ApiResponse<CreateAdResponseDTO> =
         try {
             val response = service.updateAd(id, request)
             ApiResponse.Success(response)
@@ -51,11 +51,11 @@ internal class RetrofitAdsApi(
  */
 internal interface AdsRetrofitService {
     @POST("api/v1/ads")
-    suspend fun createAd(@Body body: CreateAdRequestDto): CreateAdResponseDto
+    suspend fun createAd(@Body body: CreateAdRequestDTO): CreateAdResponseDTO
 
     @PATCH("api/v1/ads/{id}")
     suspend fun updateAd(
         @Path("id") id: String,
-        @Body body: UpdateAdRequestDto,
-    ): CreateAdResponseDto
+        @Body body: UpdateAdRequestDTO,
+    ): CreateAdResponseDTO
 }

@@ -1,23 +1,23 @@
-package gearhub.feature.menu_feature.internal.data
+package gearhub.feature.menu_feature.internal.presentation.menu
 
-import gearhub.feature.menu_feature.internal.presentation.menu.MenuCategory
-import gearhub.feature.menu_feature.internal.presentation.menu.MenuProduct
-import gearhub.feature.menu_feature.internal.presentation.menu.ProductDetail
-import gearhub.feature.menu_feature.internal.presentation.menu.ProductSpec
-import gearhub.feature.menu_feature.internal.presentation.menu.SellerInfo
+import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuCategoryUI
+import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuProductUI
+import gearhub.feature.menu_feature.internal.presentation.menu.models.ProductDetailUI
+import gearhub.feature.menu_feature.internal.presentation.menu.models.ProductSpecUI
+import gearhub.feature.menu_feature.internal.presentation.menu.models.SellerInfoUI
 import kotlin.random.Random
 
 object MenuDataProvider {
-    fun categories(): List<MenuCategory> = listOf(
-        MenuCategory("autos", "Автомобили"),
-        MenuCategory("moto", "Мото техника"),
-        MenuCategory("snow", "Снегоходы"),
-        MenuCategory("water", "Лодочная техника"),
-        MenuCategory("spec", "Спец техника"),
-        MenuCategory("parts", "Запчасти")
+    fun categories(): List<MenuCategoryUI> = listOf(
+        MenuCategoryUI("autos", "Автомобили"),
+        MenuCategoryUI("moto", "Мото техника"),
+        MenuCategoryUI("snow", "Снегоходы"),
+        MenuCategoryUI("water", "Лодочная техника"),
+        MenuCategoryUI("spec", "Спец техника"),
+        MenuCategoryUI("parts", "Запчасти"),
     )
 
-    fun products(): List<MenuProduct> {
+    fun products(): List<MenuProductUI> {
         val prices = listOf(4500.0, 18990.0, 12999.0, 7500.0, 3990.0, 6200.0, 28450.0, 1190.0)
         val titles = listOf(
             "Надувная лодка",
@@ -27,49 +27,49 @@ object MenuDataProvider {
             "Костюм для рыбалки",
             "Набор воблеров",
             "Электромотор",
-            "Шнур плетеный"
+            "Шнур плетеный",
         )
         val categories = categories()
 
         return List(40) { index ->
             val category = categories.random()
-            MenuProduct(
+            MenuProductUI(
                 id = "product-$index",
                 title = titles[index % titles.size] + " #${index + 1}",
                 price = prices[index % prices.size] + Random.nextInt(0, 5000),
                 imageUrl = null,
-                categoryId = category.id
+                categoryId = category.id,
             )
         }
     }
 
-    fun productDetails(): List<ProductDetail> {
+    fun productDetails(): List<ProductDetailUI> {
         val baseProducts = products()
         val description = """
             Легкое и надежное снаряжение для рыбалки. Полностью проверено, в отличном состоянии и готово к сезону.
             Возможна доставка, все подробности уточняйте в сообщениях или по телефону.
         """.trimIndent()
         val specs = listOf(
-            ProductSpec("Состояние", "Отличное"),
-            ProductSpec("Производитель", "GearHub"),
-            ProductSpec("Цвет", "Темно-синий"),
-            ProductSpec("Материал", "Композиционный")
+            ProductSpecUI("Состояние", "Отличное"),
+            ProductSpecUI("Производитель", "GearHub"),
+            ProductSpecUI("Цвет", "Темно-синий"),
+            ProductSpecUI("Материал", "Композиционный"),
         )
-        val seller = SellerInfo(
+        val seller = SellerInfoUI(
             name = "Магазин Рыбака",
             rating = 4.8,
             adsCount = 124,
-            isCompany = true
+            isCompany = true,
         )
         val photos = listOf(
             "photo-1",
             "photo-2",
             "photo-3",
-            "photo-4"
+            "photo-4",
         )
 
         return baseProducts.map { product ->
-            ProductDetail(
+            ProductDetailUI(
                 id = product.id,
                 title = product.title,
                 price = product.price,
@@ -77,7 +77,7 @@ object MenuDataProvider {
                 description = description,
                 photos = photos,
                 specs = specs,
-                seller = seller
+                seller = seller,
             )
         }
     }

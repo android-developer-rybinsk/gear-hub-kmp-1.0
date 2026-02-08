@@ -3,9 +3,9 @@ package gearhub.feature.products.product_service.internal
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.model.ApiResponse
 import com.gear.hub.network.util.ensureTrailingSlash
-import gearhub.feature.products.product_feature.internal.data.models.CreateAdRequestDto
-import gearhub.feature.products.product_feature.internal.data.models.CreateAdResponseDto
-import gearhub.feature.products.product_feature.internal.data.models.UpdateAdRequestDto
+import gearhub.feature.products.product_feature.internal.data.models.CreateAdRequestDTO
+import gearhub.feature.products.product_feature.internal.data.models.CreateAdResponseDTO
+import gearhub.feature.products.product_feature.internal.data.models.UpdateAdRequestDTO
 import gearhub.feature.products.product_service.api.AdsApi
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -32,14 +32,14 @@ class KtorAdsApi(
     private val hostProvider: HostProvider,
 ) : AdsApi {
 
-    override suspend fun createAd(request: CreateAdRequestDto): ApiResponse<CreateAdResponseDto> = withContext(Dispatchers.IO) {
+    override suspend fun createAd(request: CreateAdRequestDTO): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
         try {
             val response = httpClient.post(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
             return if (response.status.isSuccess()) {
-                val body: CreateAdResponseDto = response.body()
+                val body: CreateAdResponseDTO = response.body()
                 ApiResponse.Success(body)
             } else {
                 ApiResponse.HttpError(
@@ -60,14 +60,14 @@ class KtorAdsApi(
         }
     }
 
-    override suspend fun updateAd(id: String, request: UpdateAdRequestDto): ApiResponse<CreateAdResponseDto> = withContext(Dispatchers.IO) {
+    override suspend fun updateAd(id: String, request: UpdateAdRequestDTO): ApiResponse<CreateAdResponseDTO> = withContext(Dispatchers.IO) {
         try {
             val response = httpClient.patch(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads/$id") {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
             return if (response.status.isSuccess()) {
-                val body: CreateAdResponseDto = response.body()
+                val body: CreateAdResponseDTO = response.body()
                 ApiResponse.Success(body)
             } else {
                 ApiResponse.HttpError(

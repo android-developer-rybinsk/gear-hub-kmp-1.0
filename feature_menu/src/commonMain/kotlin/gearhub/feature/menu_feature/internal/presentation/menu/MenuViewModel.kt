@@ -4,8 +4,10 @@ import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
 import com.gear.hub.network.model.ApiResponse
 import gearhub.feature.menu_feature.api.MenuViewModelApi
-import gearhub.feature.menu_feature.internal.data.MenuDataProvider
 import gearhub.feature.menu_feature.internal.data.MenuCategoryRepository
+import gearhub.feature.menu_feature.internal.presentation.menu.MenuDataProvider
+import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuProductUI
+import gearhub.feature.menu_feature.internal.presentation.menu.models.toUI
 import gearhub.feature.menu_feature.navigation.DestinationMenu
 import gearhub.feature.menu_feature.navigation.FilterArgs
 import gearhub.feature.menu_feature.navigation.ProductDetailsArgs
@@ -23,12 +25,12 @@ import kotlinx.coroutines.launch
 internal class MenuViewModel(
     private val router: Router,
     private val categoryRepository: MenuCategoryRepository,
-) : BaseViewModel<MenuState, MenuAction>(MenuState()), MenuViewModelApi {
+) : BaseViewModel<MenuStateUI, MenuAction>(MenuStateUI()), MenuViewModelApi {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val categoriesSource = categoryRepository.categories
-    private val productsSource = MutableStateFlow(MenuDataProvider.products())
+    private val productsSource = MutableStateFlow<List<MenuProductUI>>(MenuDataProvider.products())
 
     private var currentPage = 0
     private val pageSize = 6
@@ -63,7 +65,7 @@ internal class MenuViewModel(
                 categoriesSource,
                 productsSource
             ) { categories, _ ->
-                categories to Unit
+                categories.map { it.toUI() } to Unit
             }.collect { (categories, _) ->
                 setState { state ->
                     state.copy(categories = categories)
@@ -193,7 +195,7 @@ internal class MenuViewModel(
         }
     }
 
-    private fun filterProducts(): List<MenuProduct> {
+    private fun filterProducts(): List<MenuProductUI> {
         return productsSource.value
     }
 

@@ -21,7 +21,7 @@ struct MyProductsScreenSwiftUI: View {
 
 class MyProductsViewModelWrapper: ObservableObject {
     private let viewModel: MyProductsViewModel
-    @Published var state: MyProductsState
+    @Published var state: MyProductsStateUI
 
     init(vm: MyProductsViewModel) {
         self.viewModel = vm

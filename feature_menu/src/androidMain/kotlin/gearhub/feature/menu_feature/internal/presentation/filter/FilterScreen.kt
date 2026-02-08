@@ -45,7 +45,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.ImeAction
 import gearhub.feature.menu_feature.navigation.FilterArgs
-import gearhub.feature.menu_feature.internal.presentation.menu.MenuCategory
+import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuCategoryUI
+import gearhub.feature.menu_feature.internal.presentation.menu.models.toUI
 import gearhub.feature.menu_feature.internal.presentation.menu.theme.MenuBrandPrimary
 import gearhub.feature.menu_feature.internal.presentation.filter.MenuFilterStore
 import gearhub.feature.menu_feature.internal.presentation.filter.SellerType
@@ -70,6 +71,7 @@ fun FilterScreen(
     var selectDialog by remember { mutableStateOf<SelectDialogState?>(null) }
     val categoryRepository: MenuCategoryRepository = koinInject()
     val categories by categoryRepository.categories.collectAsState()
+    val categoriesUi = categories.map { it.toUI() }
 
     LaunchedEffect(Unit) {
         categoryRepository.loadFromDb()
@@ -140,7 +142,7 @@ fun FilterScreen(
             ) {
                 SectionTitle(text = "Категория")
                 CategoryRow(
-                    categories = categories,
+                    categories = categoriesUi,
                     selectedId = draftState.selectedCategoryId,
                     onSelect = { selected ->
                         if (draftState.selectedCategoryId == selected) {
@@ -335,7 +337,7 @@ private fun <T> FilterChipsRow(
 }
 
 @Composable
-private fun CategoryRow(categories: List<MenuCategory>, selectedId: String?, onSelect: (String) -> Unit) {
+private fun CategoryRow(categories: List<MenuCategoryUI>, selectedId: String?, onSelect: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         if (categories.isEmpty()) {
             Text(

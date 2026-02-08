@@ -2,7 +2,7 @@ package gearhub.feature.menu_service.internal
 
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.model.ApiResponse
-import gearhub.feature.menu_feature.internal.data.model.MenuCategoryDto
+import gearhub.feature.menu_feature.internal.data.models.MenuCategoryDTO
 import gearhub.feature.menu_service.api.MenuApi
 import retrofit2.http.GET
 
@@ -14,7 +14,7 @@ internal class RetrofitMenuApi(
     @Suppress("UNUSED_PARAMETER") private val hostProvider: HostProvider,
 ) : MenuApi {
 
-    override suspend fun getCategories(): ApiResponse<List<MenuCategoryDto>> =
+    override suspend fun getCategories(): ApiResponse<List<MenuCategoryDTO>> =
         try {
             val response = service.getCategories()
             ApiResponse.Success(response)
@@ -33,5 +33,5 @@ internal class RetrofitMenuApi(
  */
 internal interface MenuRetrofitService {
     @GET("api/v1/categories")
-    suspend fun getCategories(): List<MenuCategoryDto>
+    suspend fun getCategories(): List<MenuCategoryDTO>
 }

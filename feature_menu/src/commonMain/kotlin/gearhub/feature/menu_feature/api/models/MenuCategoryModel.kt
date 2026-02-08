@@ -1,4 +1,4 @@
-package gearhub.feature.menu_feature.api.model
+package gearhub.feature.menu_feature.api.models
 
 import kotlinx.serialization.Serializable
 
@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
  * Запись категории меню для локального хранения.
  */
 @Serializable
-data class MenuCategoryRecord(
+data class MenuCategoryModel(
     val id: String,
     val slug: String? = null,
     val name: String,

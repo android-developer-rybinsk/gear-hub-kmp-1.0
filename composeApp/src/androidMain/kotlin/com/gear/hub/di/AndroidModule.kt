@@ -24,7 +24,7 @@ val androidModule = module {
     viewModel { (router: Router, config: AuthNavigationConfig) -> AuthViewModel(get(), get(), router, config) }
     viewModel { (router: Router, query: String) -> SearchResultsViewModel(router, query) }
     viewModel { (router: Router) -> MyProductsViewModel(router) }
-    viewModel { (router: Router) -> CreateAdViewModel(router, get(), get()) }
+    viewModel { (router: Router) -> CreateAdViewModel(router, get(), get(), get()) }
     viewModel { (router: Router) -> ChatsViewModel(router) }
     viewModel { (router: Router) -> ProfileViewModel(router, get(), get<ProfileNavigationConfig>()) }
 }

@@ -2,7 +2,7 @@ package com.gear.hub.navigation
 
 import gearhub.feature.menu_feature.navigation.DestinationMenu
 import gearhub.feature.menu_feature.internal.presentation.menu.MenuAction
-import gearhub.feature.menu_feature.internal.presentation.menu.MenuState
+import gearhub.feature.menu_feature.internal.presentation.menu.MenuStateUI
 import kotlinx.cinterop.ExportObjCClass
 import platform.darwin.NSObject
 
@@ -13,7 +13,7 @@ class DestinationMenuAny(
 
 @ExportObjCClass
 class MenuStateAny(
-    val state: MenuState
+    val state: MenuStateUI
 ) : NSObject()
 
 @ExportObjCClass

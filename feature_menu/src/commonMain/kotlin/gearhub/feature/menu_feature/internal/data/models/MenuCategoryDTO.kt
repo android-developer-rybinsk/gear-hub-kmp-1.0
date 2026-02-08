@@ -1,4 +1,4 @@
-package gearhub.feature.menu_feature.internal.data.model
+package gearhub.feature.menu_feature.internal.data.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
  * DTO категории из backend.
  */
 @Serializable
-data class MenuCategoryDto(
+data class MenuCategoryDTO(
     val id: Long,
     val slug: String,
     val name: String,
@@ -18,5 +18,5 @@ data class MenuCategoryDto(
     val createdAt: String? = null,
     @SerialName("updatedAt")
     val updatedAt: String? = null,
-    val children: List<MenuCategoryDto> = emptyList(),
+    val children: List<MenuCategoryDTO> = emptyList(),
 )

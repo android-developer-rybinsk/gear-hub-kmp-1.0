@@ -57,6 +57,7 @@ import gearhub.feature.menu_feature.R
 import gearhub.feature.menu_feature.internal.presentation.menu.components.ErrorPlaceholder
 import gearhub.feature.menu_feature.internal.presentation.menu.components.Loading
 import gearhub.feature.menu_feature.internal.presentation.menu.components.ProductCard
+import gearhub.feature.menu_feature.internal.presentation.menu.models.MenuCategoryUI
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -185,7 +186,7 @@ internal fun MenuScreen(
 @Composable
 private fun MenuContent(
     modifier: Modifier,
-    state: MenuState,
+    state: MenuStateUI,
     onCategoryClick: (String) -> Unit,
     onProductClick: (String) -> Unit,
     onLoadMore: () -> Unit,
@@ -223,7 +224,7 @@ private fun MenuContent(
 
 @Composable
 private fun ProductsGrid(
-    state: MenuState,
+    state: MenuStateUI,
     onCategoryClick: (String) -> Unit,
     onProductClick: (String) -> Unit,
     onLoadMore: () -> Unit,
@@ -291,7 +292,7 @@ private fun ProductsGrid(
 
 @Composable
 private fun CategoryGrid(
-    categories: List<MenuCategory>,
+    categories: List<MenuCategoryUI>,
     onCategoryClick: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
