@@ -3,6 +3,8 @@ package com.gear.hub.network.di
 import com.gear.hub.network.config.Environment
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.config.PlatformHostProvider
+import com.gear.hub.network.auth.AuthTokenProvider
+import com.gear.hub.network.auth.EmptyAuthTokenProvider
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -16,6 +18,7 @@ fun networkModule(
     prodHost: String,
 ): Module = module {
     single<HostProvider> { PlatformHostProvider(defaultEnv, devHost, prodHost) }
+    single<AuthTokenProvider> { EmptyAuthTokenProvider }
     single {
         Json {
             ignoreUnknownKeys = true

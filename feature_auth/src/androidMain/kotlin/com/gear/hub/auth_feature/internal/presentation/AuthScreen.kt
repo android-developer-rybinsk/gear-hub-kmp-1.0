@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,6 +51,7 @@ fun AuthScreen(
         contentWindowInsets = WindowInsets.systemBars,
     ) { padding ->
         val scrollState = rememberScrollState()
+        val isLoginStep = state.step is AuthStep.Login
 
         Column(
             modifier = Modifier
@@ -62,13 +64,14 @@ fun AuthScreen(
             Column(
                 modifier = Modifier
                     .weight(1f, fill = true)
-                    .verticalScroll(scrollState),
+                    .then(if (isLoginStep) Modifier else Modifier.verticalScroll(scrollState)),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 when (val step = state.step) {
-                    is AuthStep.Step1 -> StepOne(step = step, state = state, onAction = viewModel::onAction)
-                    is AuthStep.Step2 -> StepTwo(step = step, state = state, onAction = viewModel::onAction)
+                    is AuthStep.Login -> LoginStep(step = step, state = state, onAction = viewModel::onAction)
+                    is AuthStep.RegisterStep1 -> StepOne(step = step, state = state, onAction = viewModel::onAction)
+                    is AuthStep.RegisterStep2 -> StepTwo(step = step, state = state, onAction = viewModel::onAction)
                 }
 
                 if (state.errorMessage != null) {
@@ -91,7 +94,7 @@ fun AuthScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AuthTopBar(step: AuthStep, onBack: () -> Unit) {
-    val showBack = step is AuthStep.Step2
+    val showBack = step is AuthStep.RegisterStep2
     CenterAlignedTopAppBar(
         title = { Text(text = "Авторизация") },
         navigationIcon = {
@@ -111,7 +114,7 @@ private fun AuthTopBar(step: AuthStep, onBack: () -> Unit) {
  * Первый шаг: ввод имени и логина.
  */
 @Composable
-private fun StepOne(step: AuthStep.Step1, state: AuthState, onAction: (AuthAction) -> Unit) {
+private fun StepOne(step: AuthStep.RegisterStep1, state: AuthState, onAction: (AuthAction) -> Unit) {
     OutlinedTextField(
         value = step.name,
         onValueChange = { onAction(AuthAction.UpdateName(it)) },
@@ -147,7 +150,7 @@ private fun StepOne(step: AuthStep.Step1, state: AuthState, onAction: (AuthActio
  * Второй шаг: ввод пароля и подтверждения.
  */
 @Composable
-private fun StepTwo(step: AuthStep.Step2, state: AuthState, onAction: (AuthAction) -> Unit) {
+private fun StepTwo(step: AuthStep.RegisterStep2, state: AuthState, onAction: (AuthAction) -> Unit) {
     OutlinedTextField(
         value = step.password,
         onValueChange = { onAction(AuthAction.UpdatePassword(it)) },
@@ -168,16 +171,68 @@ private fun StepTwo(step: AuthStep.Step2, state: AuthState, onAction: (AuthActio
         isError = state.highlightError && step.confirmPassword.isBlank(),
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { onAction(AuthAction.Submit) }),
+        keyboardActions = KeyboardActions(onDone = { onAction(AuthAction.SubmitRegistration) }),
     )
 
     Spacer(modifier = Modifier.height(24.dp))
 
     Button(
-        onClick = { onAction(AuthAction.Submit) },
+        onClick = { onAction(AuthAction.SubmitRegistration) },
         modifier = Modifier.fillMaxWidth(),
         enabled = !state.isLoading,
     ) {
         Text("Продолжить")
+    }
+}
+
+/**
+ * Стартовый шаг: ввод логина и пароля.
+ */
+@Composable
+private fun LoginStep(step: AuthStep.Login, state: AuthState, onAction: (AuthAction) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Column {
+            OutlinedTextField(
+                value = step.login,
+                onValueChange = { onAction(AuthAction.UpdateLogin(it)) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Почта") },
+                isError = state.highlightError && step.login.isBlank(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = step.password,
+                onValueChange = { onAction(AuthAction.UpdatePassword(it)) },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Пароль") },
+                isError = state.highlightError && step.password.isBlank(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { onAction(AuthAction.SubmitLogin) }),
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(
+                onClick = { onAction(AuthAction.StartRegistration) },
+                modifier = Modifier.align(Alignment.Start),
+            ) {
+                Text("Регистрация", color = MaterialTheme.colorScheme.primary)
+            }
+        }
+
+        Button(
+            onClick = { onAction(AuthAction.SubmitLogin) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !state.isLoading,
+        ) {
+            Text("Войти")
+        }
     }
 }

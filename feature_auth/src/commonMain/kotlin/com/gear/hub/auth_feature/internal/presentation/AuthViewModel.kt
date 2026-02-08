@@ -2,6 +2,7 @@ package com.gear.hub.auth_feature.internal.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.gear.hub.auth_feature.api.AuthNavigationConfig
+import com.gear.hub.auth_feature.internal.domain.LoginUserUseCase
 import com.gear.hub.auth_feature.internal.domain.RegisterUserUseCase
 import com.gear.hub.network.model.ApiResponse
 import com.gear.hub.network.model.onError
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
  */
 class AuthViewModel(
     private val registerUserUseCase: RegisterUserUseCase,
+    private val loginUserUseCase: LoginUserUseCase,
     private val router: Router,
     private val navigationConfig: AuthNavigationConfig,
 ) : BaseViewModel<AuthState, AuthAction>(AuthState()) {
@@ -25,9 +27,11 @@ class AuthViewModel(
             is AuthAction.UpdateLogin -> setState { state -> state.copy(step = state.step.updateLogin(action.value)) }
             is AuthAction.UpdatePassword -> setState { state -> state.copy(step = state.step.updatePassword(action.value)) }
             is AuthAction.UpdateConfirmPassword -> setState { state -> state.copy(step = state.step.updateConfirmPassword(action.value)) }
+            AuthAction.StartRegistration -> startRegistration()
             AuthAction.ProceedStep -> proceedToPassword()
             AuthAction.BackToStepOne -> backToLogin()
-            AuthAction.Submit -> register()
+            AuthAction.SubmitRegistration -> register()
+            AuthAction.SubmitLogin -> login()
         }
     }
 
@@ -36,8 +40,14 @@ class AuthViewModel(
      */
     private fun proceedToPassword() {
         val step = currentState.step
-        if (step is AuthStep.Step1 && step.name.isNotBlank() && step.login.isNotBlank()) {
-            setState { it.copy(step = AuthStep.Step2(step.name.trim(), step.login.trim()), errorMessage = null, highlightError = false) }
+        if (step is AuthStep.RegisterStep1 && step.name.isNotBlank() && step.login.isNotBlank()) {
+            setState {
+                it.copy(
+                    step = AuthStep.RegisterStep2(step.name.trim(), step.login.trim()),
+                    errorMessage = null,
+                    highlightError = false,
+                )
+            }
         } else {
             setState { it.copy(errorMessage = "Введите имя и логин", highlightError = true) }
         }
@@ -48,14 +58,24 @@ class AuthViewModel(
      */
     private fun backToLogin() {
         val step = currentState.step
-        if (step is AuthStep.Step2) {
+        if (step is AuthStep.RegisterStep2) {
             setState {
                 it.copy(
-                    step = AuthStep.Step1(name = step.name, login = step.login),
+                    step = AuthStep.RegisterStep1(name = step.name, login = step.login),
                     errorMessage = null,
                     highlightError = false,
                 )
             }
+        }
+    }
+
+    private fun startRegistration() {
+        setState {
+            it.copy(
+                step = AuthStep.RegisterStep1(),
+                errorMessage = null,
+                highlightError = false,
+            )
         }
     }
 
@@ -64,7 +84,7 @@ class AuthViewModel(
      */
     private fun register() {
         val step = currentState.step
-        if (step !is AuthStep.Step2) return
+        if (step !is AuthStep.RegisterStep2) return
         if (step.password.isBlank() || step.confirmPassword.isBlank()) {
             setState { it.copy(errorMessage = "Заполните оба поля пароля", highlightError = true) }
             return
@@ -89,6 +109,51 @@ class AuthViewModel(
                                 "Пользователь уже зарегистрирован"
                             } else {
                                 error.message ?: "Ошибка регистрации"
+                            }
+                            setState { it.copy(isLoading = false, errorMessage = message, highlightError = true) }
+                        }
+
+                        ApiResponse.NetworkError -> {
+                            setState {
+                                it.copy(
+                                    isLoading = false,
+                                    errorMessage = "Проблема с интернет соединением. Попробуйте позже",
+                                    highlightError = true,
+                                )
+                            }
+                        }
+
+                        is ApiResponse.UnknownError -> {
+                            setState { it.copy(isLoading = false, errorMessage = error.throwable?.message, highlightError = true) }
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun login() {
+        val step = currentState.step
+        if (step !is AuthStep.Login) return
+        if (step.login.isBlank() || step.password.isBlank()) {
+            setState { it.copy(errorMessage = "Введите почту и пароль", highlightError = true) }
+            return
+        }
+
+        setState { it.copy(isLoading = true, errorMessage = null, highlightError = false) }
+
+        viewModelScope.launch {
+            loginUserUseCase(step.login, step.password)
+                .onSuccess {
+                    setState { it.copy(isLoading = false) }
+                    router.replaceAll(navigationConfig.successDestination)
+                }
+                .onError { error ->
+                    when (error) {
+                        is ApiResponse.HttpError -> {
+                            val message = if (error.code == 401) {
+                                "Неверный логин или пароль"
+                            } else {
+                                error.message ?: "Ошибка авторизации"
                             }
                             setState { it.copy(isLoading = false, errorMessage = message, highlightError = true) }
                         }

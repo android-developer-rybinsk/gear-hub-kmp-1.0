@@ -3,7 +3,7 @@ package com.gear.hub.presentation.screens.main
 import com.gear.hub.presentation.models.TabItem
 import gearhub.feature.chats.navigation.DestinationChats
 import gearhub.feature.menu_feature.navigation.DestinationMenu
-import gearhub.feature.products.navigation.DestinationProducts
+import gearhub.feature.products.product_feature.api.navigation.DestinationProducts
 import gearhub.feature.profile.navigation.DestinationProfile
 import gearhubkmp.shared.generated.resources.Res
 import gearhubkmp.shared.generated.resources.icon_test

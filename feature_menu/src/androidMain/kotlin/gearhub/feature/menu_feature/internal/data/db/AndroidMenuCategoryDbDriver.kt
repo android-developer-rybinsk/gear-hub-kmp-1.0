@@ -2,7 +2,7 @@ package gearhub.feature.menu_feature.internal.data.db
 
 import com.gear.hub.data.config.DatabaseFactory
 import gearhub.feature.menu_feature.api.db.MenuCategoryDbDriver
-import gearhub.feature.menu_feature.api.model.MenuCategoryRecord
+import gearhub.feature.menu_feature.api.models.MenuCategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -22,15 +22,15 @@ internal class AndroidMenuCategoryDbDriver(
         withContext(Dispatchers.IO) { dao }
     }
 
-    override fun setCategories(categories: List<MenuCategoryRecord>) {
+    override fun setCategories(categories: List<MenuCategoryModel>) {
         dao.clear()
         dao.insertCategories(categories.map { it.toEntity() })
     }
 
-    override fun getCategories(): List<MenuCategoryRecord> =
+    override fun getCategories(): List<MenuCategoryModel> =
         dao.getCategories().map { it.toRecord() }
 
-    private fun MenuCategoryRecord.toEntity(): MenuCategoryEntity = MenuCategoryEntity(
+    private fun MenuCategoryModel.toEntity(): MenuCategoryEntity = MenuCategoryEntity(
         id = id,
         slug = slug,
         name = name,
@@ -38,7 +38,7 @@ internal class AndroidMenuCategoryDbDriver(
         position = position,
     )
 
-    private fun MenuCategoryEntity.toRecord(): MenuCategoryRecord = MenuCategoryRecord(
+    private fun MenuCategoryEntity.toRecord(): MenuCategoryModel = MenuCategoryModel(
         id = id,
         slug = slug,
         name = name,

@@ -8,7 +8,9 @@ sealed class AuthAction {
     data class UpdateLogin(val value: String) : AuthAction()
     data class UpdatePassword(val value: String) : AuthAction()
     data class UpdateConfirmPassword(val value: String) : AuthAction()
+    data object StartRegistration : AuthAction()
     data object ProceedStep : AuthAction()
-    data object Submit : AuthAction()
+    data object SubmitRegistration : AuthAction()
+    data object SubmitLogin : AuthAction()
     data object BackToStepOne : AuthAction()
 }

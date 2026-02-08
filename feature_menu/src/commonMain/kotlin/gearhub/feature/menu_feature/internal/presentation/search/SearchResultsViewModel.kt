@@ -2,7 +2,7 @@ package gearhub.feature.menu_feature.internal.presentation.search
 
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
-import gearhub.feature.menu_feature.internal.data.MenuDataProvider
+import gearhub.feature.menu_feature.internal.presentation.menu.MenuDataProvider
 import gearhub.feature.menu_feature.navigation.DestinationMenu
 import gearhub.feature.menu_feature.navigation.ProductDetailsArgs
 import gearhub.feature.menu_feature.internal.presentation.filter.MenuFilterStore

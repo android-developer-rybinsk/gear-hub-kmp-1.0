@@ -1,5 +1,8 @@
 package com.gear.hub.network.di
 
+import com.gear.hub.network.auth.AUTH_REQUIRED_HEADER
+import com.gear.hub.network.auth.AUTH_REQUIRED_VALUE
+import com.gear.hub.network.auth.AuthTokenProvider
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.util.ensureTrailingSlash
 import io.ktor.client.HttpClient
@@ -15,16 +18,27 @@ import org.koin.dsl.module
  * Платформенный модуль сети для iOS: единый HttpClient c JSON сериализацией и базовым URL.
  */
 actual fun platformNetworkModule(): Module = module {
-    single { provideIosHttpClient(get(), get()) }
+    single { provideIosHttpClient(get(), get(), get()) }
 }
 
 /**
  * Создаёт HttpClient с базовым URL и обработкой JSON через kotlinx.serialization.
  */
-private fun provideIosHttpClient(hostProvider: HostProvider, jsonSerializer: Json): HttpClient = HttpClient(Darwin) {
+private fun provideIosHttpClient(
+    hostProvider: HostProvider,
+    jsonSerializer: Json,
+    tokenProvider: AuthTokenProvider,
+): HttpClient = HttpClient(Darwin) {
     install(ContentNegotiation) { json(jsonSerializer) }
     install(DefaultRequest) {
         url(hostProvider.baseUrl().ensureTrailingSlash())
         headers.append("Content-Type", "application/json")
+        val requiresAuth = headers[AUTH_REQUIRED_HEADER] == AUTH_REQUIRED_VALUE
+        if (requiresAuth) {
+            headers.remove(AUTH_REQUIRED_HEADER)
+            tokenProvider.accessToken()?.takeIf { it.isNotBlank() }?.let { token ->
+                headers.append("Authorization", "Bearer $token")
+            }
+        }
     }
 }
