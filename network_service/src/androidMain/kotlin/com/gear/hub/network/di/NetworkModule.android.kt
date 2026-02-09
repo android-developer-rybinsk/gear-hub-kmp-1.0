@@ -75,10 +75,13 @@ private fun authTokenInterceptor(
 ): Interceptor = Interceptor { chain ->
     val request = chain.request()
     val token = tokenProvider.accessToken()?.takeIf { it.isNotBlank() }
+    val resolvedToken = token ?: kotlinx.coroutines.runBlocking {
+        sessionManager.refreshAccessToken()
+    }?.takeIf { it.isNotBlank() }
     val updatedRequest = request.newBuilder()
         .apply {
-            if (token != null) {
-                addHeader("Authorization", "Bearer $token")
+            if (resolvedToken != null) {
+                addHeader("Authorization", "Bearer $resolvedToken")
             }
         }
         .build()

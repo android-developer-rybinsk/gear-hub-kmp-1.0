@@ -62,6 +62,12 @@ private fun provideAuthorizedIosHttpClient(
     }
     install(HttpSend) {
         intercept { request ->
+            if (request.headers[HttpHeaders.Authorization] == null && request.headers[RETRY_HEADER] == null) {
+                val refreshed = sessionManager.refreshAccessToken()
+                if (!refreshed.isNullOrBlank()) {
+                    request.headers.append(HttpHeaders.Authorization, "Bearer $refreshed")
+                }
+            }
             val response = execute(request)
             if (response.status != HttpStatusCode.Unauthorized || request.headers[RETRY_HEADER] != null) {
                 return@intercept response
