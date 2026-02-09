@@ -13,6 +13,3 @@ interface AuthTokenProvider {
 object EmptyAuthTokenProvider : AuthTokenProvider {
     override fun accessToken(): String? = null
 }
-
-const val AUTH_REQUIRED_HEADER = "X-Requires-Auth"
-const val AUTH_REQUIRED_VALUE = "true"

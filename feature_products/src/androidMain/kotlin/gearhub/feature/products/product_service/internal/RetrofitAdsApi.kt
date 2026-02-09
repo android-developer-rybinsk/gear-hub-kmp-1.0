@@ -7,7 +7,6 @@ import gearhub.feature.products.product_feature.internal.data.models.CreateAdRes
 import gearhub.feature.products.product_feature.internal.data.models.UpdateAdRequestDTO
 import gearhub.feature.products.product_service.api.AdsApi
 import retrofit2.http.Body
-import retrofit2.http.Headers
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -52,11 +51,9 @@ internal class RetrofitAdsApi(
  */
 internal interface AdsRetrofitService {
     @POST("api/v1/ads")
-    @Headers("X-Requires-Auth: true")
     suspend fun createAd(@Body body: CreateAdRequestDTO): CreateAdResponseDTO
 
     @PATCH("api/v1/ads/{id}")
-    @Headers("X-Requires-Auth: true")
     suspend fun updateAd(
         @Path("id") id: String,
         @Body body: UpdateAdRequestDTO,

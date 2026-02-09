@@ -5,8 +5,11 @@ import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.config.PlatformHostProvider
 import com.gear.hub.network.auth.AuthTokenProvider
 import com.gear.hub.network.auth.EmptyAuthTokenProvider
+import com.gear.hub.network.client.NetworkClient
+import com.gear.hub.network.client.NetworkClientQualifiers
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -24,6 +27,7 @@ fun networkModule(
             ignoreUnknownKeys = true
         }
     }
+    single<NetworkClient> { get(named(NetworkClientQualifiers.DEFAULT)) }
 
     includes(platformNetworkModule())
 }

@@ -1,8 +1,8 @@
 package com.gear.hub.network.di
 
-import com.gear.hub.network.auth.AUTH_REQUIRED_HEADER
 import com.gear.hub.network.auth.AuthTokenProvider
 import com.gear.hub.network.client.NetworkClient
+import com.gear.hub.network.client.NetworkClientQualifiers
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.util.ensureTrailingSlash
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -11,6 +11,7 @@ import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.qualifier.named
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -22,14 +23,26 @@ private const val CONTENT_TYPE_JSON = "application/json"
  * Платформенный модуль сети для Android: единый OkHttp + Retrofit c общими заголовками.
  */
 actual fun platformNetworkModule(): Module = module {
-    single { provideOkHttpClient(get()) }
-    single<NetworkClient> { provideRetrofit(get(), get(), get()) }
+    single<NetworkClient>(named(NetworkClientQualifiers.DEFAULT)) {
+        provideRetrofit(get(), provideOkHttpClient(), get())
+    }
+    single<NetworkClient>(named(NetworkClientQualifiers.AUTHORIZED)) {
+        provideRetrofit(get(), provideAuthorizedOkHttpClient(get()), get())
+    }
 }
 
 /**
- * Создаёт общий OkHttpClient с логированием и установкой Content-Type по умолчанию.
+ * Создаёт OkHttpClient с логированием и установкой Content-Type по умолчанию.
  */
-private fun provideOkHttpClient(tokenProvider: AuthTokenProvider): OkHttpClient = OkHttpClient.Builder()
+private fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+    .addInterceptor(defaultHeadersInterceptor())
+    .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+    .build()
+
+/**
+ * Создаёт OkHttpClient с авторизацией (Bearer) поверх базовой конфигурации.
+ */
+private fun provideAuthorizedOkHttpClient(tokenProvider: AuthTokenProvider): OkHttpClient = OkHttpClient.Builder()
     .addInterceptor(defaultHeadersInterceptor())
     .addInterceptor(authTokenInterceptor(tokenProvider))
     .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
@@ -49,17 +62,12 @@ private fun defaultHeadersInterceptor(): Interceptor = Interceptor { chain ->
 }
 
 /**
- * Добавляет Authorization заголовок, когда запрос помечен как требующий авторизацию.
+ * Добавляет Authorization заголовок для авторизованного клиента.
  */
 private fun authTokenInterceptor(tokenProvider: AuthTokenProvider): Interceptor = Interceptor { chain ->
     val request = chain.request()
-    val requiresAuth = request.header(AUTH_REQUIRED_HEADER) != null
-    if (!requiresAuth) {
-        return@Interceptor chain.proceed(request)
-    }
     val token = tokenProvider.accessToken()?.takeIf { it.isNotBlank() }
     val updatedRequest = request.newBuilder()
-        .removeHeader(AUTH_REQUIRED_HEADER)
         .apply {
             if (token != null) {
                 addHeader("Authorization", "Bearer $token")

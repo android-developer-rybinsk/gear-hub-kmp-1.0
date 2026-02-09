@@ -3,8 +3,6 @@ package gearhub.feature.products.product_service.internal
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.model.ApiResponse
 import com.gear.hub.network.util.ensureTrailingSlash
-import com.gear.hub.network.auth.AUTH_REQUIRED_HEADER
-import com.gear.hub.network.auth.AUTH_REQUIRED_VALUE
 import gearhub.feature.products.product_feature.internal.data.models.CreateAdRequestDTO
 import gearhub.feature.products.product_feature.internal.data.models.CreateAdResponseDTO
 import gearhub.feature.products.product_feature.internal.data.models.UpdateAdRequestDTO
@@ -37,7 +35,6 @@ class KtorAdsApi(
         try {
             val response = httpClient.post(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads") {
                 contentType(ContentType.Application.Json)
-                header(AUTH_REQUIRED_HEADER, AUTH_REQUIRED_VALUE)
                 setBody(request)
             }
             return if (response.status.isSuccess()) {
@@ -66,7 +63,6 @@ class KtorAdsApi(
         try {
             val response = httpClient.patch(hostProvider.baseUrl().ensureTrailingSlash() + "api/v1/ads/$id") {
                 contentType(ContentType.Application.Json)
-                header(AUTH_REQUIRED_HEADER, AUTH_REQUIRED_VALUE)
                 setBody(request)
             }
             return if (response.status.isSuccess()) {
