@@ -14,20 +14,23 @@ import kotlinx.coroutines.withContext
 class AuthSessionStorageImpl(
     private val driver: AuthSessionDbDriver,
 ) : AuthSessionStorage {
+    private var cachedCredentials: AuthCredentialsRecord? = null
+    private var cachedUser: AuthUserRecord? = null
 
     override suspend fun isAuthorized(): Boolean = withContext(Dispatchers.IO) {
         driver.ensureInitialized()
-        driver.getCredentials() != null
+        cachedCredentials ?: driver.getCredentials()?.also { cachedCredentials = it } != null
     }
 
     override suspend fun getCredentials(): AuthCredentialsRecord? = withContext(Dispatchers.IO) {
         driver.ensureInitialized()
-        driver.getCredentials()
+        cachedCredentials ?: driver.getCredentials()?.also { cachedCredentials = it }
     }
 
     override suspend fun setCredentials(credentials: AuthCredentialsRecord) {
         withContext(Dispatchers.IO) {
             driver.ensureInitialized()
+            cachedCredentials = credentials
             driver.setCredentials(credentials)
         }
     }
@@ -35,6 +38,7 @@ class AuthSessionStorageImpl(
     override suspend fun setUser(user: AuthUserRecord) {
         withContext(Dispatchers.IO) {
             driver.ensureInitialized()
+            cachedUser = user
             driver.setUser(user)
         }
     }
@@ -42,6 +46,8 @@ class AuthSessionStorageImpl(
     override suspend fun clear() {
         withContext(Dispatchers.IO) {
             driver.ensureInitialized()
+            cachedCredentials = null
+            cachedUser = null
             driver.deleteCredentials()
             driver.deleteUser()
         }
