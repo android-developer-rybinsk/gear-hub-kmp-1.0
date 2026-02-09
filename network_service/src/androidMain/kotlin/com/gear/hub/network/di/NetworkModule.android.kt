@@ -1,6 +1,7 @@
 package com.gear.hub.network.di
 
 import com.gear.hub.network.auth.AuthTokenProvider
+import com.gear.hub.network.auth.AuthSessionManager
 import com.gear.hub.network.client.NetworkClient
 import com.gear.hub.network.client.NetworkClientQualifiers
 import com.gear.hub.network.config.HostProvider
@@ -18,6 +19,7 @@ import retrofit2.Retrofit
 
 private const val CONTENT_TYPE_HEADER = "Content-Type"
 private const val CONTENT_TYPE_JSON = "application/json"
+private const val RETRY_HEADER = "X-Auth-Retry"
 
 /**
  * Платформенный модуль сети для Android: единый OkHttp + Retrofit c общими заголовками.
@@ -27,7 +29,7 @@ actual fun platformNetworkModule(): Module = module {
         provideRetrofit(get(), provideOkHttpClient(), get())
     }
     single<NetworkClient>(named(NetworkClientQualifiers.AUTHORIZED)) {
-        provideRetrofit(get(), provideAuthorizedOkHttpClient(get()), get())
+        provideRetrofit(get(), provideAuthorizedOkHttpClient(get(), get()), get())
     }
 }
 
@@ -42,9 +44,12 @@ private fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
 /**
  * Создаёт OkHttpClient с авторизацией (Bearer) поверх базовой конфигурации.
  */
-private fun provideAuthorizedOkHttpClient(tokenProvider: AuthTokenProvider): OkHttpClient = OkHttpClient.Builder()
+private fun provideAuthorizedOkHttpClient(
+    tokenProvider: AuthTokenProvider,
+    sessionManager: AuthSessionManager,
+): OkHttpClient = OkHttpClient.Builder()
     .addInterceptor(defaultHeadersInterceptor())
-    .addInterceptor(authTokenInterceptor(tokenProvider))
+    .addInterceptor(authTokenInterceptor(tokenProvider, sessionManager))
     .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
     .build()
 
@@ -64,7 +69,10 @@ private fun defaultHeadersInterceptor(): Interceptor = Interceptor { chain ->
 /**
  * Добавляет Authorization заголовок для авторизованного клиента.
  */
-private fun authTokenInterceptor(tokenProvider: AuthTokenProvider): Interceptor = Interceptor { chain ->
+private fun authTokenInterceptor(
+    tokenProvider: AuthTokenProvider,
+    sessionManager: AuthSessionManager,
+): Interceptor = Interceptor { chain ->
     val request = chain.request()
     val token = tokenProvider.accessToken()?.takeIf { it.isNotBlank() }
     val updatedRequest = request.newBuilder()
@@ -74,7 +82,24 @@ private fun authTokenInterceptor(tokenProvider: AuthTokenProvider): Interceptor 
             }
         }
         .build()
-    chain.proceed(updatedRequest)
+    val response = chain.proceed(updatedRequest)
+    if (response.code != 401 || request.header(RETRY_HEADER) != null) {
+        return@Interceptor response
+    }
+    val refreshedToken = kotlinx.coroutines.runBlocking {
+        sessionManager.refreshAccessToken()
+    }
+    if (refreshedToken.isNullOrBlank()) {
+        kotlinx.coroutines.runBlocking { sessionManager.clearSession() }
+        return@Interceptor response
+    }
+    response.close()
+    val retryRequest = request.newBuilder()
+        .removeHeader("Authorization")
+        .addHeader("Authorization", "Bearer $refreshedToken")
+        .addHeader(RETRY_HEADER, "true")
+        .build()
+    chain.proceed(retryRequest)
 }
 
 /**

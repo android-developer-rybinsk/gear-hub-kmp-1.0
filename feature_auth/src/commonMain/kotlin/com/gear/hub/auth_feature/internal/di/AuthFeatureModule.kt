@@ -1,6 +1,7 @@
 package com.gear.hub.auth_feature.internal.di
 
 import com.gear.hub.auth_feature.internal.data.AuthRepositoryImpl
+import com.gear.hub.auth_feature.internal.data.AuthSessionManagerImpl
 import com.gear.hub.auth_feature.internal.data.AuthSessionRepositoryImpl
 import com.gear.hub.auth_feature.internal.data.AuthTokenProviderImpl
 import com.gear.hub.auth_feature.api.session.AuthSessionDbDriver
@@ -9,6 +10,7 @@ import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorageImpl
 import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
 import com.gear.hub.auth_feature.internal.domain.AuthRepository
 import com.gear.hub.auth_feature.internal.domain.AuthSessionRepository
+import com.gear.hub.network.auth.AuthSessionManager
 import com.gear.hub.network.auth.AuthTokenProvider
 import com.gear.hub.auth_feature.internal.domain.CheckAuthorizationUseCase
 import com.gear.hub.auth_feature.internal.domain.LogoutUseCase
@@ -29,11 +31,12 @@ import org.koin.dsl.module
 val authFeatureModule: Module = module {
     includes(authServiceModule)
 
-    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+    single<AuthRepository> { AuthRepositoryImpl(get()) }
     single<AuthSessionDbDriver> { createAuthSessionDbDriver(get<DatabaseFactory>(named("auth_db"))) }
     single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
     single<AuthSessionRepository> { AuthSessionRepositoryImpl(get()) }
     single<AuthTokenProvider>(override = true) { AuthTokenProviderImpl(get()) }
+    single<AuthSessionManager>(override = true) { AuthSessionManagerImpl(get(), get()) }
     factory { RegisterUserUseCase(get(), get()) }
     factory { LoginUserUseCase(get(), get()) }
     factory { CheckAuthorizationUseCase(get()) }
