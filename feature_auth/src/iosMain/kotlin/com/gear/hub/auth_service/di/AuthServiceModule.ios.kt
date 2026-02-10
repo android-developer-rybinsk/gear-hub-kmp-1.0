@@ -10,9 +10,11 @@ import io.ktor.client.HttpClient
  * iOS-реализация AuthApi на базе общего HttpClient.
  */
 actual fun provideAuthApi(
-    client: NetworkClient,
+    defaultClient: NetworkClient,
+    authorizedClient: NetworkClient,
     hostProvider: HostProvider,
 ): AuthApi {
-    val httpClient = client as HttpClient
-    return KtorAuthApi(httpClient, hostProvider)
+    val defaultHttpClient = defaultClient as HttpClient
+    val authorizedHttpClient = authorizedClient as HttpClient
+    return KtorAuthApi(defaultHttpClient, authorizedHttpClient, hostProvider)
 }

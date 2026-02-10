@@ -1,8 +1,8 @@
 package com.gear.hub.navigation
 
-import gearhub.feature.products.navigation.DestinationProducts
-import gearhub.feature.products.presentation.my.MyProductsAction
-import gearhub.feature.products.presentation.my.MyProductsState
+import gearhub.feature.products.product_feature.api.navigation.DestinationProducts
+import gearhub.feature.products.product_feature.internal.presentation.my.MyProductsAction
+import gearhub.feature.products.product_feature.internal.presentation.models.MyProductsStateUI
 import kotlinx.cinterop.ExportObjCClass
 import platform.darwin.NSObject
 
@@ -13,7 +13,7 @@ class DestinationProductsAny(
 
 @ExportObjCClass
 class MyProductsStateAny(
-    val state: MyProductsState
+    val state: MyProductsStateUI
 ) : NSObject()
 
 @ExportObjCClass

@@ -11,9 +11,15 @@ import retrofit2.Retrofit
  * Android-реализация AuthApi строится через общий Retrofit из network-service.
  */
 actual fun provideAuthApi(
-    client: NetworkClient,
+    defaultClient: NetworkClient,
+    authorizedClient: NetworkClient,
     hostProvider: HostProvider,
 ): AuthApi {
-    val retrofit = client as Retrofit
-    return RetrofitAuthApi(retrofit.create(AuthRetrofitService::class.java), hostProvider)
+    val defaultRetrofit = defaultClient as Retrofit
+    val authorizedRetrofit = authorizedClient as Retrofit
+    return RetrofitAuthApi(
+        defaultRetrofit.create(AuthRetrofitService::class.java),
+        authorizedRetrofit.create(AuthRetrofitService::class.java),
+        hostProvider,
+    )
 }

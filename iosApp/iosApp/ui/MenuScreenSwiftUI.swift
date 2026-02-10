@@ -90,7 +90,7 @@ private struct SearchBar: View {
 }
 
 private struct CategorySection: View {
-    let categories: [MenuCategory]
+    let categories: [MenuCategoryUI]
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 4)
 
@@ -148,7 +148,7 @@ private struct SectionHeader: View {
 }
 
 private struct ProductsGrid: View {
-    let products: [MenuProduct]
+    let products: [MenuProductUI]
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
 
@@ -162,7 +162,7 @@ private struct ProductsGrid: View {
 }
 
 private struct ProductCard: View {
-    let product: MenuProduct
+    let product: MenuProductUI
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -198,7 +198,7 @@ private struct ProductCard: View {
 
 class MenuViewModelWrapper: ObservableObject {
     private let viewModel: MenuViewModelApi
-    @Published var state: MenuState
+    @Published var state: MenuStateUI
 
     init(vm: MenuViewModelApi) {
         self.viewModel = vm

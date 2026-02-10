@@ -7,7 +7,7 @@ import com.gear.hub.data.config.DatabaseConfig
 import com.gear.hub.data.config.PlatformContext
 import com.gear.hub.data.di.dataModule
 import com.gear.hub.auth_feature.api.session.createAuthSessionDbDriver
-import gearhub.feature.menu_feature.api.menuFeatureAndroidModule
+import gearhub.feature.menu_feature.api.di.menuFeatureAndroidModule
 import gearhub.feature.menu_feature.api.db.createMenuCategoryDbDriver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

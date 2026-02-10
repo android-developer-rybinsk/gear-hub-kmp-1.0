@@ -3,9 +3,11 @@ package gearhub.feature.menu_feature.internal.data
 import com.gear.hub.network.model.ApiResponse
 import com.gear.hub.network.model.map
 import gearhub.feature.menu_feature.api.db.MenuCategoryDbDriver
-import gearhub.feature.menu_feature.api.model.MenuCategoryRecord
-import gearhub.feature.menu_feature.internal.data.model.MenuCategoryDto
-import gearhub.feature.menu_feature.internal.presentation.menu.MenuCategory
+import gearhub.feature.menu_feature.api.models.MenuCategoryModel
+import gearhub.feature.menu_feature.internal.data.models.MenuCategoryDTO
+import gearhub.feature.menu_feature.internal.data.mappers.toDomain
+import gearhub.feature.menu_feature.internal.domain.MenuCategoryRepository
+import gearhub.feature.menu_feature.internal.domain.models.MenuCategoryDomain
 import gearhub.feature.menu_service.api.MenuApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -14,28 +16,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 
-internal interface MenuCategoryRepository {
-    val categories: StateFlow<List<MenuCategory>>
-
-    suspend fun loadFromDb()
-
-    suspend fun refreshCategories(): ApiResponse<Unit>
-}
-
 internal class MenuCategoryRepositoryImpl(
     private val api: MenuApi,
     private val dbDriver: MenuCategoryDbDriver,
 ) : MenuCategoryRepository {
-    private val categoriesState = MutableStateFlow<List<MenuCategory>>(emptyList())
+    private val categoriesState = MutableStateFlow<List<MenuCategoryDomain>>(emptyList())
 
-    override val categories: StateFlow<List<MenuCategory>> = categoriesState.asStateFlow()
+    override val categories: StateFlow<List<MenuCategoryDomain>> = categoriesState.asStateFlow()
 
     override suspend fun loadFromDb() {
         val records = withContext(Dispatchers.IO) { dbDriver.getCategories() }
         categoriesState.value = records
             .filter { it.parentId == null }
             .sortedBy { it.position }
-            .map { MenuCategory(id = it.id, title = it.name) }
+            .map { it.toDomain() }
     }
 
     override suspend fun refreshCategories(): ApiResponse<Unit> {
@@ -47,14 +41,14 @@ internal class MenuCategoryRepositoryImpl(
         return response.map { Unit }
     }
 
-    private fun List<MenuCategoryDto>.toRecords(): List<MenuCategoryRecord> {
-        val result = mutableListOf<MenuCategoryRecord>()
+    private fun List<MenuCategoryDTO>.toRecords(): List<MenuCategoryModel> {
+        val result = mutableListOf<MenuCategoryModel>()
         val positionCounter = intArrayOf(0)
 
-        fun append(category: MenuCategoryDto) {
+        fun append(category: MenuCategoryDTO) {
             val position = positionCounter[0]++
             result.add(
-                MenuCategoryRecord(
+                MenuCategoryModel(
                     id = category.id.toString(),
                     slug = category.slug,
                     name = category.name,
