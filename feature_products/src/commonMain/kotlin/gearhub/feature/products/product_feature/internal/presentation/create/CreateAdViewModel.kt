@@ -145,14 +145,14 @@ class CreateAdViewModel(
             onSuccess = { response ->
                 setState { it.copy(adId = response.id, errorMessage = null) }
                 when {
-                    reloadAfterSave -> reloadWizard(category.id.toIntOrNull() ?: 0, response.id, currentStep.children)
+                    reloadAfterSave -> reloadWizard(category.id.toIntOrNull() ?: 0, currentStep.children)
                     advanceToNext -> moveNextStep()
                 }
             },
         )
     }
 
-    private fun reloadWizard(categoryId: Int, adId: String, stepChildren: List<String>) {
+    private fun reloadWizard(categoryId: Int, stepChildren: List<String>) {
         val valuesForWizard = stepChildren.mapNotNull { key ->
             currentState.fieldValues[key]?.let { AdsWizardFieldInputDomainModel(key = key, value = it) }
         }
@@ -160,7 +160,6 @@ class CreateAdViewModel(
             request = {
                 loadAdsWizardUseCase(
                     categoryId = categoryId,
-                    id = adId,
                     fieldsValues = valuesForWizard,
                 )
             },

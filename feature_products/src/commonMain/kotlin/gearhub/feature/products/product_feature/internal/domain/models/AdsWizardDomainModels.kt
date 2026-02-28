@@ -4,7 +4,6 @@ import kotlinx.serialization.json.JsonElement
 
 data class AdsWizardPayloadDomainModel(
     val categoryId: Int,
-    val id: String? = null,
     val fieldsValues: List<AdsWizardFieldInputDomainModel> = emptyList(),
 )
 

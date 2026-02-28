@@ -10,13 +10,11 @@ class LoadAdsWizardUseCase(
 ) {
     suspend operator fun invoke(
         categoryId: Int,
-        id: String? = null,
         fieldsValues: List<AdsWizardFieldInputDomainModel> = emptyList(),
     ): ApiResponse<AdsWizardResultDomainModel> {
         return repository.wizard(
             AdsWizardPayloadDomainModel(
                 categoryId = categoryId,
-                id = id,
                 fieldsValues = fieldsValues,
             ),
         )

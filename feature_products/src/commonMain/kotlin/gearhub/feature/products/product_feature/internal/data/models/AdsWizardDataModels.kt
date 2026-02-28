@@ -15,8 +15,6 @@ import kotlinx.serialization.json.JsonElement
 data class AdsWizardRequestDataModel(
     @SerialName("categoryId")
     val categoryId: Int? = null,
-    @SerialName("id")
-    val id: String? = null,
     @SerialName("fieldsValues")
     val fieldsValues: List<AdsWizardFieldValueDataModel> = emptyList(),
 )
@@ -107,7 +105,6 @@ data class AdsSaveResponseDataModel(
 
 internal fun AdsWizardPayloadDomainModel.toData(): AdsWizardRequestDataModel = AdsWizardRequestDataModel(
     categoryId = categoryId,
-    id = id,
     fieldsValues = fieldsValues.map { AdsWizardFieldValueDataModel(it.key, it.value) },
 )
 
