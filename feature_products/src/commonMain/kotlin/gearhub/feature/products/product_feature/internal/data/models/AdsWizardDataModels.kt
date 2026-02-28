@@ -45,6 +45,8 @@ data class AdsWizardResponseDataModel(
     val fields: List<AdsWizardFieldDataModel> = emptyList(),
     @SerialName("steps")
     val steps: List<AdsWizardStepDataModel> = emptyList(),
+    @SerialName("currentStep")
+    val currentStep: Int? = null,
 )
 
 @Serializable
@@ -134,6 +136,7 @@ internal fun AdsWizardResponseDataModel.toDomain(): AdsWizardResultDomainModel =
             children = step.children,
         )
     },
+    currentStep = currentStep,
 )
 
 internal fun AdsSaveResponseDataModel.toDomain(): AdsSaveResultDomainModel = AdsSaveResultDomainModel(

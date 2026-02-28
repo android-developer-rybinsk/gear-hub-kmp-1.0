@@ -22,6 +22,7 @@ data class AdsSavePayloadDomainModel(
 data class AdsWizardResultDomainModel(
     val fields: List<AdsWizardFieldDomainModel> = emptyList(),
     val steps: List<AdsWizardStepDomainModel> = emptyList(),
+    val currentStep: Int? = null,
 )
 
 data class AdsWizardFieldDomainModel(

@@ -9,6 +9,7 @@ import kotlinx.serialization.json.JsonElement
 data class AdsWizardResultUiModel(
     val fields: List<AdsWizardFieldUiModel> = emptyList(),
     val steps: List<AdsWizardStepUiModel> = emptyList(),
+    val currentStep: Int? = null,
 )
 
 data class AdsWizardFieldUiModel(
@@ -37,6 +38,7 @@ data class AdsWizardStepUiModel(
 internal fun AdsWizardResultDomainModel.toUi(): AdsWizardResultUiModel = AdsWizardResultUiModel(
     fields = fields.map { it.toUi() },
     steps = steps.sortedBy { it.sorting }.map { it.toUi() },
+    currentStep = currentStep,
 )
 
 internal fun AdsWizardFieldDomainModel.toUi(): AdsWizardFieldUiModel = AdsWizardFieldUiModel(

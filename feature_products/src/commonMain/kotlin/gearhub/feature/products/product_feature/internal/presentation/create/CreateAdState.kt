@@ -12,6 +12,7 @@ data class CreateAdState(
     val currentWizardStepIndex: Int = -1,
     val fieldValues: Map<String, JsonElement> = emptyMap(),
     val fieldInputValues: Map<String, String> = emptyMap(),
+    val invalidFieldKeys: Set<String> = emptySet(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
 )
