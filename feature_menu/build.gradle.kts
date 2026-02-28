@@ -42,6 +42,7 @@ kotlin {
                 // Add KMP dependencies here
                 implementation(compose.runtime)
                 implementation(compose.foundation)
+                implementation(compose.material)
                 implementation(compose.material3)
                 implementation(compose.ui)
                 implementation(compose.components.resources)
@@ -71,7 +72,6 @@ kotlin {
                 implementation(libs.koin.android)
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.accompanist)
-                implementation(libs.accompanist.swiperefresh)
                 implementation(libs.retrofit.core)
                 implementation(libs.retrofit.kotlinx.serialization.converter)
                 implementation(libs.okhttp.logging)

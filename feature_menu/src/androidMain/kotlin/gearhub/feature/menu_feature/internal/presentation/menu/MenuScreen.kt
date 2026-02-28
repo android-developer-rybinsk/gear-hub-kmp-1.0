@@ -61,15 +61,17 @@ import gearhub.feature.menu_feature.internal.presentation.menu.components.Loadin
 import gearhub.feature.menu_feature.internal.presentation.menu.components.ProductCard
 import gearhub.feature.menu_feature.internal.presentation.menu.components.ProductCardSkeleton
 import gearhub.feature.menu_feature.api.presentation.models.MenuCategoryUI
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 @Composable
+@OptIn(ExperimentalMaterialApi::class)
 internal fun MenuScreen(
     viewModel: MenuViewModel
 ) {
@@ -180,17 +182,15 @@ internal fun MenuScreen(
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         val isRefreshing = state.isLoading && state.products.isNotEmpty()
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = isRefreshing,
             onRefresh = { viewModel.onAction(MenuAction.Retry) },
-            modifier = Modifier.padding(paddingValues),
-            indicator = { swipeRefreshState, trigger ->
-                SwipeRefreshIndicator(
-                    state = swipeRefreshState,
-                    refreshTriggerDistance = trigger,
-                    contentColor = MaterialTheme.colorScheme.primary,
-                )
-            },
+        )
+
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .pullRefresh(pullRefreshState)
         ) {
             MenuContent(
                 modifier = Modifier,
@@ -199,6 +199,11 @@ internal fun MenuScreen(
                 onProductClick = { productId -> viewModel.onAction(MenuAction.ProductClicked(productId)) },
                 onLoadMore = { viewModel.onAction(MenuAction.LoadNextPage) },
                 onRetry = { viewModel.onAction(MenuAction.Retry) }
+            )
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
             )
         }
     }
