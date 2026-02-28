@@ -60,6 +60,7 @@ class CreateAdViewModel(
             )
         }
         if (field?.requiresReload == true) {
+            resetFollowingStepFields(changedKey = key)
             saveCurrentStepAndReloadWizard()
         }
     }
@@ -112,6 +113,23 @@ class CreateAdViewModel(
                 applyWizardResponse(wizardDomain.toUi(), preserveCurrentStep = false)
             },
         )
+    }
+
+
+    private fun resetFollowingStepFields(changedKey: String) {
+        val step = currentState.wizardResult.steps.getOrNull(currentState.currentWizardStepIndex) ?: return
+        val changedIndex = step.children.indexOf(changedKey)
+        if (changedIndex == -1) return
+        val keysToReset = step.children.drop(changedIndex + 1)
+        if (keysToReset.isEmpty()) return
+
+        setState {
+            it.copy(
+                fieldValues = it.fieldValues - keysToReset.toSet(),
+                fieldInputValues = it.fieldInputValues - keysToReset.toSet(),
+                invalidFieldKeys = it.invalidFieldKeys - keysToReset.toSet(),
+            )
+        }
     }
 
     private fun saveCurrentStepAndReloadWizard() {
