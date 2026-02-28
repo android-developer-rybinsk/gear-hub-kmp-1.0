@@ -36,7 +36,7 @@ val authFeatureModule: Module = module {
     single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
     single<AuthSessionRepository> { AuthSessionRepositoryImpl(get()) }
     single<AuthTokenProvider> { AuthTokenProviderImpl(get()) }
-    single<AuthSessionManager> { AuthSessionManagerImpl(get(), get()) }
+    single<AuthSessionManager> { AuthSessionManagerImpl(get(), get(), get()) }
     factory { RegisterUserUseCase(get(), get()) }
     factory { LoginUserUseCase(get(), get()) }
     factory { CheckAuthorizationUseCase(get()) }

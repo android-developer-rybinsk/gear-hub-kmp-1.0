@@ -7,8 +7,8 @@ import gear.hub.core.navigation.Router
 import gearhub.feature.menu_feature.api.MenuCategoryProvider
 import gearhub.feature.products.product_feature.internal.domain.LoadAdsWizardUseCase
 import gearhub.feature.products.product_feature.internal.domain.SaveAdsWizardStepUseCase
-import gearhub.feature.products.product_feature.internal.presentation.create.models.AdCategoryUI
-import gearhub.feature.products.product_feature.internal.presentation.create.models.CreateAdStepUI
+import gearhub.feature.products.product_feature.internal.domain.models.AdsWizardFieldInputDomainModel
+import gearhub.feature.products.product_feature.internal.presentation.create.models.AdsWizardFieldUiModel
 import gearhub.feature.products.product_feature.internal.presentation.create.models.toUI
 import gearhub.feature.products.product_feature.internal.presentation.create.models.toUi
 import kotlinx.coroutines.IO
@@ -31,14 +31,8 @@ class CreateAdViewModel(
         when (action) {
             CreateAdAction.LoadCategories -> loadCategories()
             is CreateAdAction.SelectCategory -> selectCategory(action.categoryId)
-            is CreateAdAction.UpdateTitle -> setState { it.copy(title = action.value) }
-            is CreateAdAction.UpdateBrand -> setState { it.copy(brand = action.value) }
-            is CreateAdAction.UpdateModel -> setState { it.copy(model = action.value) }
-            is CreateAdAction.UpdateVin -> setState { it.copy(vin = action.value) }
-            is CreateAdAction.UpdateLocation -> setState { it.copy(location = action.value) }
-            is CreateAdAction.UpdateCondition -> setState { it.copy(condition = action.value) }
-            is CreateAdAction.UpdateDescription -> setState { it.copy(description = action.value) }
-            is CreateAdAction.UpdatePrice -> setState { it.copy(price = action.value) }
+            is CreateAdAction.UpdateFieldInput -> onFieldChanged(action.key, action.value, JsonPrimitive(action.value))
+            is CreateAdAction.SelectFieldValue -> onFieldChanged(action.key, action.label, action.value)
             CreateAdAction.NextStep -> onNext()
             CreateAdAction.Back -> onBack()
         }
@@ -46,9 +40,7 @@ class CreateAdViewModel(
 
     private fun loadCategories() {
         viewModelScope.launch {
-            val mapped = withContext(IO) {
-                categoryProvider.getCategories()
-            }.map { it.toUI() }
+            val mapped = withContext(IO) { categoryProvider.getCategories() }.map { it.toUI() }
             setState { it.copy(categories = mapped) }
         }
     }
@@ -58,104 +50,207 @@ class CreateAdViewModel(
         setState { it.copy(selectedCategory = category, errorMessage = null) }
     }
 
-    private fun onNext() {
-        when (currentState.step) {
-            CreateAdStepUI.Category -> proceedFromCategory()
-            CreateAdStepUI.Title -> saveCurrentStep(CreateAdStepUI.Vin)
-            CreateAdStepUI.Vin -> saveCurrentStep(CreateAdStepUI.Details)
-            CreateAdStepUI.Details -> saveCurrentStep(CreateAdStepUI.Description)
-            CreateAdStepUI.Description -> saveCurrentStep(CreateAdStepUI.Photos)
-            CreateAdStepUI.Photos -> saveCurrentStep(CreateAdStepUI.Price)
-            CreateAdStepUI.Price -> saveCurrentStep(CreateAdStepUI.Price)
+    private fun onFieldChanged(key: String, labelValue: String, rawValue: JsonElement) {
+        val field = currentState.wizardResult.fields.firstOrNull { it.key == key }
+        setState {
+            it.copy(
+                fieldInputValues = it.fieldInputValues + (key to labelValue),
+                fieldValues = it.fieldValues + (key to rawValue),
+                invalidFieldKeys = it.invalidFieldKeys - key,
+            )
+        }
+        if (field?.requiresReload == true) {
+            resetFollowingStepFields(changedKey = key)
+            saveCurrentStepAndReloadWizard()
         }
     }
 
+    private fun onNext() {
+        if (currentState.currentWizardStepIndex < 0) {
+            proceedFromCategory()
+            return
+        }
+
+        val missingKeys = fieldsForCurrentStep(currentState)
+            .filter { it.required && !isPhotoField(it) }
+            .filter { isBlankField(it.key) }
+            .map { it.key }
+            .toSet()
+
+        if (missingKeys.isNotEmpty()) {
+            setState { it.copy(invalidFieldKeys = it.invalidFieldKeys + missingKeys) }
+            return
+        }
+
+        saveCurrentStep(advanceToNext = true)
+    }
+
     private fun onBack() {
-        when (currentState.step) {
-            CreateAdStepUI.Category -> router.back()
-            CreateAdStepUI.Title -> setState { it.copy(step = CreateAdStepUI.Category) }
-            CreateAdStepUI.Vin -> setState { it.copy(step = CreateAdStepUI.Title) }
-            CreateAdStepUI.Details -> setState { it.copy(step = CreateAdStepUI.Vin) }
-            CreateAdStepUI.Description -> setState { it.copy(step = CreateAdStepUI.Details) }
-            CreateAdStepUI.Photos -> setState { it.copy(step = CreateAdStepUI.Description) }
-            CreateAdStepUI.Price -> setState { it.copy(step = CreateAdStepUI.Photos) }
+        val currentIndex = currentState.currentWizardStepIndex
+        when {
+            currentIndex < 0 -> router.back()
+            currentIndex == 0 -> setState {
+                it.copy(currentWizardStepIndex = -1, errorMessage = null, invalidFieldKeys = emptySet())
+            }
+            else -> setState {
+                it.copy(currentWizardStepIndex = currentIndex - 1, errorMessage = null, invalidFieldKeys = emptySet())
+            }
         }
     }
 
     private fun proceedFromCategory() {
-        val category = currentState.selectedCategory
-        if (category == null) {
+        val category = currentState.selectedCategory ?: run {
             setState { it.copy(errorMessage = "Выберите категорию") }
             return
         }
         val categoryId = category.id.toIntOrNull() ?: 0
         runWithLoader(
-            request = { loadAdsWizardUseCase(categoryId = categoryId) },
+            request = {
+                // Step 1: body only categoryId
+                loadAdsWizardUseCase(categoryId = categoryId)
+            },
             onSuccess = { wizardDomain ->
-                val wizardUi = wizardDomain.toUi()
-                setState {
-                    it.copy(
-                        step = CreateAdStepUI.Title,
-                        wizardResult = wizardUi,
-                        currentWizardStepIndex = 0,
-                        errorMessage = null,
-                    )
-                }
+                applyWizardResponse(wizardDomain.toUi(), preserveCurrentStep = false)
             },
         )
     }
 
-    private fun saveCurrentStep(nextStep: CreateAdStepUI) {
-        val category = currentState.selectedCategory
-        if (category == null) {
+
+    private fun resetFollowingStepFields(changedKey: String) {
+        val step = currentState.wizardResult.steps.getOrNull(currentState.currentWizardStepIndex) ?: return
+        val changedIndex = step.children.indexOf(changedKey)
+        if (changedIndex == -1) return
+        val keysToReset = step.children.drop(changedIndex + 1)
+        if (keysToReset.isEmpty()) return
+
+        setState {
+            it.copy(
+                fieldValues = it.fieldValues - keysToReset.toSet(),
+                fieldInputValues = it.fieldInputValues - keysToReset.toSet(),
+                invalidFieldKeys = it.invalidFieldKeys - keysToReset.toSet(),
+            )
+        }
+    }
+
+    private fun saveCurrentStepAndReloadWizard() {
+        saveCurrentStep(advanceToNext = false, reloadAfterSave = true)
+    }
+
+    private fun saveCurrentStep(
+        advanceToNext: Boolean,
+        reloadAfterSave: Boolean = false,
+    ) {
+        val category = currentState.selectedCategory ?: run {
             setState { it.copy(errorMessage = "Категория не выбрана") }
             return
         }
-        val categoryId = category.id.toIntOrNull() ?: 0
-        val stepAttributes = buildCurrentStepAttributes()
+
+        val currentStep = currentState.wizardResult.steps.getOrNull(currentState.currentWizardStepIndex) ?: return
+        val stepKeys = currentStep.children
+        val attributes = stepKeys.mapNotNull { key ->
+            currentState.fieldValues[key]?.let { key to it }
+        }.toMap()
 
         runWithLoader(
             request = {
+                // first save can be {categoryId, attributes}; next saves use {id, attributes}
                 saveAdsWizardStepUseCase(
-                    categoryId = categoryId,
+                    categoryId = category.id.toIntOrNull() ?: 0,
                     id = currentState.adId,
-                    attributes = stepAttributes,
+                    attributes = attributes,
                 )
             },
             onSuccess = { response ->
-                setState {
-                    it.copy(
-                        adId = response.id,
-                        step = nextStep,
-                        errorMessage = null,
-                    )
+                setState { it.copy(adId = response.id, errorMessage = null) }
+                when {
+                    reloadAfterSave -> reloadWizard(category.id.toIntOrNull() ?: 0, currentStep.children)
+                    advanceToNext -> moveNextStep()
                 }
             },
         )
     }
 
-    private fun buildCurrentStepAttributes(): Map<String, JsonElement> {
-        return when (currentState.step) {
-            CreateAdStepUI.Category -> emptyMap()
-            CreateAdStepUI.Title -> {
-                if (isVehicleCategory(currentState.selectedCategory)) {
-                    mapOf(
-                        "brand" to JsonPrimitive(currentState.brand),
-                        "model" to JsonPrimitive(currentState.model),
-                    )
-                } else {
-                    mapOf("title" to JsonPrimitive(currentState.title))
-                }
-            }
-            CreateAdStepUI.Vin -> mapOf("vin" to JsonPrimitive(currentState.vin))
-            CreateAdStepUI.Details -> mapOf(
-                "location" to JsonPrimitive(currentState.location),
-                "condition" to JsonPrimitive(currentState.condition),
-            )
-            CreateAdStepUI.Description -> mapOf("description" to JsonPrimitive(currentState.description))
-            CreateAdStepUI.Photos -> emptyMap()
-            CreateAdStepUI.Price -> mapOf("price" to JsonPrimitive(currentState.price))
+    private fun reloadWizard(categoryId: Int, stepChildren: List<String>) {
+        val valuesForWizard = stepChildren.mapNotNull { key ->
+            currentState.fieldValues[key]?.let { AdsWizardFieldInputDomainModel(key = key, value = it) }
         }
+        runWithLoader(
+            request = {
+                loadAdsWizardUseCase(
+                    categoryId = categoryId,
+                    fieldsValues = valuesForWizard,
+                )
+            },
+            onSuccess = { wizardDomain ->
+                applyWizardResponse(wizardDomain.toUi(), preserveCurrentStep = true)
+            },
+        )
+    }
+
+    private fun moveNextStep() {
+        setState {
+            val nextIndex = it.currentWizardStepIndex + 1
+            val hasMore = nextIndex < it.wizardResult.steps.size
+            it.copy(
+                currentWizardStepIndex = if (hasMore) nextIndex else it.currentWizardStepIndex,
+                invalidFieldKeys = emptySet(),
+                errorMessage = null,
+            )
+        }
+    }
+
+    private fun applyWizardResponse(
+        wizardUi: gearhub.feature.products.product_feature.internal.presentation.create.models.AdsWizardResultUiModel,
+        preserveCurrentStep: Boolean,
+    ) {
+        val fieldsByKey = wizardUi.fields.associateBy { it.key }
+        val mergedValues = currentState.fieldValues
+            .filterKeys { it in fieldsByKey.keys } +
+            wizardUi.fields.mapNotNull { it.value?.let { valueItem -> it.key to valueItem } }.toMap()
+
+        val mergedInputs = currentState.fieldInputValues
+            .filterKeys { it in fieldsByKey.keys } +
+            wizardUi.fields.associate { field ->
+                val existing = currentState.fieldInputValues[field.key]
+                field.key to (existing ?: mergedValues[field.key]?.toString()?.trim('"').orEmpty())
+            }
+
+        val maxIndex = (wizardUi.steps.size - 1).coerceAtLeast(0)
+        val backendIndex = wizardUi.currentStep?.minus(1)?.coerceIn(0, maxIndex)
+        val resolvedIndex = when {
+            backendIndex != null -> backendIndex
+            preserveCurrentStep -> currentState.currentWizardStepIndex.coerceAtMost(maxIndex).coerceAtLeast(0)
+            else -> 0
+        }
+
+        setState {
+            it.copy(
+                wizardResult = wizardUi,
+                currentWizardStepIndex = resolvedIndex,
+                fieldValues = mergedValues,
+                fieldInputValues = mergedInputs,
+                invalidFieldKeys = it.invalidFieldKeys.filter { invalidKey -> invalidKey in fieldsByKey.keys }.toSet(),
+                errorMessage = null,
+            )
+        }
+    }
+
+    private fun fieldsForCurrentStep(state: CreateAdState): List<AdsWizardFieldUiModel> {
+        val step = state.wizardResult.steps.getOrNull(state.currentWizardStepIndex) ?: return emptyList()
+        val fieldsMap = state.wizardResult.fields.associateBy { it.key }
+        return step.children.mapNotNull { fieldsMap[it] }
+    }
+
+    private fun isBlankField(key: String): Boolean {
+        val input = currentState.fieldInputValues[key].orEmpty()
+        if (input.isNotBlank()) return false
+        val raw = currentState.fieldValues[key] ?: return true
+        return raw.toString().trim('"').isBlank()
+    }
+
+    private fun isPhotoField(field: AdsWizardFieldUiModel): Boolean {
+        val widget = field.widgetType.lowercase()
+        return widget == "photos" || widget == "uploader"
     }
 
     @OptIn(ExperimentalTime::class)
@@ -168,9 +263,7 @@ class CreateAdViewModel(
             val start = Clock.System.now()
             val response = request()
             val elapsed = (Clock.System.now() - start).inWholeMilliseconds
-            if (elapsed < MIN_LOADING_MS) {
-                delay(MIN_LOADING_MS - elapsed)
-            }
+            if (elapsed < MIN_LOADING_MS) delay(MIN_LOADING_MS - elapsed)
             when (response) {
                 is ApiResponse.Success -> onSuccess(response.data)
                 is ApiResponse.HttpError -> setState {
@@ -187,14 +280,7 @@ class CreateAdViewModel(
         }
     }
 
-    private fun isVehicleCategory(category: AdCategoryUI?): Boolean {
-        if (category == null) return false
-        val slug = category.slug.lowercase()
-        val title = category.title.lowercase()
-        return slug.contains("auto") || slug.contains("moto") || title.contains("авто") || title.contains("мото")
-    }
-
     private companion object {
-        const val MIN_LOADING_MS = 1000L
+        const val MIN_LOADING_MS = 500L
     }
 }

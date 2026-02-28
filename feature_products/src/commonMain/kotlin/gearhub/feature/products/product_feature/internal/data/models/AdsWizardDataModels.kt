@@ -15,8 +15,6 @@ import kotlinx.serialization.json.JsonElement
 data class AdsWizardRequestDataModel(
     @SerialName("categoryId")
     val categoryId: Int? = null,
-    @SerialName("id")
-    val id: String? = null,
     @SerialName("fieldsValues")
     val fieldsValues: List<AdsWizardFieldValueDataModel> = emptyList(),
 )
@@ -45,6 +43,8 @@ data class AdsWizardResponseDataModel(
     val fields: List<AdsWizardFieldDataModel> = emptyList(),
     @SerialName("steps")
     val steps: List<AdsWizardStepDataModel> = emptyList(),
+    @SerialName("currentStep")
+    val currentStep: Int? = null,
 )
 
 @Serializable
@@ -63,6 +63,8 @@ data class AdsWizardFieldDataModel(
     val widget: AdsWizardWidgetDataModel? = null,
     @SerialName("value")
     val value: JsonElement? = null,
+    @SerialName("validation")
+    val validation: JsonElement? = null,
     @SerialName("values")
     val values: List<AdsWizardOptionDataModel> = emptyList(),
 )
@@ -103,7 +105,6 @@ data class AdsSaveResponseDataModel(
 
 internal fun AdsWizardPayloadDomainModel.toData(): AdsWizardRequestDataModel = AdsWizardRequestDataModel(
     categoryId = categoryId,
-    id = id,
     fieldsValues = fieldsValues.map { AdsWizardFieldValueDataModel(it.key, it.value) },
 )
 
@@ -123,6 +124,7 @@ internal fun AdsWizardResponseDataModel.toDomain(): AdsWizardResultDomainModel =
             stepSlug = field.stepSlug,
             widgetType = field.widget?.type.orEmpty(),
             value = field.value,
+            validation = field.validation,
             values = field.values.map { AdsWizardFieldValueDomainModel(it.label, it.value) },
         )
     },
@@ -134,6 +136,7 @@ internal fun AdsWizardResponseDataModel.toDomain(): AdsWizardResultDomainModel =
             children = step.children,
         )
     },
+    currentStep = currentStep,
 )
 
 internal fun AdsSaveResponseDataModel.toDomain(): AdsSaveResultDomainModel = AdsSaveResultDomainModel(

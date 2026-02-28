@@ -5,6 +5,7 @@ import com.gear.hub.auth_feature.internal.data.model.AuthRefreshRequestDto
 import com.gear.hub.auth_feature.internal.data.session.AuthSessionStorage
 import com.gear.hub.auth_service.api.AuthApi
 import com.gear.hub.network.auth.AuthSessionManager
+import com.gear.hub.network.auth.SessionExpirationNotifier
 import com.gear.hub.network.model.ApiResponse
 
 /**
@@ -13,6 +14,7 @@ import com.gear.hub.network.model.ApiResponse
 internal class AuthSessionManagerImpl(
     private val api: AuthApi,
     private val storage: AuthSessionStorage,
+    private val sessionExpirationNotifier: SessionExpirationNotifier,
 ) : AuthSessionManager {
     override suspend fun refreshAccessToken(): String? {
         val refreshToken = storage.getCredentials()?.refreshToken ?: return null
@@ -33,5 +35,6 @@ internal class AuthSessionManagerImpl(
 
     override suspend fun clearSession() {
         storage.clear()
+        sessionExpirationNotifier.notifySessionExpired()
     }
 }

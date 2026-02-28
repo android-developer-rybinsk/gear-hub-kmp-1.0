@@ -86,7 +86,11 @@ private fun authTokenInterceptor(
         }
         .build()
     val response = chain.proceed(updatedRequest)
-    if (response.code != 401 || request.header(RETRY_HEADER) != null) {
+    if (response.code != 401) {
+        return@Interceptor response
+    }
+    if (request.header(RETRY_HEADER) != null) {
+        kotlinx.coroutines.runBlocking { sessionManager.clearSession() }
         return@Interceptor response
     }
     val refreshedToken = kotlinx.coroutines.runBlocking {

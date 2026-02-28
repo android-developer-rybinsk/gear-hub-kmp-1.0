@@ -69,7 +69,11 @@ private fun provideAuthorizedIosHttpClient(
                 }
             }
             val response = execute(request)
-            if (response.status != HttpStatusCode.Unauthorized || request.headers[RETRY_HEADER] != null) {
+            if (response.status != HttpStatusCode.Unauthorized) {
+                return@intercept response
+            }
+            if (request.headers[RETRY_HEADER] != null) {
+                sessionManager.clearSession()
                 return@intercept response
             }
             val newToken = sessionManager.refreshAccessToken()
