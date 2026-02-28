@@ -1,6 +1,10 @@
 package gearhub.feature.products.product_feature.internal.di
 
+import gearhub.feature.products.product_feature.api.ProductAdsProvider
+import gearhub.feature.products.product_feature.api.ProductCategoryProvider
 import gearhub.feature.products.product_feature.internal.data.AdsRepositoryImpl
+import gearhub.feature.products.product_feature.internal.data.ProductAdsProviderImpl
+import gearhub.feature.products.product_feature.internal.data.ProductCategoryProviderImpl
 import gearhub.feature.products.product_feature.internal.domain.AdsRepository
 import gearhub.feature.products.product_feature.internal.domain.CreateAdDraftUseCase
 import gearhub.feature.products.product_feature.internal.domain.UpdateAdDraftUseCase
@@ -17,6 +21,8 @@ val productFeatureModule: Module = module {
     includes(adsServiceModule)
 
     single<AdsRepository> { AdsRepositoryImpl(get()) }
+    single<ProductAdsProvider> { ProductAdsProviderImpl(get()) }
+    single<ProductCategoryProvider> { ProductCategoryProviderImpl(get()) }
     factory { CreateAdDraftUseCase(get()) }
     factory { UpdateAdDraftUseCase(get()) }
     factory { LoadAdsWizardUseCase(get()) }

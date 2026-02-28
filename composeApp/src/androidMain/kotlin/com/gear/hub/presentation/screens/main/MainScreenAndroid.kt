@@ -52,6 +52,7 @@ fun MainScreenAndroid(viewModel: MainViewModel, rootRouter: Router) {
             TabsHost(
                 tabs = state.tabs,
                 rootRouter = rootRouter,
+                menuRouter = router,
             )
         }
         composable(
@@ -109,7 +110,8 @@ private const val MAIN_TABS_ROUTE = "main_tabs"
 @Composable
 private fun TabsHost(
     tabs: List<TabItem>,
-    rootRouter: Router
+    rootRouter: Router,
+    menuRouter: Router,
 ) {
     val tabNavController = rememberNavController()
     val tabRouter: Router = getKoin().get { parametersOf(tabNavController) }
@@ -137,7 +139,7 @@ private fun TabsHost(
             modifier = innerModifier
         ) {
             composable(DestinationMenu.MenuScreen.route) {
-                MenuScreenEntry(rootRouter)
+                MenuScreenEntry(menuRouter)
             }
             composable(DestinationProducts.MyProductsScreen.route) {
                 val vm: MyProductsViewModel = koinViewModel(parameters = { parametersOf(tabRouter) })

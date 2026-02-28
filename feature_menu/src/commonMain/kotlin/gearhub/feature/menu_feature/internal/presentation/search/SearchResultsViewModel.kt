@@ -1,25 +1,27 @@
 package gearhub.feature.menu_feature.internal.presentation.search
 
+import com.gear.hub.network.model.ApiResponse
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
+import gearhub.feature.menu_feature.api.presentation.models.MenuProductUI
+import gearhub.feature.menu_feature.internal.presentation.filter.MenuFilterStore
 import gearhub.feature.menu_feature.internal.presentation.menu.MenuDataProvider
 import gearhub.feature.menu_feature.navigation.DestinationMenu
 import gearhub.feature.menu_feature.navigation.ProductDetailsArgs
-import gearhub.feature.menu_feature.internal.presentation.filter.MenuFilterStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SearchResultsViewModel(
     private val router: Router,
-    initialQuery: String
+    private val dataProvider: MenuDataProvider,
+    initialQuery: String,
 ) : BaseViewModel<SearchResultsState, SearchResultsAction>(SearchResultsState(query = initialQuery)) {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val products = MenuDataProvider.products()
+    private var products: List<MenuProductUI> = emptyList()
 
     init {
         initialize(initialQuery)
@@ -27,7 +29,7 @@ class SearchResultsViewModel(
 
     private fun initialize(initialQuery: String) {
         MenuFilterStore.update { it.copy(query = initialQuery) }
-        loadResults(initialQuery)
+        loadProductsAndFilter(initialQuery)
     }
 
     override fun onCleared() {
@@ -44,7 +46,7 @@ class SearchResultsViewModel(
             is SearchResultsAction.QueryChanged -> {
                 setState { it.copy(query = action.value) }
                 MenuFilterStore.update { it.copy(query = action.value) }
-                loadResults(action.value)
+                applyFilter(action.value)
             }
 
             is SearchResultsAction.ProductClicked -> router.navigate(
@@ -57,29 +59,44 @@ class SearchResultsViewModel(
         }
     }
 
-    private fun loadResults(query: String) {
+    private fun loadProductsAndFilter(query: String) {
         scope.launch {
             setState { it.copy(isLoading = true, errorMessage = null) }
-            try {
-                delay(150)
-                val filterState = MenuFilterStore.state().value
-                val minPrice = filterState.priceFrom.toDoubleOrNull()
-                val maxPrice = filterState.priceTo.toDoubleOrNull()
-                val filtered = products.filter { product ->
-                    val matchesQuery = query.isBlank() || product.title.contains(query, ignoreCase = true)
-                    val matchesCategory = filterState.selectedCategoryId == null || product.categoryId == filterState.selectedCategoryId
-                    val matchesPrice = (minPrice == null || product.price >= minPrice) && (maxPrice == null || product.price <= maxPrice)
-                    matchesQuery && matchesCategory && matchesPrice
+            when (val response = dataProvider.products(limit = 100, cursor = null)) {
+                is ApiResponse.Success -> {
+                    products = response.data.data
+                    applyFilter(query)
                 }
-                setState {
-                    it.copy(
-                        results = filtered,
-                        isLoading = false,
-                        errorMessage = null
-                    )
+                is ApiResponse.HttpError -> setState {
+                    it.copy(isLoading = false, errorMessage = response.message ?: "Ошибка сервера")
                 }
-            } catch (e: Exception) {
-                setState { it.copy(isLoading = false, errorMessage = e.message) }
+                ApiResponse.NetworkError -> setState {
+                    it.copy(isLoading = false, errorMessage = "Нет соединения с сервером")
+                }
+                is ApiResponse.UnknownError -> setState {
+                    it.copy(isLoading = false, errorMessage = response.throwable?.message)
+                }
+            }
+        }
+    }
+
+    private fun applyFilter(query: String) {
+        scope.launch {
+            val filterState = MenuFilterStore.state().value
+            val minPrice = filterState.priceFrom.toDoubleOrNull()
+            val maxPrice = filterState.priceTo.toDoubleOrNull()
+            val filtered = products.filter { product ->
+                val matchesQuery = query.isBlank() || product.title.contains(query, ignoreCase = true)
+                val matchesCategory = filterState.selectedCategoryId == null || product.categoryId == filterState.selectedCategoryId
+                val matchesPrice = (minPrice == null || product.price >= minPrice) && (maxPrice == null || product.price <= maxPrice)
+                matchesQuery && matchesCategory && matchesPrice
+            }
+            setState {
+                it.copy(
+                    results = filtered,
+                    isLoading = false,
+                    errorMessage = null,
+                )
             }
         }
     }

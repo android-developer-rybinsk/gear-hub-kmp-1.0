@@ -10,6 +10,6 @@ import org.koin.dsl.module
  * Android Koin-модуль для menu feature.
  */
 val menuFeatureAndroidModule = module {
-    viewModel { (router: Router) -> MenuViewModel(router, get()) }
+    viewModel { (router: Router) -> MenuViewModel(router, get(), get()) }
     factory<MenuViewModelApi> { get<MenuViewModel>() }
 }

@@ -41,7 +41,7 @@ import gearhub.feature.products.R
 fun MyProductsScreen(
     viewModel: MyProductsViewModel = koinViewModel()
 ) {
-    val sampleListings = remember { sampleListingItems() }
+    val sampleListings = remember { emptyList<ListingItem>() }
     var selectedTab by remember { mutableStateOf(ListingTab.Favorites) }
     var selectedFavoriteCategory by remember { mutableStateOf<String?>(null) }
     var deletedSheetItem by remember { mutableStateOf<ListingItem?>(null) }
@@ -272,54 +272,4 @@ private fun ListingCard(
             Text(text = "Рейтинг ${item.rating}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
-}
-
-private fun sampleListingItems(): List<ListingItem> {
-    return listOf(
-        ListingItem(
-            id = "fav-1",
-            title = "BMW X5 2021",
-            price = "6 500 000 ₽",
-            location = "Москва, 3 часа назад",
-            rating = "4.9",
-            category = "Автомобили",
-            section = ListingSection.Favorites
-        ),
-        ListingItem(
-            id = "fav-2",
-            title = "Yamaha MT-07",
-            price = "750 000 ₽",
-            location = "Санкт-Петербург, вчера",
-            rating = "4.8",
-            category = "Мотоциклы",
-            section = ListingSection.Favorites
-        ),
-        ListingItem(
-            id = "my-1",
-            title = "Audi Q7 2019",
-            price = "4 200 000 ₽",
-            location = "Казань, 2 дня назад",
-            rating = "4.6",
-            category = "Автомобили",
-            section = ListingSection.MyAds
-        ),
-        ListingItem(
-            id = "my-2",
-            title = "Honda CRF 450",
-            price = "620 000 ₽",
-            location = "Екатеринбург, 4 дня назад",
-            rating = "4.7",
-            category = "Мотоциклы",
-            section = ListingSection.MyAds
-        ),
-        ListingItem(
-            id = "del-1",
-            title = "Toyota Land Cruiser",
-            price = "5 400 000 ₽",
-            location = "Новосибирск, неделю назад",
-            rating = "4.5",
-            category = "Автомобили",
-            section = ListingSection.Deleted
-        )
-    )
 }

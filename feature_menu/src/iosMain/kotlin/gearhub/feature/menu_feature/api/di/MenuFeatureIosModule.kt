@@ -7,5 +7,5 @@ import org.koin.dsl.module
  * iOS Koin-модуль для menu feature.
  */
 val menuFeatureIosModule = module {
-    factory<MenuViewModelApi> { MenuViewModel(get(), get()) }
+    factory<MenuViewModelApi> { MenuViewModel(get(), get(), get()) }
 }

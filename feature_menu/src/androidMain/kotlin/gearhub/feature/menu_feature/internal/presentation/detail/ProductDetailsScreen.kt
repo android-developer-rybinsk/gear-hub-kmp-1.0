@@ -49,7 +49,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import gearhub.feature.menu_feature.internal.presentation.menu.MenuDataProvider
 import gearhub.feature.menu_feature.navigation.ProductDetailsArgs
 import gearhub.feature.menu_feature.internal.presentation.menu.models.ProductDetailUI
 import gearhub.feature.menu_feature.internal.presentation.menu.theme.MenuBrandPrimary
@@ -69,7 +68,7 @@ fun ProductDetailsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(args.productId) {
-        product = MenuDataProvider.productDetails().firstOrNull { it.id == args.productId }
+        product = placeholderDetail(args.productId)
     }
 
     Scaffold(
@@ -358,3 +357,20 @@ private fun FullscreenGallery(
 
 private fun formatPrice(value: Double): String =
     String.format("%,.0f", value).replace(',', ' ')
+
+
+private fun placeholderDetail(productId: String): ProductDetailUI = ProductDetailUI(
+    id = productId,
+    title = "Объявление",
+    price = 0.0,
+    city = "",
+    description = "Описание недоступно",
+    photos = listOf("photo-1"),
+    specs = emptyList(),
+    seller = SellerInfoUI(
+        name = "",
+        rating = 0.0,
+        adsCount = 0,
+        isCompany = false,
+    ),
+)
