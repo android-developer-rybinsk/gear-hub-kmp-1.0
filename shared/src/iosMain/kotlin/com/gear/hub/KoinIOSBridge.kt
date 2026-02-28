@@ -3,6 +3,7 @@ package com.gear.hub
 import com.gear.hub.di.initKoin
 import gear.hub.core.navigation.Router
 import com.gear.hub.navigation.RouterIOS
+import com.gear.hub.navigation.DestinationApp
 import com.gear.hub.presentation.screens.main.MainViewModel
 import com.gear.hub.presentation.screens.splash.SplashViewModel
 import com.gear.hub.auth_feature.api.AuthNavigationConfig
@@ -20,9 +21,11 @@ import gearhub.feature.profile.presentation.profile.ProfileViewModel
 import com.gear.hub.data.config.DatabaseConfig
 import com.gear.hub.data.config.PlatformContext
 import com.gear.hub.data.di.dataModule
+import com.gear.hub.network.auth.SessionExpirationNotifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -69,5 +72,12 @@ class KoinIOSBridge {
             factory { ProfileViewModel(get(), get(), get()) }
             factory { AuthViewModel(get(), get(), get(), get<AuthNavigationConfig>()) }
         }
-    )
+    ).also { koin ->
+        val notifier = koin.get<SessionExpirationNotifier>()
+        initScope.launch {
+            notifier.events.collect {
+                router.replaceAll(DestinationApp.AuthScreen)
+            }
+        }
+    }
 }
