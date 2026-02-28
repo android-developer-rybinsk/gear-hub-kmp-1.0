@@ -28,13 +28,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import gearhub.feature.menu_feature.internal.presentation.menu.MenuProduct
+import gearhub.feature.menu_feature.api.presentation.models.MenuProductUI
 import gearhub.feature.menu_feature.internal.presentation.menu.theme.MenuBrandPrimary
 import gearhub.feature.menu_feature.internal.presentation.menu.theme.MenuRating
 
 @Composable
 fun ProductCard(
-    product: MenuProduct,
+    product: MenuProductUI,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

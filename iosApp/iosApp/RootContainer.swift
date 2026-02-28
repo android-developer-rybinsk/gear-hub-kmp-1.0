@@ -33,6 +33,8 @@ struct RootContainer: View {
                         vm: MyProductsViewModelWrapper(vm: KoinKt.resolveMyProductsVM()),
                         router: router
                     )
+                case is DestinationProducts.CreateAdScreen:
+                    CreateAdScreenSwiftUI(router: router)
                 case is DestinationProfile.ProfileScreen:
                     ProfileScreenSwiftUI(
                         vm: ProfileViewModelWrapper(vm: KoinKt.resolveProfileVM()),

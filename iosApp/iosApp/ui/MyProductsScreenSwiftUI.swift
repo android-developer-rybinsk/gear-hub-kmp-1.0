@@ -11,6 +11,9 @@ struct MyProductsScreenSwiftUI: View {
                 .font(.largeTitle)
                 .padding()
                 .foregroundColor(.black)
+            Button("Добавить") {
+                vm.dispatch(action: MyProductsAction.CreateAd())
+            }
         }
         .background(.white)
     }
@@ -18,7 +21,7 @@ struct MyProductsScreenSwiftUI: View {
 
 class MyProductsViewModelWrapper: ObservableObject {
     private let viewModel: MyProductsViewModel
-    @Published var state: MyProductsState
+    @Published var state: MyProductsStateUI
 
     init(vm: MyProductsViewModel) {
         self.viewModel = vm

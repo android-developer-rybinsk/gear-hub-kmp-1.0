@@ -49,9 +49,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import gearhub.feature.menu_feature.internal.data.MenuDataProvider
+import gearhub.feature.menu_feature.internal.presentation.menu.MenuDataProvider
 import gearhub.feature.menu_feature.navigation.ProductDetailsArgs
-import gearhub.feature.menu_feature.internal.presentation.menu.ProductDetail
+import gearhub.feature.menu_feature.internal.presentation.menu.models.ProductDetailUI
 import gearhub.feature.menu_feature.internal.presentation.menu.theme.MenuBrandPrimary
 import gearhub.feature.menu_feature.internal.presentation.menu.theme.MenuRating
 import kotlinx.coroutines.launch
@@ -62,7 +62,7 @@ fun ProductDetailsScreen(
     args: ProductDetailsArgs,
     onBack: () -> Unit
 ) {
-    var product by remember { mutableStateOf<ProductDetail?>(null) }
+    var product by remember { mutableStateOf<ProductDetailUI?>(null) }
     var showFullScreen by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState(pageCount = { product?.photos?.size ?: 0 })
     val fullscreenPagerState = rememberPagerState(pageCount = { product?.photos?.size ?: 0 })
@@ -270,7 +270,7 @@ fun ProductDetailsScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ProductGallery(detail: ProductDetail, pagerState: androidx.compose.foundation.pager.PagerState, onImageClick: () -> Unit) {
+private fun ProductGallery(detail: ProductDetailUI, pagerState: androidx.compose.foundation.pager.PagerState, onImageClick: () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Surface(
             modifier = Modifier
@@ -318,7 +318,7 @@ private fun ProductGallery(detail: ProductDetail, pagerState: androidx.compose.f
 @Composable
 private fun FullscreenGallery(
     pagerState: androidx.compose.foundation.pager.PagerState,
-    detail: ProductDetail,
+    detail: ProductDetailUI,
     onClose: (Int) -> Unit
 ) {
     Box(

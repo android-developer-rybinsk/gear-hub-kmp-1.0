@@ -1,0 +1,24 @@
+package gearhub.feature.products.product_feature.internal.presentation.create
+
+import gearhub.feature.products.product_feature.internal.presentation.create.models.AdCategoryUI
+import gearhub.feature.products.product_feature.internal.presentation.create.models.CreateAdStepUI
+import gearhub.feature.products.product_feature.internal.presentation.create.models.AdsWizardResultUiModel
+
+data class CreateAdState(
+    val step: CreateAdStepUI = CreateAdStepUI.Category,
+    val categories: List<AdCategoryUI> = emptyList(),
+    val selectedCategory: AdCategoryUI? = null,
+    val title: String = "",
+    val brand: String = "",
+    val model: String = "",
+    val vin: String = "",
+    val location: String = "",
+    val condition: String = "",
+    val description: String = "",
+    val price: String = "",
+    val adId: String? = null,
+    val wizardResult: AdsWizardResultUiModel = AdsWizardResultUiModel(),
+    val currentWizardStepIndex: Int = 0,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+)

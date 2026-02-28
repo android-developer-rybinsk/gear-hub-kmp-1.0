@@ -1,5 +1,8 @@
 package com.gear.hub.auth_service.internal
 
+import com.gear.hub.auth_feature.internal.data.model.AuthLoginRequestDto
+import com.gear.hub.auth_feature.internal.data.model.AuthRefreshRequestDto
+import com.gear.hub.auth_feature.internal.data.model.AuthRefreshResponseDto
 import com.gear.hub.auth_feature.internal.data.model.AuthRegisterRequestDto
 import com.gear.hub.auth_feature.internal.data.model.AuthRegisterResponseDto
 import com.gear.hub.auth_service.api.AuthApi
@@ -12,13 +15,14 @@ import retrofit2.http.POST
  * Android-реализация AuthApi на базе общего Retrofit-клиента.
  */
 internal class RetrofitAuthApi(
-    private val service: AuthRetrofitService,
+    private val defaultService: AuthRetrofitService,
+    private val authorizedService: AuthRetrofitService,
     @Suppress("UNUSED_PARAMETER") private val hostProvider: HostProvider,
 ) : AuthApi {
 
     override suspend fun register(request: AuthRegisterRequestDto): ApiResponse<AuthRegisterResponseDto> =
         try {
-            val response = service.register(request)
+            val response = defaultService.register(request)
             ApiResponse.Success(response)
         } catch (http: retrofit2.HttpException) {
             val message = http.response()?.errorBody()?.string()
@@ -29,6 +33,33 @@ internal class RetrofitAuthApi(
             ApiResponse.UnknownError(throwable)
         }
 
+    override suspend fun login(
+        request: AuthLoginRequestDto,
+    ): ApiResponse<AuthRegisterResponseDto> =
+        try {
+            val response = defaultService.login(request)
+            ApiResponse.Success(response)
+        } catch (http: retrofit2.HttpException) {
+            val message = http.response()?.errorBody()?.string()
+            ApiResponse.HttpError(http.code(), message)
+        } catch (_: java.io.IOException) {
+            ApiResponse.NetworkError
+        } catch (throwable: Throwable) {
+            ApiResponse.UnknownError(throwable)
+        }
+
+    override suspend fun refresh(request: AuthRefreshRequestDto): ApiResponse<AuthRefreshResponseDto> =
+        try {
+            val response = authorizedService.refresh(request)
+            ApiResponse.Success(response)
+        } catch (http: retrofit2.HttpException) {
+            val message = http.response()?.errorBody()?.string()
+            ApiResponse.HttpError(http.code(), message)
+        } catch (_: java.io.IOException) {
+            ApiResponse.NetworkError
+        } catch (throwable: Throwable) {
+            ApiResponse.UnknownError(throwable)
+        }
 }
 
 /**
@@ -37,4 +68,10 @@ internal class RetrofitAuthApi(
 internal interface AuthRetrofitService {
     @POST("api/v1/auth/register")
     suspend fun register(@Body body: AuthRegisterRequestDto): AuthRegisterResponseDto
+
+    @POST("api/v1/auth/login")
+    suspend fun login(@Body body: AuthLoginRequestDto): AuthRegisterResponseDto
+
+    @POST("api/v1/auth/refresh")
+    suspend fun refresh(@Body body: AuthRefreshRequestDto): AuthRefreshResponseDto
 }

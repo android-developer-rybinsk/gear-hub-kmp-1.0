@@ -2,7 +2,7 @@ package gearhub.feature.menu_feature.internal.data.db
 
 import com.gear.hub.data.config.DatabaseFactory
 import gearhub.feature.menu_feature.api.db.MenuCategoryDbDriver
-import gearhub.feature.menu_feature.api.model.MenuCategoryRecord
+import gearhub.feature.menu_feature.api.models.MenuCategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -21,14 +21,14 @@ internal class IosMenuCategoryDbDriver(
         withContext(Dispatchers.Default) { defaults }
     }
 
-    override fun setCategories(categories: List<MenuCategoryRecord>) {
+    override fun setCategories(categories: List<MenuCategoryModel>) {
         val payload = json.encodeToString(categories)
         defaults.setObject(payload, CATEGORIES_KEY)
     }
 
-    override fun getCategories(): List<MenuCategoryRecord> {
+    override fun getCategories(): List<MenuCategoryModel> {
         val payload = defaults.stringForKey(CATEGORIES_KEY) ?: return emptyList()
-        return runCatching { json.decodeFromString<List<MenuCategoryRecord>>(payload) }
+        return runCatching { json.decodeFromString<List<MenuCategoryModel>>(payload) }
             .getOrDefault(emptyList())
     }
 

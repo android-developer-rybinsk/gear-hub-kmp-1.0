@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -32,6 +33,8 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":core"))
+                implementation(project(":network_service"))
+                implementation(project(":feature_menu"))
 
                 implementation(libs.kotlin.stdlib)
                 // Add KMP dependencies here
@@ -40,6 +43,8 @@ kotlin {
                 implementation(compose.material3)
                 implementation(compose.ui)
                 implementation(compose.components.resources)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.coroutines.core)
 
                 // DI
                 implementation(libs.koin.core)
@@ -63,6 +68,11 @@ kotlin {
                 implementation(libs.koin.android)
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.accompanist)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.activity.ktx)
+                implementation(libs.retrofit.core)
+                implementation(libs.retrofit.kotlinx.serialization.converter)
+                implementation(libs.okhttp.logging)
             }
         }
 

@@ -4,8 +4,12 @@ import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
 import com.gear.hub.network.model.ApiResponse
 import gearhub.feature.menu_feature.api.MenuViewModelApi
-import gearhub.feature.menu_feature.internal.data.MenuDataProvider
-import gearhub.feature.menu_feature.internal.data.MenuCategoryRepository
+import gearhub.feature.menu_feature.api.presentation.MenuAction
+import gearhub.feature.menu_feature.api.presentation.MenuStateUI
+import gearhub.feature.menu_feature.internal.domain.MenuCategoriesUseCase
+import gearhub.feature.menu_feature.internal.presentation.menu.MenuDataProvider
+import gearhub.feature.menu_feature.api.presentation.models.MenuProductUI
+import gearhub.feature.menu_feature.api.presentation.models.toUI
 import gearhub.feature.menu_feature.navigation.DestinationMenu
 import gearhub.feature.menu_feature.navigation.FilterArgs
 import gearhub.feature.menu_feature.navigation.ProductDetailsArgs
@@ -22,13 +26,13 @@ import kotlinx.coroutines.launch
 
 internal class MenuViewModel(
     private val router: Router,
-    private val categoryRepository: MenuCategoryRepository,
-) : BaseViewModel<MenuState, MenuAction>(MenuState()), MenuViewModelApi {
+    private val categoriesUseCase: MenuCategoriesUseCase,
+) : BaseViewModel<MenuStateUI, MenuAction>(MenuStateUI()), MenuViewModelApi {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-    private val categoriesSource = categoryRepository.categories
-    private val productsSource = MutableStateFlow(MenuDataProvider.products())
+    private val categoriesSource = categoriesUseCase.categories
+    private val productsSource = MutableStateFlow<List<MenuProductUI>>(MenuDataProvider.products())
 
     private var currentPage = 0
     private val pageSize = 6
@@ -46,14 +50,14 @@ internal class MenuViewModel(
 
     private fun syncCategories() {
         scope.launch {
-            categoryRepository.loadFromDb()
-            when (val response = categoryRepository.refreshCategories()) {
+            categoriesUseCase.loadFromDb()
+            when (val response = categoriesUseCase.refreshCategories()) {
                 is ApiResponse.HttpError -> setCategoryError(response.message)
                 ApiResponse.NetworkError -> setCategoryError("Нет соединения с сервером")
                 is ApiResponse.UnknownError -> setCategoryError("Не удалось загрузить категории")
                 is ApiResponse.Success -> Unit
             }
-            categoryRepository.loadFromDb()
+            categoriesUseCase.loadFromDb()
         }
     }
 
@@ -63,7 +67,7 @@ internal class MenuViewModel(
                 categoriesSource,
                 productsSource
             ) { categories, _ ->
-                categories to Unit
+                categories.map { it.toUI() } to Unit
             }.collect { (categories, _) ->
                 setState { state ->
                     state.copy(categories = categories)
@@ -193,7 +197,7 @@ internal class MenuViewModel(
         }
     }
 
-    private fun filterProducts(): List<MenuProduct> {
+    private fun filterProducts(): List<MenuProductUI> {
         return productsSource.value
     }
 
