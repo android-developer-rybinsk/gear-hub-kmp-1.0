@@ -59,7 +59,11 @@ import gearhub.feature.menu_feature.api.presentation.MenuStateUI
 import gearhub.feature.menu_feature.internal.presentation.menu.components.ErrorPlaceholder
 import gearhub.feature.menu_feature.internal.presentation.menu.components.Loading
 import gearhub.feature.menu_feature.internal.presentation.menu.components.ProductCard
+import gearhub.feature.menu_feature.internal.presentation.menu.components.ProductCardSkeleton
 import gearhub.feature.menu_feature.api.presentation.models.MenuCategoryUI
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -174,14 +178,20 @@ internal fun MenuScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        MenuContent(
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing = state.isLoading && state.products.isNotEmpty()),
+            onRefresh = { viewModel.onAction(MenuAction.Retry) },
             modifier = Modifier.padding(paddingValues),
-            state = state,
-            onCategoryClick = { categoryId -> viewModel.onAction(MenuAction.CategorySelected(categoryId)) },
-            onProductClick = { productId -> viewModel.onAction(MenuAction.ProductClicked(productId)) },
-            onLoadMore = { viewModel.onAction(MenuAction.LoadNextPage) },
-            onRetry = { viewModel.onAction(MenuAction.Retry) }
-        )
+        ) {
+            MenuContent(
+                modifier = Modifier,
+                state = state,
+                onCategoryClick = { categoryId -> viewModel.onAction(MenuAction.CategorySelected(categoryId)) },
+                onProductClick = { productId -> viewModel.onAction(MenuAction.ProductClicked(productId)) },
+                onLoadMore = { viewModel.onAction(MenuAction.LoadNextPage) },
+                onRetry = { viewModel.onAction(MenuAction.Retry) }
+            )
+        }
     }
 }
 
@@ -194,6 +204,23 @@ private fun MenuContent(
     onLoadMore: () -> Unit,
     onRetry: () -> Unit
 ) {
+    var showSkeleton by remember { mutableStateOf(false) }
+    var skeletonStartMs by remember { mutableStateOf(0L) }
+
+    LaunchedEffect(state.isLoading, state.products.isEmpty()) {
+        if (state.isLoading && state.products.isEmpty()) {
+            if (!showSkeleton) {
+                showSkeleton = true
+                skeletonStartMs = System.currentTimeMillis()
+            }
+        } else if (showSkeleton) {
+            val elapsed = System.currentTimeMillis() - skeletonStartMs
+            val remaining = MIN_SKELETON_MS - elapsed
+            if (remaining > 0) delay(remaining)
+            showSkeleton = false
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -201,7 +228,16 @@ private fun MenuContent(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             when {
-                state.isLoading && state.products.isEmpty() -> Loading(modifier = Modifier.align(Alignment.Center))
+                showSkeleton -> {
+                    ProductsGrid(
+                        state = state,
+                        onCategoryClick = onCategoryClick,
+                        onProductClick = onProductClick,
+                        onLoadMore = onLoadMore,
+                        onRetry = onRetry,
+                        showSkeleton = true,
+                    )
+                }
                 state.errorMessage != null && state.products.isEmpty() -> {
                     ErrorPlaceholder(
                         message = state.errorMessage,
@@ -216,7 +252,8 @@ private fun MenuContent(
                         onCategoryClick = onCategoryClick,
                         onProductClick = onProductClick,
                         onLoadMore = onLoadMore,
-                        onRetry = onRetry
+                        onRetry = onRetry,
+                        showSkeleton = false,
                     )
                 }
             }
@@ -230,7 +267,8 @@ private fun ProductsGrid(
     onCategoryClick: (String) -> Unit,
     onProductClick: (String) -> Unit,
     onLoadMore: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    showSkeleton: Boolean,
 ) {
     val gridState = rememberLazyGridState()
 
@@ -264,8 +302,14 @@ private fun ProductsGrid(
             SectionHeader(title = "Рекомендуем", action = "Смотреть все")
         }
 
-        items(state.products, key = { it.id }) { product ->
-            ProductCard(product, onClick = { onProductClick(product.id) })
+        if (showSkeleton) {
+            items(4) {
+                ProductCardSkeleton()
+            }
+        } else {
+            items(state.products, key = { it.id }) { product ->
+                ProductCard(product, onClick = { onProductClick(product.id) })
+            }
         }
 
         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -375,3 +419,6 @@ private fun SectionHeader(title: String, action: String) {
         )
     }
 }
+
+
+private const val MIN_SKELETON_MS = 2000L
