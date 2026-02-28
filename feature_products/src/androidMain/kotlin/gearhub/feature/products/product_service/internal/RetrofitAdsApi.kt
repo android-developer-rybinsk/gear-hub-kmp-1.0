@@ -2,6 +2,7 @@ package gearhub.feature.products.product_service.internal
 
 import com.gear.hub.network.config.HostProvider
 import com.gear.hub.network.model.ApiResponse
+import gearhub.feature.products.product_feature.internal.data.models.AdsPageResponseDTO
 import gearhub.feature.products.product_feature.internal.data.models.AdsSaveRequestDataModel
 import gearhub.feature.products.product_feature.internal.data.models.AdsSaveResponseDataModel
 import gearhub.feature.products.product_feature.internal.data.models.AdsWizardRequestDataModel
@@ -9,16 +10,25 @@ import gearhub.feature.products.product_feature.internal.data.models.AdsWizardRe
 import gearhub.feature.products.product_feature.internal.data.models.CreateAdRequestDTO
 import gearhub.feature.products.product_feature.internal.data.models.CreateAdResponseDTO
 import gearhub.feature.products.product_feature.internal.data.models.UpdateAdRequestDTO
+import gearhub.feature.products.product_feature.internal.data.models.ProductCategoryDTO
 import gearhub.feature.products.product_service.api.AdsApi
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 internal class RetrofitAdsApi(
     private val service: AdsRetrofitService,
     @Suppress("UNUSED_PARAMETER") private val hostProvider: HostProvider,
 ) : AdsApi {
+
+    override suspend fun getCategories(): ApiResponse<List<ProductCategoryDTO>> =
+        safeCall { service.getCategories() }
+
+    override suspend fun getAds(limit: Int, cursor: String?): ApiResponse<AdsPageResponseDTO> =
+        safeCall { service.getAds(limit, cursor) }
 
     override suspend fun wizard(request: AdsWizardRequestDataModel): ApiResponse<AdsWizardResponseDataModel> =
         safeCall { service.wizard(request) }
@@ -46,6 +56,15 @@ internal class RetrofitAdsApi(
 }
 
 internal interface AdsRetrofitService {
+    @GET("api/v1/categories")
+    suspend fun getCategories(): List<ProductCategoryDTO>
+
+    @GET("api/v1/ads")
+    suspend fun getAds(
+        @Query("limit") limit: Int,
+        @Query("cursor") cursor: String?,
+    ): AdsPageResponseDTO
+
     @POST("api/v1/ads/wizard")
     suspend fun wizard(@Body body: AdsWizardRequestDataModel): AdsWizardResponseDataModel
 

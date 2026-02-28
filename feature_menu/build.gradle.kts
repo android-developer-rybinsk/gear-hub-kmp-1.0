@@ -36,6 +36,7 @@ kotlin {
                 implementation(project(":core"))
                 implementation(project(":data_service"))
                 implementation(project(":network_service"))
+                implementation(project(":feature_products"))
 
                 implementation(libs.kotlin.stdlib)
                 // Add KMP dependencies here

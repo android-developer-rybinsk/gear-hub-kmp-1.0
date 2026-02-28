@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.gear.hub.network.model.ApiResponse
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
-import gearhub.feature.menu_feature.api.MenuCategoryProvider
+import gearhub.feature.products.product_feature.api.ProductCategoryProvider
 import gearhub.feature.products.product_feature.internal.domain.LoadAdsWizardUseCase
 import gearhub.feature.products.product_feature.internal.domain.SaveAdsWizardStepUseCase
 import gearhub.feature.products.product_feature.internal.presentation.create.models.AdCategoryUI
@@ -24,7 +24,7 @@ class CreateAdViewModel(
     private val router: Router,
     private val loadAdsWizardUseCase: LoadAdsWizardUseCase,
     private val saveAdsWizardStepUseCase: SaveAdsWizardStepUseCase,
-    private val categoryProvider: MenuCategoryProvider,
+    private val categoryProvider: ProductCategoryProvider,
 ) : BaseViewModel<CreateAdState, CreateAdAction>(CreateAdState()) {
 
     override fun onAction(action: CreateAdAction) {

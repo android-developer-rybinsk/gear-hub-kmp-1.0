@@ -11,6 +11,15 @@ class AdsRepositoryImpl(
     private val api: AdsApi,
 ) : AdsRepository {
 
+    override suspend fun getAds(limit: Int, cursor: String?): ApiResponse<AdsPageDomain> {
+        return when (val response = api.getAds(limit = limit, cursor = cursor)) {
+            is ApiResponse.Success -> ApiResponse.Success(response.data.toDomain())
+            is ApiResponse.HttpError -> response
+            ApiResponse.NetworkError -> ApiResponse.NetworkError
+            is ApiResponse.UnknownError -> response
+        }
+    }
+
     override suspend fun wizard(payload: AdsWizardPayloadDomainModel): ApiResponse<AdsWizardResultDomainModel> {
         return when (val response = api.wizard(payload.toData())) {
             is ApiResponse.Success -> ApiResponse.Success(response.data.toDomain())

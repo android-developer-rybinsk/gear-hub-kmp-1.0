@@ -1,6 +1,6 @@
 package gearhub.feature.products.product_feature.internal.presentation.create.models
 
-import gearhub.feature.menu_feature.api.models.MenuCategoryInfoModel
+import gearhub.feature.products.product_feature.api.ProductCategoryInfoModel
 
 data class AdCategoryUI(
     val id: String,
@@ -18,7 +18,7 @@ enum class CreateAdStepUI {
     Price,
 }
 
-internal fun MenuCategoryInfoModel.toUI(): AdCategoryUI = AdCategoryUI(
+internal fun ProductCategoryInfoModel.toUI(): AdCategoryUI = AdCategoryUI(
     id = id,
     title = title,
     slug = slug,
