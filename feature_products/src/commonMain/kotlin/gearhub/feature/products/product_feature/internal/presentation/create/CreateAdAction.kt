@@ -1,16 +1,12 @@
 package gearhub.feature.products.product_feature.internal.presentation.create
 
+import kotlinx.serialization.json.JsonElement
+
 sealed class CreateAdAction {
     data object LoadCategories : CreateAdAction()
     data class SelectCategory(val categoryId: String) : CreateAdAction()
-    data class UpdateTitle(val value: String) : CreateAdAction()
-    data class UpdateBrand(val value: String) : CreateAdAction()
-    data class UpdateModel(val value: String) : CreateAdAction()
-    data class UpdateVin(val value: String) : CreateAdAction()
-    data class UpdateLocation(val value: String) : CreateAdAction()
-    data class UpdateCondition(val value: String) : CreateAdAction()
-    data class UpdateDescription(val value: String) : CreateAdAction()
-    data class UpdatePrice(val value: String) : CreateAdAction()
+    data class UpdateFieldInput(val key: String, val value: String) : CreateAdAction()
+    data class SelectFieldValue(val key: String, val label: String, val value: JsonElement) : CreateAdAction()
     data object NextStep : CreateAdAction()
     data object Back : CreateAdAction()
 }

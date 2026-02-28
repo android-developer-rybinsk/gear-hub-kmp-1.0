@@ -8,16 +8,6 @@ data class AdCategoryUI(
     val slug: String,
 )
 
-enum class CreateAdStepUI {
-    Category,
-    Title,
-    Vin,
-    Details,
-    Description,
-    Photos,
-    Price,
-}
-
 internal fun MenuCategoryInfoModel.toUI(): AdCategoryUI = AdCategoryUI(
     id = id,
     title = title,

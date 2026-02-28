@@ -6,14 +6,9 @@ import gearhub.feature.products.product_feature.internal.data.models.AdsSaveRequ
 import gearhub.feature.products.product_feature.internal.data.models.AdsSaveResponseDataModel
 import gearhub.feature.products.product_feature.internal.data.models.AdsWizardRequestDataModel
 import gearhub.feature.products.product_feature.internal.data.models.AdsWizardResponseDataModel
-import gearhub.feature.products.product_feature.internal.data.models.CreateAdRequestDTO
-import gearhub.feature.products.product_feature.internal.data.models.CreateAdResponseDTO
-import gearhub.feature.products.product_feature.internal.data.models.UpdateAdRequestDTO
 import gearhub.feature.products.product_service.api.AdsApi
 import retrofit2.http.Body
-import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.Path
 
 internal class RetrofitAdsApi(
     private val service: AdsRetrofitService,
@@ -25,12 +20,6 @@ internal class RetrofitAdsApi(
 
     override suspend fun save(request: AdsSaveRequestDataModel): ApiResponse<AdsSaveResponseDataModel> =
         safeCall { service.save(request) }
-
-    override suspend fun createAd(request: CreateAdRequestDTO): ApiResponse<CreateAdResponseDTO> =
-        safeCall { service.createAd(request) }
-
-    override suspend fun updateAd(id: String, request: UpdateAdRequestDTO): ApiResponse<CreateAdResponseDTO> =
-        safeCall { service.updateAd(id, request) }
 
     private inline fun <T> safeCall(block: () -> T): ApiResponse<T> =
         try {
@@ -51,13 +40,4 @@ internal interface AdsRetrofitService {
 
     @POST("api/v1/ads/save")
     suspend fun save(@Body body: AdsSaveRequestDataModel): AdsSaveResponseDataModel
-
-    @POST("api/v1/ads")
-    suspend fun createAd(@Body body: CreateAdRequestDTO): CreateAdResponseDTO
-
-    @PATCH("api/v1/ads/{id}")
-    suspend fun updateAd(
-        @Path("id") id: String,
-        @Body body: UpdateAdRequestDTO,
-    ): CreateAdResponseDTO
 }
