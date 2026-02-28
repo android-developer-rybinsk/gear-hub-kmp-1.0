@@ -33,6 +33,7 @@ data class AdsWizardFieldDomainModel(
     val stepSlug: String?,
     val widgetType: String,
     val value: JsonElement?,
+    val validation: JsonElement?,
     val values: List<AdsWizardFieldValueDomainModel>,
 )
 

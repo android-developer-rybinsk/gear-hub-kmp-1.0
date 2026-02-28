@@ -133,7 +133,9 @@ fun CreateAdScreen(
                     } else {
                         DynamicStepFields(
                             state = state,
-                            fields = state.wizardResult.fields.filter { it.stepSlug == currentStep?.slug },
+                            fields = currentStep?.children
+                                ?.mapNotNull { key -> state.wizardResult.fields.firstOrNull { it.key == key } }
+                                .orEmpty(),
                             images = images,
                             onAddPhotoClick = { showSheet = true },
                             onAction = viewModel::onAction,
@@ -199,7 +201,8 @@ private fun DynamicStepFields(
     onAction: (CreateAdAction) -> Unit,
 ) {
     fields.forEach { field ->
-        val isPhoto = field.widgetType.equals("photos", ignoreCase = true)
+        val isPhoto = field.widgetType.equals("photos", ignoreCase = true) ||
+            field.widgetType.equals("uploader", ignoreCase = true)
         Text(text = field.label.ifBlank { field.key })
         if (isPhoto) {
             PhotosGridField(images = images, onAddPhotoClick = onAddPhotoClick)

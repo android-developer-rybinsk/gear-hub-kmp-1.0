@@ -65,6 +65,8 @@ data class AdsWizardFieldDataModel(
     val widget: AdsWizardWidgetDataModel? = null,
     @SerialName("value")
     val value: JsonElement? = null,
+    @SerialName("validation")
+    val validation: JsonElement? = null,
     @SerialName("values")
     val values: List<AdsWizardOptionDataModel> = emptyList(),
 )
@@ -125,6 +127,7 @@ internal fun AdsWizardResponseDataModel.toDomain(): AdsWizardResultDomainModel =
             stepSlug = field.stepSlug,
             widgetType = field.widget?.type.orEmpty(),
             value = field.value,
+            validation = field.validation,
             values = field.values.map { AdsWizardFieldValueDomainModel(it.label, it.value) },
         )
     },

@@ -20,6 +20,7 @@ data class AdsWizardFieldUiModel(
     val stepSlug: String?,
     val widgetType: String,
     val value: JsonElement?,
+    val validation: JsonElement?,
     val values: List<AdsWizardFieldValueUiModel>,
 )
 
@@ -49,6 +50,7 @@ internal fun AdsWizardFieldDomainModel.toUi(): AdsWizardFieldUiModel = AdsWizard
     stepSlug = stepSlug,
     widgetType = widgetType,
     value = value,
+    validation = validation,
     values = values.map { it.toUi() },
 )
 
