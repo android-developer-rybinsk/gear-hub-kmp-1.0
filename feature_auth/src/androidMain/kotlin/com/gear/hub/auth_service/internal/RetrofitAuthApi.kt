@@ -37,7 +37,7 @@ internal class RetrofitAuthApi(
         request: AuthLoginRequestDto,
     ): ApiResponse<AuthRegisterResponseDto> =
         try {
-            val response = authorizedService.login(request)
+            val response = defaultService.login(request)
             ApiResponse.Success(response)
         } catch (http: retrofit2.HttpException) {
             val message = http.response()?.errorBody()?.string()
@@ -50,7 +50,7 @@ internal class RetrofitAuthApi(
 
     override suspend fun refresh(request: AuthRefreshRequestDto): ApiResponse<AuthRefreshResponseDto> =
         try {
-            val response = defaultService.refresh(request)
+            val response = authorizedService.refresh(request)
             ApiResponse.Success(response)
         } catch (http: retrofit2.HttpException) {
             val message = http.response()?.errorBody()?.string()

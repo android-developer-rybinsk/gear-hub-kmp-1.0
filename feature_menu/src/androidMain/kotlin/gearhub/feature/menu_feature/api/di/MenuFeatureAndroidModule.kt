@@ -1,6 +1,7 @@
-package gearhub.feature.menu_feature.api
+package gearhub.feature.menu_feature.api.di
 
 import gear.hub.core.navigation.Router
+import gearhub.feature.menu_feature.api.MenuViewModelApi
 import gearhub.feature.menu_feature.internal.presentation.menu.MenuViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

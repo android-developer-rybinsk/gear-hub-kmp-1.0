@@ -5,22 +5,25 @@ import com.gear.hub.network.model.ApiResponse
 import gear.hub.core.BaseViewModel
 import gear.hub.core.navigation.Router
 import gearhub.feature.menu_feature.api.MenuCategoryProvider
-import gearhub.feature.products.product_feature.internal.domain.CreateAdDraftUseCase
-import gearhub.feature.products.product_feature.internal.domain.UpdateAdDraftUseCase
+import gearhub.feature.products.product_feature.internal.domain.LoadAdsWizardUseCase
+import gearhub.feature.products.product_feature.internal.domain.SaveAdsWizardStepUseCase
 import gearhub.feature.products.product_feature.internal.presentation.create.models.AdCategoryUI
 import gearhub.feature.products.product_feature.internal.presentation.create.models.CreateAdStepUI
 import gearhub.feature.products.product_feature.internal.presentation.create.models.toUI
-import kotlinx.coroutines.Dispatchers
+import gearhub.feature.products.product_feature.internal.presentation.create.models.toUi
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 class CreateAdViewModel(
     private val router: Router,
-    private val createAdDraftUseCase: CreateAdDraftUseCase,
-    private val updateAdDraftUseCase: UpdateAdDraftUseCase,
+    private val loadAdsWizardUseCase: LoadAdsWizardUseCase,
+    private val saveAdsWizardStepUseCase: SaveAdsWizardStepUseCase,
     private val categoryProvider: MenuCategoryProvider,
 ) : BaseViewModel<CreateAdState, CreateAdAction>(CreateAdState()) {
 
@@ -43,7 +46,7 @@ class CreateAdViewModel(
 
     private fun loadCategories() {
         viewModelScope.launch {
-            val mapped = withContext(Dispatchers.IO) {
+            val mapped = withContext(IO) {
                 categoryProvider.getCategories()
             }.map { it.toUI() }
             setState { it.copy(categories = mapped) }
@@ -58,12 +61,12 @@ class CreateAdViewModel(
     private fun onNext() {
         when (currentState.step) {
             CreateAdStepUI.Category -> proceedFromCategory()
-            CreateAdStepUI.Title -> createAdDraft()
-            CreateAdStepUI.Vin -> patchDraft(nextStep = CreateAdStepUI.Details)
-            CreateAdStepUI.Details -> patchDraft(nextStep = CreateAdStepUI.Description)
-            CreateAdStepUI.Description -> patchDraft(nextStep = CreateAdStepUI.Photos)
-            CreateAdStepUI.Photos -> patchDraft(nextStep = CreateAdStepUI.Price)
-            CreateAdStepUI.Price -> publishDraft()
+            CreateAdStepUI.Title -> saveCurrentStep(CreateAdStepUI.Vin)
+            CreateAdStepUI.Vin -> saveCurrentStep(CreateAdStepUI.Details)
+            CreateAdStepUI.Details -> saveCurrentStep(CreateAdStepUI.Description)
+            CreateAdStepUI.Description -> saveCurrentStep(CreateAdStepUI.Photos)
+            CreateAdStepUI.Photos -> saveCurrentStep(CreateAdStepUI.Price)
+            CreateAdStepUI.Price -> saveCurrentStep(CreateAdStepUI.Price)
         }
     }
 
@@ -72,7 +75,7 @@ class CreateAdViewModel(
             CreateAdStepUI.Category -> router.back()
             CreateAdStepUI.Title -> setState { it.copy(step = CreateAdStepUI.Category) }
             CreateAdStepUI.Vin -> setState { it.copy(step = CreateAdStepUI.Title) }
-            CreateAdStepUI.Details -> setState { it.copy(step = previousAfterDetails()) }
+            CreateAdStepUI.Details -> setState { it.copy(step = CreateAdStepUI.Vin) }
             CreateAdStepUI.Description -> setState { it.copy(step = CreateAdStepUI.Details) }
             CreateAdStepUI.Photos -> setState { it.copy(step = CreateAdStepUI.Description) }
             CreateAdStepUI.Price -> setState { it.copy(step = CreateAdStepUI.Photos) }
@@ -85,41 +88,16 @@ class CreateAdViewModel(
             setState { it.copy(errorMessage = "Выберите категорию") }
             return
         }
-        setState { it.copy(step = CreateAdStepUI.Title, errorMessage = null) }
-    }
-
-    private fun createAdDraft() {
-        val category = currentState.selectedCategory
-        if (category == null) {
-            setState { it.copy(errorMessage = "Выберите категорию") }
-            return
-        }
-
-        val title = if (isVehicleCategory(category)) {
-            val brand = currentState.brand.trim()
-            val model = currentState.model.trim()
-            if (brand.isBlank() || model.isBlank()) {
-                setState { it.copy(errorMessage = "Введите марку и модель") }
-                return
-            }
-            "$brand $model"
-        } else {
-            val titleValue = currentState.title.trim()
-            if (titleValue.isBlank()) {
-                setState { it.copy(errorMessage = "Введите заголовок") }
-                return
-            }
-            titleValue
-        }
-
         val categoryId = category.id.toIntOrNull() ?: 0
         runWithLoader(
-            request = { createAdDraftUseCase(title, "", categoryId) },
-            onSuccess = { adId ->
+            request = { loadAdsWizardUseCase(categoryId = categoryId) },
+            onSuccess = { wizardDomain ->
+                val wizardUi = wizardDomain.toUi()
                 setState {
                     it.copy(
-                        adId = adId,
-                        step = nextAfterTitle(category),
+                        step = CreateAdStepUI.Title,
+                        wizardResult = wizardUi,
+                        currentWizardStepIndex = 0,
                         errorMessage = null,
                     )
                 }
@@ -127,25 +105,57 @@ class CreateAdViewModel(
         )
     }
 
-    private fun patchDraft(nextStep: CreateAdStepUI) {
-        val adId = currentState.adId ?: return
+    private fun saveCurrentStep(nextStep: CreateAdStepUI) {
+        val category = currentState.selectedCategory
+        if (category == null) {
+            setState { it.copy(errorMessage = "Категория не выбрана") }
+            return
+        }
+        val categoryId = category.id.toIntOrNull() ?: 0
+        val stepAttributes = buildCurrentStepAttributes()
 
         runWithLoader(
-            request = { updateAdDraftUseCase(adId, "123") },
-            onSuccess = {
-                setState { it.copy(step = nextStep, errorMessage = null) }
+            request = {
+                saveAdsWizardStepUseCase(
+                    categoryId = categoryId,
+                    id = currentState.adId,
+                    attributes = stepAttributes,
+                )
+            },
+            onSuccess = { response ->
+                setState {
+                    it.copy(
+                        adId = response.id,
+                        step = nextStep,
+                        errorMessage = null,
+                    )
+                }
             },
         )
     }
 
-    private fun publishDraft() {
-        val adId = currentState.adId ?: return
-        runWithLoader(
-            request = { updateAdDraftUseCase(adId, currentState.price.ifBlank { "123" }) },
-            onSuccess = {
-                setState { it.copy(errorMessage = null) }
-            },
-        )
+    private fun buildCurrentStepAttributes(): Map<String, JsonElement> {
+        return when (currentState.step) {
+            CreateAdStepUI.Category -> emptyMap()
+            CreateAdStepUI.Title -> {
+                if (isVehicleCategory(currentState.selectedCategory)) {
+                    mapOf(
+                        "brand" to JsonPrimitive(currentState.brand),
+                        "model" to JsonPrimitive(currentState.model),
+                    )
+                } else {
+                    mapOf("title" to JsonPrimitive(currentState.title))
+                }
+            }
+            CreateAdStepUI.Vin -> mapOf("vin" to JsonPrimitive(currentState.vin))
+            CreateAdStepUI.Details -> mapOf(
+                "location" to JsonPrimitive(currentState.location),
+                "condition" to JsonPrimitive(currentState.condition),
+            )
+            CreateAdStepUI.Description -> mapOf("description" to JsonPrimitive(currentState.description))
+            CreateAdStepUI.Photos -> emptyMap()
+            CreateAdStepUI.Price -> mapOf("price" to JsonPrimitive(currentState.price))
+        }
     }
 
     @OptIn(ExperimentalTime::class)
@@ -164,55 +174,24 @@ class CreateAdViewModel(
             when (response) {
                 is ApiResponse.Success -> onSuccess(response.data)
                 is ApiResponse.HttpError -> setState {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = response.message ?: "Ошибка сервера",
-                    )
+                    it.copy(isLoading = false, errorMessage = response.message ?: "Ошибка сервера")
                 }
                 ApiResponse.NetworkError -> setState {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = "Нет соединения с сервером",
-                    )
+                    it.copy(isLoading = false, errorMessage = "Нет соединения с сервером")
                 }
                 is ApiResponse.UnknownError -> setState {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = response.throwable?.message ?: "Неизвестная ошибка",
-                    )
+                    it.copy(isLoading = false, errorMessage = response.throwable?.message ?: "Неизвестная ошибка")
                 }
             }
             setState { it.copy(isLoading = false) }
         }
     }
 
-    private fun nextAfterTitle(category: AdCategoryUI): CreateAdStepUI {
-        return if (isPartsCategory(category)) {
-            CreateAdStepUI.Details
-        } else {
-            CreateAdStepUI.Vin
-        }
-    }
-
-    private fun previousAfterDetails(): CreateAdStepUI {
-        val category = currentState.selectedCategory
-        return if (category != null && isPartsCategory(category)) {
-            CreateAdStepUI.Title
-        } else {
-            CreateAdStepUI.Vin
-        }
-    }
-
-    private fun isVehicleCategory(category: AdCategoryUI): Boolean {
+    private fun isVehicleCategory(category: AdCategoryUI?): Boolean {
+        if (category == null) return false
         val slug = category.slug.lowercase()
         val title = category.title.lowercase()
         return slug.contains("auto") || slug.contains("moto") || title.contains("авто") || title.contains("мото")
-    }
-
-    private fun isPartsCategory(category: AdCategoryUI): Boolean {
-        val slug = category.slug.lowercase()
-        val title = category.title.lowercase()
-        return slug.contains("parts") || title.contains("запчаст")
     }
 
     private companion object {

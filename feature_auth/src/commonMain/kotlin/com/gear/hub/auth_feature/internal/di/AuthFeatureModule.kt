@@ -35,8 +35,8 @@ val authFeatureModule: Module = module {
     single<AuthSessionDbDriver> { createAuthSessionDbDriver(get<DatabaseFactory>(named("auth_db"))) }
     single<AuthSessionStorage> { AuthSessionStorageImpl(get()) }
     single<AuthSessionRepository> { AuthSessionRepositoryImpl(get()) }
-    single<AuthTokenProvider>(override = true) { AuthTokenProviderImpl(get()) }
-    single<AuthSessionManager>(override = true) { AuthSessionManagerImpl(get(), get()) }
+    single<AuthTokenProvider> { AuthTokenProviderImpl(get()) }
+    single<AuthSessionManager> { AuthSessionManagerImpl(get(), get()) }
     factory { RegisterUserUseCase(get(), get()) }
     factory { LoginUserUseCase(get(), get()) }
     factory { CheckAuthorizationUseCase(get()) }

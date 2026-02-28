@@ -7,9 +7,3 @@ interface AuthTokenProvider {
     fun accessToken(): String?
 }
 
-/**
- * Заглушка, когда токен недоступен.
- */
-object EmptyAuthTokenProvider : AuthTokenProvider {
-    override fun accessToken(): String? = null
-}
